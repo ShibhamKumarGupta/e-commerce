@@ -1,0 +1,128 @@
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold mb-8">Checkout</h1>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Checkout Form -->
+    <div class="lg:col-span-2">
+      <form [formGroup]="checkoutForm">
+        <!-- Shipping Address -->
+        <div class="card mb-6">
+          <h2 class="text-xl font-bold mb-4">Shipping Address</h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium mb-1">Street Address</label>
+              <input formControlName="street" type="text" class="input-field" placeholder="123 Main St">
+              <div *ngIf="checkoutForm.get('street')?.invalid && checkoutForm.get('street')?.touched" 
+                   class="text-red-500 text-sm mt-1">Street address is required</div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium mb-1">City</label>
+              <input formControlName="city" type="text" class="input-field" placeholder="New York">
+              <div *ngIf="checkoutForm.get('city')?.invalid && checkoutForm.get('city')?.touched" 
+                   class="text-red-500 text-sm mt-1">City is required</div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium mb-1">State</label>
+              <input formControlName="state" type="text" class="input-field" placeholder="NY">
+              <div *ngIf="checkoutForm.get('state')?.invalid && checkoutForm.get('state')?.touched" 
+                   class="text-red-500 text-sm mt-1">State is required</div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium mb-1">ZIP Code</label>
+              <input formControlName="zipCode" type="text" class="input-field" placeholder="10001">
+              <div *ngIf="checkoutForm.get('zipCode')?.invalid && checkoutForm.get('zipCode')?.touched" 
+                   class="text-red-500 text-sm mt-1">ZIP code is required</div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium mb-1">Country</label>
+              <input formControlName="country" type="text" class="input-field" placeholder="USA">
+              <div *ngIf="checkoutForm.get('country')?.invalid && checkoutForm.get('country')?.touched" 
+                   class="text-red-500 text-sm mt-1">Country is required</div>
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium mb-1">Phone Number</label>
+              <input formControlName="phone" type="tel" class="input-field" placeholder="+1 234 567 8900">
+              <div *ngIf="checkoutForm.get('phone')?.invalid && checkoutForm.get('phone')?.touched" 
+                   class="text-red-500 text-sm mt-1">Phone number is required</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment Method -->
+        <div class="card mb-6">
+          <h2 class="text-xl font-bold mb-4">Payment Method</h2>
+          
+          <div class="space-y-3">
+            <label class="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50">
+              <input type="radio" name="payment" [value]="PaymentMethod.COD" 
+                     [(ngModel)]="paymentMethod" [ngModelOptions]="{standalone: true}" class="mr-3">
+              <div>
+                <div class="font-semibold">Cash on Delivery</div>
+                <div class="text-sm text-gray-600">Pay when you receive the order</div>
+              </div>
+            </label>
+
+            <label class="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50">
+              <input type="radio" name="payment" [value]="PaymentMethod.STRIPE" 
+                     [(ngModel)]="paymentMethod" [ngModelOptions]="{standalone: true}" class="mr-3">
+              <div>
+                <div class="font-semibold">Credit/Debit Card</div>
+                <div class="text-sm text-gray-600">Pay securely with Stripe</div>
+              </div>
+            </label>
+          </div>
+
+          <!-- Stripe Card Element -->
+          <div *ngIf="paymentMethod === PaymentMethod.STRIPE" class="mt-4">
+            <label class="block text-sm font-medium mb-2">Card Details</label>
+            <div id="card-element" class="p-3 border rounded-lg"></div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Order Summary -->
+    <div class="lg:col-span-1">
+      <div class="card sticky top-4">
+        <h2 class="text-xl font-bold mb-4">Order Summary</h2>
+        
+        <div class="space-y-3 mb-4 max-h-60 overflow-y-auto">
+          <div *ngFor="let item of cart.items" class="flex justify-between text-sm">
+            <span>{{item.product.name}} x {{item.quantity}}</span>
+            <span>${{(item.product.price * item.quantity).toFixed(2)}}</span>
+          </div>
+        </div>
+
+        <div class="border-t pt-4 space-y-2">
+          <div class="flex justify-between">
+            <span class="text-gray-600">Subtotal</span>
+            <span class="font-semibold">${{cart.totalPrice.toFixed(2)}}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Shipping</span>
+            <span class="font-semibold">${{cart.totalPrice > 100 ? '0.00' : '10.00'}}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-600">Tax (10%)</span>
+            <span class="font-semibold">${{(cart.totalPrice * 0.1).toFixed(2)}}</span>
+          </div>
+          <div class="border-t pt-2 flex justify-between text-lg">
+            <span class="font-bold">Total</span>
+            <span class="font-bold text-primary-600">${{totalAmount.toFixed(2)}}</span>
+          </div>
+        </div>
+
+        <button (click)="placeOrder()" [disabled]="loading || checkoutForm.invalid" 
+                class="btn-primary w-full mt-6">
+          {{loading ? 'Processing...' : 'Place Order'}}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

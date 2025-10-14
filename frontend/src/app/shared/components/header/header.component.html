@@ -1,0 +1,97 @@
+<header class="bg-white shadow-md sticky top-0 z-50">
+  <div class="container mx-auto px-4">
+    <div class="flex items-center justify-between h-16">
+      <!-- Logo -->
+      <div class="flex items-center">
+        <a routerLink="/" class="text-2xl font-bold text-primary-600 hover:text-primary-700 transition-colors">
+          🛒 E-Shop
+        </a>
+      </div>
+
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex items-center space-x-6">
+        <a routerLink="/" routerLinkActive="text-primary-600" [routerLinkActiveOptions]="{exact: true}" 
+           class="text-gray-700 hover:text-primary-600 transition-colors font-medium">
+          Home
+        </a>
+        <a routerLink="/products" routerLinkActive="text-primary-600" 
+           class="text-gray-700 hover:text-primary-600 transition-colors font-medium">
+          Products
+        </a>
+
+        <ng-container *ngIf="authService.isAuthenticated; else guestLinks">
+          <a *ngIf="currentUser?.role === 'seller'" routerLink="/seller/dashboard" routerLinkActive="text-primary-600"
+             class="text-gray-700 hover:text-primary-600 transition-colors font-medium">
+            Dashboard
+          </a>
+          <a *ngIf="currentUser?.role === 'buyer'" routerLink="/buyer/orders" routerLinkActive="text-primary-600"
+             class="text-gray-700 hover:text-primary-600 transition-colors font-medium">
+            My Orders
+          </a>
+        </ng-container>
+
+        <ng-template #guestLinks>
+          <a routerLink="/auth/login" class="text-gray-700 hover:text-primary-600 transition-colors font-medium">
+            Login
+          </a>
+          <a routerLink="/auth/register" class="btn-primary">
+            Sign Up
+          </a>
+        </ng-template>
+      </nav>
+
+      <!-- Right Side Icons -->
+      <div class="flex items-center space-x-4">
+        <!-- Cart Icon -->
+        <a routerLink="/buyer/cart" class="relative text-gray-700 hover:text-primary-600 transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+          </svg>
+          <span *ngIf="cartItemCount > 0" 
+                class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+            {{cartItemCount}}
+          </span>
+        </a>
+
+        <!-- User Menu -->
+        <div *ngIf="authService.isAuthenticated" class="relative">
+          <button (click)="toggleMenu()" class="flex items-center space-x-2 text-gray-700 hover:text-primary-600 transition-colors">
+            <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+              <span class="text-primary-600 font-semibold">{{(currentUser?.name || 'U').charAt(0).toUpperCase()}}</span>
+            </div>
+          </button>
+
+          <div *ngIf="isMenuOpen" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 animate-fade-in">
+            <a routerLink="/buyer/profile" (click)="toggleMenu()" 
+               class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors">
+              Profile
+            </a>
+            <button (click)="logout(); toggleMenu()" 
+                    class="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors">
+              Logout
+            </button>
+          </div>
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <button (click)="toggleMenu()" class="md:hidden text-gray-700">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div *ngIf="isMenuOpen" class="md:hidden py-4 animate-slide-down">
+      <a routerLink="/" (click)="toggleMenu()" class="block py-2 text-gray-700 hover:text-primary-600">Home</a>
+      <a routerLink="/products" (click)="toggleMenu()" class="block py-2 text-gray-700 hover:text-primary-600">Products</a>
+      
+      <ng-container *ngIf="!authService.isAuthenticated">
+        <a routerLink="/auth/login" (click)="toggleMenu()" class="block py-2 text-gray-700 hover:text-primary-600">Login</a>
+        <a routerLink="/auth/register" (click)="toggleMenu()" class="block py-2 text-gray-700 hover:text-primary-600">Sign Up</a>
+      </ng-container>
+    </div>
+  </div>
+</header>

@@ -1,0 +1,81 @@
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold mb-8">My Orders</h1>
+
+  <app-loading *ngIf="loading"></app-loading>
+
+  <div *ngIf="!loading && orders.length === 0" class="text-center py-12">
+    <div class="text-6xl mb-4">📦</div>
+    <h2 class="text-2xl font-semibold mb-4">No orders yet</h2>
+    <p class="text-gray-600 mb-6">Start shopping to see your orders here!</p>
+    <a routerLink="/products" class="btn-primary">Browse Products</a>
+  </div>
+
+  <div *ngIf="!loading && orders.length > 0" class="space-y-6">
+    <div *ngFor="let order of orders" class="card">
+      <div class="flex justify-between items-start mb-4">
+        <div>
+          <h3 class="font-semibold text-lg">Order #{{order._id.slice(-8)}}</h3>
+          <p class="text-sm text-gray-600">Placed on {{order.createdAt | date:'medium'}}</p>
+        </div>
+        <span [class]="getStatusClass(order.orderStatus)" class="badge">
+          {{order.orderStatus | uppercase}}
+        </span>
+      </div>
+
+      <div class="border-t border-b py-4 mb-4">
+        <div *ngFor="let item of order.orderItems" class="flex items-center space-x-4 mb-3">
+          <img [src]="item.image" [alt]="item.name" class="w-16 h-16 object-cover rounded">
+          <div class="flex-1">
+            <p class="font-semibold">{{item.name}}</p>
+            <p class="text-sm text-gray-600">Quantity: {{item.quantity}}</p>
+          </div>
+          <p class="font-semibold">${{(item.price * item.quantity).toFixed(2)}}</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div>
+          <h4 class="font-semibold mb-2">Shipping Address</h4>
+          <p class="text-sm text-gray-600">
+            {{order.shippingAddress.street}}<br>
+            {{order.shippingAddress.city}}, {{order.shippingAddress.state}} {{order.shippingAddress.zipCode}}<br>
+            {{order.shippingAddress.country}}<br>
+            Phone: {{order.shippingAddress.phone}}
+          </p>
+        </div>
+        <div>
+          <h4 class="font-semibold mb-2">Payment</h4>
+          <p class="text-sm text-gray-600">
+            Method: {{order.paymentMethod | uppercase}}<br>
+            Status: <span [class]="order.paymentStatus === 'paid' ? 'text-green-600' : 'text-yellow-600'">
+              {{order.paymentStatus | uppercase}}
+            </span>
+          </p>
+        </div>
+      </div>
+
+      <div class="flex justify-between items-center">
+        <div class="text-lg font-bold">
+          Total: <span class="text-primary-600">${{order.totalPrice.toFixed(2)}}</span>
+        </div>
+        <div class="space-x-2">
+          <a [routerLink]="['/buyer/orders', order._id]" class="btn-secondary text-sm">View Details</a>
+          <button *ngIf="order.orderStatus === OrderStatus.PENDING" 
+                  (click)="cancelOrder(order._id)" 
+                  class="btn-danger text-sm">
+            Cancel Order
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div *ngIf="!loading && totalPages > 1" class="flex justify-center items-center space-x-2 mt-8">
+    <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1" 
+            class="px-4 py-2 border rounded-lg disabled:opacity-50">Previous</button>
+    <span class="px-4 py-2">Page {{currentPage}} of {{totalPages}}</span>
+    <button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage === totalPages" 
+            class="px-4 py-2 border rounded-lg disabled:opacity-50">Next</button>
+  </div>
+</div>
