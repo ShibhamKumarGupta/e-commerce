@@ -48,10 +48,10 @@
   </div>
 </div>
 
-<!-- Best Deals Section -->
+<!-- Trending Products Section -->
 <div class="bg-gray-50 py-12">
   <div class="container mx-auto px-4">
-    <h2 class="text-3xl font-bold text-gray-900 mb-8">Best Deals</h2>
+    <h2 class="text-3xl font-bold text-gray-900 mb-8">Trending Products</h2>
     
     <div *ngIf="loading" class="flex justify-center py-12">
       <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-600"></div>
@@ -59,22 +59,24 @@
     
     <div *ngIf="!loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       <div 
-        *ngFor="let product of featuredProducts"
-        (click)="navigateToProduct(product._id)"
-        class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all cursor-pointer transform hover:scale-105">
-        <div class="relative h-64 bg-gray-200">
+        *ngFor="let product of trendingProducts"
+        class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all group">
+        <div 
+          (click)="navigateToProduct(product._id)"
+          class="relative h-64 bg-gray-200 cursor-pointer">
           <img 
             [src]="product.images[0] || 'assets/placeholder.jpg'" 
             [alt]="product.name"
             class="w-full h-full object-cover">
-          <div class="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-            50% off - Limited Stock
-          </div>
         </div>
         <div class="p-4">
-          <h3 class="font-semibold text-gray-900 mb-1 truncate">{{product.name}}</h3>
-          <p class="text-sm text-gray-500 mb-2">{{product.category}}</p>
-          <div class="flex items-center justify-between">
+          <h3 
+            (click)="navigateToProduct(product._id)"
+            class="font-semibold text-gray-900 mb-1 truncate cursor-pointer hover:text-blue-600">
+            {{product.name}}
+          </h3>
+          <p class="text-sm text-gray-500 mb-2">{{product.brand || product.category}}</p>
+          <div class="flex items-center justify-between mb-3">
             <div class="text-blue-600 font-bold text-lg">${{product.price}}</div>
             <div class="flex items-center text-yellow-500">
               <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
@@ -83,31 +85,16 @@
               <span class="ml-1 text-gray-700 text-sm">{{product.rating}}</span>
             </div>
           </div>
+          <button 
+            (click)="addToCart(product)"
+            [disabled]="product.stock === 0"
+            class="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+            </svg>
+            {{product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}}
+          </button>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Trending Products Section -->
-<div class="container mx-auto px-4 py-12">
-  <h2 class="text-3xl font-bold text-gray-900 mb-8">Trending Products</h2>
-  
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-    <div 
-      *ngFor="let product of trendingProducts"
-      (click)="navigateToProduct(product._id)"
-      class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all cursor-pointer transform hover:scale-105">
-      <div class="relative h-64 bg-gray-200">
-        <img 
-          [src]="product.images[0] || 'assets/placeholder.jpg'" 
-          [alt]="product.name"
-          class="w-full h-full object-cover">
-      </div>
-      <div class="p-4">
-        <h3 class="font-semibold text-gray-900 mb-1 truncate">{{product.name}}</h3>
-        <p class="text-sm text-gray-500 mb-2">{{product.brand || 'Featured Home Decor'}}</p>
-        <div class="text-blue-600 font-bold text-lg">${{product.price}}</div>
       </div>
     </div>
   </div>

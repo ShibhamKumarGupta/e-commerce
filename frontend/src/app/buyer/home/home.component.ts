@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ProductService } from '../../core/services/product.service';
+import { CartService } from '../../core/services/cart.service';
 import { Product } from '../../core/models/product.model';
 
 @Component({
@@ -51,6 +52,7 @@ export class HomeComponent implements OnInit {
 
   constructor(
     private productService: ProductService,
+    private cartService: CartService,
     private router: Router
   ) {}
 
@@ -109,5 +111,11 @@ export class HomeComponent implements OnInit {
 
   navigateToProduct(productId: string): void {
     this.router.navigate(['/products', productId]);
+  }
+
+  addToCart(product: Product): void {
+    if (product.stock > 0) {
+      this.cartService.addToCart(product, 1);
+    }
   }
 }

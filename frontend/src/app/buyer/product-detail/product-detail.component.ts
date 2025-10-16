@@ -62,7 +62,7 @@ export class ProductDetailComponent implements OnInit {
   addToCart(): void {
     if (this.product) {
       this.cartService.addToCart(this.product, this.quantity);
-      alert('Product added to cart!');
+      // Toast notification will be handled by CartService
     }
   }
 
@@ -93,7 +93,6 @@ export class ProductDetailComponent implements OnInit {
     this.submittingReview = true;
     this.productService.addReview(this.product._id, this.rating, this.comment).subscribe({
       next: () => {
-        alert('Review submitted successfully!');
         this.showReviewForm = false;
         this.comment = '';
         this.rating = 5;
@@ -101,7 +100,6 @@ export class ProductDetailComponent implements OnInit {
         this.submittingReview = false;
       },
       error: (error) => {
-        alert(error.message || 'Failed to submit review');
         this.submittingReview = false;
       }
     });
@@ -109,5 +107,11 @@ export class ProductDetailComponent implements OnInit {
 
   getStars(rating: number): number[] {
     return Array(5).fill(0).map((_, i) => i < rating ? 1 : 0);
+  }
+
+  getStarPercentage(stars: number): number {
+    if (!this.product || this.product.numReviews === 0) return 0;
+    const count = this.product.reviews.filter(r => Math.floor(r.rating) === stars).length;
+    return Math.round((count / this.product.numReviews) * 100);
   }
 }

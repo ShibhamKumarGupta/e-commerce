@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Cart, CartItem } from '../models/cart.model';
 import { Product } from '../models/product.model';
+import { ToastService } from './toast.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,7 @@ export class CartService {
   private cartSubject = new BehaviorSubject<Cart>(this.getInitialCart());
   public cart$ = this.cartSubject.asObservable();
 
-  constructor() {}
+  constructor(private toastService: ToastService) {}
 
   private getInitialCart(): Cart {
     const cartStr = localStorage.getItem('cart');
@@ -41,8 +42,10 @@ export class CartService {
 
     if (existingItem) {
       existingItem.quantity += quantity;
+      this.toastService.success(`Updated ${product.name} quantity in cart`);
     } else {
       cart.items.push({ product, quantity });
+      this.toastService.success(`${product.name} added to cart`);
     }
 
     const totals = this.calculateTotals(cart.items);

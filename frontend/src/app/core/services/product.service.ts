@@ -1,14 +1,18 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
+import { ToastService } from './toast.service';
 import { Product, ProductQuery, ProductResponse } from '../models/product.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
-  constructor(private apiService: ApiService) {}
+  constructor(
+    private apiService: ApiService,
+    private toastService: ToastService
+  ) {}
 
   getAllProducts(query?: ProductQuery): Observable<ProductResponse> {
     return this.apiService.get<any>('/products', query).pipe(
@@ -32,7 +36,9 @@ export class ProductService {
     return this.apiService.post<any>(`/products/${productId}/reviews`, {
       rating,
       comment
-    });
+    }).pipe(
+      tap(() => this.toastService.success('Review submitted successfully!'))
+    );
   }
 
   createProduct(data: any): Observable<Product> {
