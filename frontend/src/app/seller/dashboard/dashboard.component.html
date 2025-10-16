@@ -1,102 +1,160 @@
-<div class="container mx-auto px-4 py-8">
-  <h1 class="text-3xl font-bold mb-8">Seller Dashboard</h1>
+<app-seller-navbar></app-seller-navbar>
 
-  <app-loading *ngIf="loading"></app-loading>
-
-  <div *ngIf="!loading">
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <div class="card bg-gradient-to-br from-blue-500 to-blue-600 text-white">
-        <div class="flex justify-between items-start">
-          <div>
-            <p class="text-blue-100 text-sm mb-1">Total Products</p>
-            <p class="text-3xl font-bold">{{stats.totalProducts}}</p>
-          </div>
-          <div class="text-4xl opacity-50">📦</div>
-        </div>
-      </div>
-
-      <div class="card bg-gradient-to-br from-green-500 to-green-600 text-white">
-        <div class="flex justify-between items-start">
-          <div>
-            <p class="text-green-100 text-sm mb-1">Active Products</p>
-            <p class="text-3xl font-bold">{{stats.activeProducts}}</p>
-          </div>
-          <div class="text-4xl opacity-50">✅</div>
-        </div>
-      </div>
-
-      <div class="card bg-gradient-to-br from-purple-500 to-purple-600 text-white">
-        <div class="flex justify-between items-start">
-          <div>
-            <p class="text-purple-100 text-sm mb-1">Total Orders</p>
-            <p class="text-3xl font-bold">{{stats.totalOrders}}</p>
-          </div>
-          <div class="text-4xl opacity-50">🛒</div>
-        </div>
-      </div>
-
-      <div class="card bg-gradient-to-br from-yellow-500 to-yellow-600 text-white">
-        <div class="flex justify-between items-start">
-          <div>
-            <p class="text-yellow-100 text-sm mb-1">Total Revenue</p>
-            <p class="text-3xl font-bold">${{stats.totalRevenue.toFixed(2)}}</p>
-          </div>
-          <div class="text-4xl opacity-50">💰</div>
-        </div>
-      </div>
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="container mx-auto px-4">
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">Seller Dashboard</h1>
+      <p class="text-gray-600">Welcome back! Here's your business overview</p>
     </div>
 
-    <!-- Quick Actions -->
-    <div class="card mb-8">
-      <h2 class="text-xl font-bold mb-4">Quick Actions</h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <a routerLink="/seller/products/add" class="btn-primary text-center">
-          ➕ Add New Product
-        </a>
-        <a routerLink="/seller/products" class="btn-secondary text-center">
-          📦 Manage Products
-        </a>
-        <a routerLink="/seller/orders" class="btn-secondary text-center">
-          📋 View Orders
-        </a>
-      </div>
+    <!-- Loading State -->
+    <div *ngIf="loading" class="flex justify-center items-center py-20">
+      <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-green-600"></div>
     </div>
 
-    <!-- Recent Orders -->
-    <div class="card">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-bold">Recent Orders</h2>
-        <a routerLink="/seller/orders" class="text-primary-600 hover:text-primary-700">View All →</a>
+    <div *ngIf="!loading">
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-green-500">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="text-sm text-gray-600 mb-1">Total Products</p>
+              <p class="text-3xl font-bold text-gray-900">{{stats.totalProducts}}</p>
+              <p class="text-sm text-green-600 mt-2">All your products</p>
+            </div>
+            <div class="bg-green-100 rounded-lg p-3">
+              <svg class="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-500">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="text-sm text-gray-600 mb-1">Active Products</p>
+              <p class="text-3xl font-bold text-gray-900">{{stats.activeProducts}}</p>
+              <p class="text-sm text-blue-600 mt-2">Currently selling</p>
+            </div>
+            <div class="bg-blue-100 rounded-lg p-3">
+              <svg class="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-purple-500">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="text-sm text-gray-600 mb-1">Total Orders</p>
+              <p class="text-3xl font-bold text-gray-900">{{stats.totalOrders}}</p>
+              <p class="text-sm text-purple-600 mt-2">{{stats.pendingOrders}} pending</p>
+            </div>
+            <div class="bg-purple-100 rounded-lg p-3">
+              <svg class="w-8 h-8 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-yellow-500">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="text-sm text-gray-600 mb-1">Total Revenue</p>
+              <p class="text-3xl font-bold text-gray-900">${{stats.totalRevenue.toFixed(2)}}</p>
+              <p class="text-sm text-yellow-600 mt-2">Your earnings</p>
+            </div>
+            <div class="bg-yellow-100 rounded-lg p-3">
+              <svg class="w-8 h-8 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div *ngIf="recentOrders.length === 0" class="text-center py-8 text-gray-500">
-        No orders yet
+      <!-- Quick Actions -->
+      <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <a routerLink="/seller/products/add" class="flex items-center justify-center px-6 py-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium">
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+            </svg>
+            Add Product
+          </a>
+          <a routerLink="/seller/products" class="flex items-center justify-center px-6 py-4 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium">
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"/>
+            </svg>
+            Manage Products
+          </a>
+          <a routerLink="/seller/orders" class="flex items-center justify-center px-6 py-4 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium">
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/>
+            </svg>
+            View Orders
+          </a>
+          <a routerLink="/seller/reports" class="flex items-center justify-center px-6 py-4 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium">
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
+            </svg>
+            View Reports
+          </a>
+        </div>
       </div>
 
-      <div *ngIf="recentOrders.length > 0" class="overflow-x-auto">
-        <table class="min-w-full">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Order ID</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Items</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-200">
-            <tr *ngFor="let order of recentOrders" class="hover:bg-gray-50">
-              <td class="px-6 py-4 text-sm">#{{order._id.slice(-8)}}</td>
-              <td class="px-6 py-4 text-sm">{{order.createdAt | date:'short'}}</td>
-              <td class="px-6 py-4 text-sm">{{order.orderItems.length}}</td>
-              <td class="px-6 py-4 text-sm font-semibold">${{order.totalPrice.toFixed(2)}}</td>
-              <td class="px-6 py-4 text-sm">
-                <span class="badge badge-info">{{order.orderStatus}}</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <!-- Recent Orders -->
+      <div class="bg-white rounded-xl shadow-md p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold text-gray-900">Recent Orders</h2>
+          <a routerLink="/seller/orders" class="text-green-600 hover:text-green-700 font-medium">View All →</a>
+        </div>
+
+        <div *ngIf="recentOrders.length === 0" class="text-center py-12">
+          <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/>
+          </svg>
+          <p class="text-gray-500 text-lg font-medium">No orders yet</p>
+          <p class="text-gray-400 text-sm">Orders from customers will appear here</p>
+        </div>
+
+        <div *ngIf="recentOrders.length > 0" class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Items</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <tr *ngFor="let order of recentOrders" class="hover:bg-gray-50 transition-colors">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{{order._id.slice(-8).toUpperCase()}}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{order.createdAt | date:'short'}}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{order.orderItems.length}}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">${{order.totalPrice.toFixed(2)}}</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                    {{order.orderStatus}}
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                  <a [routerLink]="['/seller/orders', order._id]" class="text-green-600 hover:text-green-900 font-medium">
+                    View Details
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>

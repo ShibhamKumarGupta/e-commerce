@@ -42,4 +42,12 @@ export class OrderService {
       map(response => response.data.order)
     );
   }
+
+  updateOrderStatus(id: string, orderStatus: string): Observable<Order> {
+    return this.apiService.patch<any>(`/orders/${id}/status`, {
+      orderStatus
+    }).pipe(
+      map(response => response.data.order)
+    );
+  }
 }

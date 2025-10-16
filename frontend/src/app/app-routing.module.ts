@@ -18,6 +18,9 @@ import { ProfileComponent } from './buyer/profile/profile.component';
 import { SellerDashboardComponent } from './seller/dashboard/dashboard.component';
 import { SellerProductsComponent } from './seller/products/products.component';
 import { ProductFormComponent } from './seller/product-form/product-form.component';
+import { SellerOrdersComponent } from './seller/orders/orders.component';
+import { SellerOrderDetailsComponent } from './seller/order-details/order-details.component';
+import { SellerReportsComponent } from './seller/reports/reports.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/products', pathMatch: 'full' },
@@ -52,7 +55,9 @@ const routes: Routes = [
       { path: 'products', component: SellerProductsComponent },
       { path: 'products/add', component: ProductFormComponent },
       { path: 'products/edit/:id', component: ProductFormComponent },
-      { path: 'orders', component: OrdersComponent },
+      { path: 'orders', component: SellerOrdersComponent },
+      { path: 'orders/:id', component: SellerOrderDetailsComponent },
+      { path: 'reports', component: SellerReportsComponent },
       { path: 'profile', component: ProfileComponent }
     ]
   },

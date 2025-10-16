@@ -24,6 +24,10 @@ import { ProfileComponent } from './buyer/profile/profile.component';
 import { SellerDashboardComponent } from './seller/dashboard/dashboard.component';
 import { SellerProductsComponent } from './seller/products/products.component';
 import { ProductFormComponent } from './seller/product-form/product-form.component';
+import { SellerOrdersComponent } from './seller/orders/orders.component';
+import { SellerOrderDetailsComponent } from './seller/order-details/order-details.component';
+import { SellerReportsComponent } from './seller/reports/reports.component';
+import { SellerNavbarComponent } from './seller/shared/seller-navbar/seller-navbar.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +42,11 @@ import { ProductFormComponent } from './seller/product-form/product-form.compone
     ProfileComponent,
     SellerDashboardComponent,
     SellerProductsComponent,
-    ProductFormComponent
+    ProductFormComponent,
+    SellerOrdersComponent,
+    SellerOrderDetailsComponent,
+    SellerReportsComponent,
+    SellerNavbarComponent
   ],
   imports: [
     BrowserModule,

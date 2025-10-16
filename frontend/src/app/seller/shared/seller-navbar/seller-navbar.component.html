@@ -1,0 +1,184 @@
+<nav class="bg-white shadow-lg sticky top-0 z-50">
+  <div class="container mx-auto px-4">
+    <div class="flex justify-between items-center h-16">
+      <!-- Logo -->
+      <div class="flex items-center space-x-8">
+        <a routerLink="/seller/dashboard" class="flex items-center space-x-2">
+          <div class="bg-gradient-to-r from-green-500 to-emerald-600 text-white p-2 rounded-lg">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+          <span class="text-xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+            Seller Panel
+          </span>
+        </a>
+
+        <!-- Desktop Navigation -->
+        <div class="hidden md:flex space-x-1">
+          <a
+            routerLink="/seller/dashboard"
+            routerLinkActive="bg-green-50 text-green-600"
+            class="px-4 py-2 rounded-lg font-medium text-gray-700 hover:bg-gray-100 transition-colors"
+          >
+            <div class="flex items-center space-x-2">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+              </svg>
+              <span>Dashboard</span>
+            </div>
+          </a>
+
+          <a
+            routerLink="/seller/products"
+            routerLinkActive="bg-green-50 text-green-600"
+            class="px-4 py-2 rounded-lg font-medium text-gray-700 hover:bg-gray-100 transition-colors"
+          >
+            <div class="flex items-center space-x-2">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"/>
+              </svg>
+              <span>Products</span>
+            </div>
+          </a>
+
+          <a
+            routerLink="/seller/orders"
+            routerLinkActive="bg-green-50 text-green-600"
+            class="px-4 py-2 rounded-lg font-medium text-gray-700 hover:bg-gray-100 transition-colors"
+          >
+            <div class="flex items-center space-x-2">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/>
+              </svg>
+              <span>Orders</span>
+            </div>
+          </a>
+
+          <a
+            routerLink="/seller/reports"
+            routerLinkActive="bg-green-50 text-green-600"
+            class="px-4 py-2 rounded-lg font-medium text-gray-700 hover:bg-gray-100 transition-colors"
+          >
+            <div class="flex items-center space-x-2">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
+              </svg>
+              <span>Reports</span>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- User Menu -->
+      <div class="hidden md:flex items-center space-x-4">
+        <div class="relative">
+          <button
+            (click)="toggleUserMenu()"
+            class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+          >
+            <div class="h-8 w-8 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-white font-bold">
+              {{currentUser?.name?.charAt(0).toUpperCase() || 'S'}}
+            </div>
+            <span class="font-medium text-gray-700">{{currentUser?.name || 'Seller'}}</span>
+            <svg class="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+            </svg>
+          </button>
+
+          <!-- User Dropdown -->
+          <div
+            *ngIf="isUserMenuOpen"
+            class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-50 border border-gray-200"
+          >
+            <a
+              routerLink="/seller/profile"
+              (click)="toggleUserMenu()"
+              class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors"
+            >
+              <div class="flex items-center space-x-2">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                </svg>
+                <span>Profile</span>
+              </div>
+            </a>
+            <hr class="my-2">
+            <button
+              (click)="logout()"
+              class="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 transition-colors"
+            >
+              <div class="flex items-center space-x-2">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/>
+                </svg>
+                <span>Logout</span>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <button
+        (click)="toggleMobileMenu()"
+        class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+      >
+        <svg class="w-6 h-6 text-gray-700" fill="currentColor" viewBox="0 0 20 20">
+          <path *ngIf="!isMobileMenuOpen" fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+          <path *ngIf="isMobileMenuOpen" fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div *ngIf="isMobileMenuOpen" class="md:hidden py-4 border-t">
+      <a
+        routerLink="/seller/dashboard"
+        routerLinkActive="bg-green-50 text-green-600"
+        (click)="toggleMobileMenu()"
+        class="block px-4 py-3 rounded-lg font-medium text-gray-700 hover:bg-gray-100 transition-colors mb-1"
+      >
+        Dashboard
+      </a>
+      <a
+        routerLink="/seller/products"
+        routerLinkActive="bg-green-50 text-green-600"
+        (click)="toggleMobileMenu()"
+        class="block px-4 py-3 rounded-lg font-medium text-gray-700 hover:bg-gray-100 transition-colors mb-1"
+      >
+        Products
+      </a>
+      <a
+        routerLink="/seller/orders"
+        routerLinkActive="bg-green-50 text-green-600"
+        (click)="toggleMobileMenu()"
+        class="block px-4 py-3 rounded-lg font-medium text-gray-700 hover:bg-gray-100 transition-colors mb-1"
+      >
+        Orders
+      </a>
+      <a
+        routerLink="/seller/reports"
+        routerLinkActive="bg-green-50 text-green-600"
+        (click)="toggleMobileMenu()"
+        class="block px-4 py-3 rounded-lg font-medium text-gray-700 hover:bg-gray-100 transition-colors mb-1"
+      >
+        Reports
+      </a>
+      <hr class="my-2">
+      <a
+        routerLink="/seller/profile"
+        (click)="toggleMobileMenu()"
+        class="block px-4 py-3 rounded-lg font-medium text-gray-700 hover:bg-gray-100 transition-colors mb-1"
+      >
+        Profile
+      </a>
+      <button
+        (click)="logout()"
+        class="w-full text-left px-4 py-3 rounded-lg font-medium text-red-600 hover:bg-red-50 transition-colors"
+      >
+        Logout
+      </button>
+    </div>
+  </div>
+</nav>
