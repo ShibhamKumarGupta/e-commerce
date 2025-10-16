@@ -7,7 +7,7 @@
       <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-green-600"></div>
     </div>
 
-    <div *ngIf="!loading && order">
+    <div *ngIf="!loading && subOrder">
       <!-- Header -->
       <div class="mb-6 flex justify-between items-center">
         <div>
@@ -18,7 +18,7 @@
             Back to Orders
           </button>
           <h1 class="text-3xl font-bold text-gray-900">Order Details</h1>
-          <p class="text-gray-600">Order ID: #{{order._id.slice(-8).toUpperCase()}}</p>
+          <p class="text-gray-600">Sub-Order ID: #{{subOrder._id.slice(-8).toUpperCase()}}</p>
         </div>
         <button
           (click)="printOrder()"
@@ -38,14 +38,14 @@
           <div class="space-y-3">
             <div>
               <p class="text-sm text-gray-600 mb-1">Current Status</p>
-              <span [class]="'px-3 py-1 inline-flex text-sm font-semibold rounded-full ' + getStatusClass(order.orderStatus)">
-                {{order.orderStatus}}
+              <span [class]="'px-3 py-1 inline-flex text-sm font-semibold rounded-full ' + getStatusClass(subOrder.orderStatus)">
+                {{subOrder.orderStatus}}
               </span>
             </div>
             <div>
               <p class="text-sm text-gray-600 mb-2">Update Status</p>
               <select
-                [value]="order.orderStatus"
+                [value]="subOrder.orderStatus"
                 (change)="updateOrderStatus($any($event.target).value)"
                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
               >
@@ -59,14 +59,14 @@
           <h3 class="text-lg font-semibold text-gray-900 mb-4">Payment Info</h3>
           <div class="space-y-3">
             <div>
-              <p class="text-sm text-gray-600">Payment Method</p>
-              <p class="font-semibold text-gray-900 uppercase">{{order.paymentMethod}}</p>
+              <p class="text-sm text-gray-600">Payment Status</p>
+              <span [class]="'px-3 py-1 inline-flex text-sm font-semibold rounded-full ' + getPaymentStatusClass(subOrder.paymentStatus)">
+                {{subOrder.paymentStatus}}
+              </span>
             </div>
             <div>
-              <p class="text-sm text-gray-600">Payment Status</p>
-              <span [class]="'px-3 py-1 inline-flex text-sm font-semibold rounded-full ' + getPaymentStatusClass(order.paymentStatus)">
-                {{order.paymentStatus}}
-              </span>
+              <p class="text-sm text-gray-600">Commission Rate</p>
+              <p class="font-semibold text-gray-900">{{subOrder.commissionRate}}%</p>
             </div>
           </div>
         </div>
@@ -76,11 +76,11 @@
           <div class="space-y-3">
             <div>
               <p class="text-sm text-gray-600">Created At</p>
-              <p class="font-semibold text-gray-900">{{formatDate(order.createdAt)}}</p>
+              <p class="font-semibold text-gray-900">{{formatDate(subOrder.createdAt)}}</p>
             </div>
-            <div *ngIf="order.deliveredAt">
+            <div *ngIf="subOrder.deliveredAt">
               <p class="text-sm text-gray-600">Delivered At</p>
-              <p class="font-semibold text-gray-900">{{formatDate(order.deliveredAt)}}</p>
+              <p class="font-semibold text-gray-900">{{formatDate(subOrder.deliveredAt)}}</p>
             </div>
           </div>
         </div>
@@ -93,31 +93,33 @@
           <div class="space-y-2">
             <div>
               <p class="text-sm text-gray-600">Name</p>
-              <p class="font-semibold text-gray-900">{{order.user?.name || 'N/A'}}</p>
+              <p class="font-semibold text-gray-900">{{subOrder.buyer?.name || 'N/A'}}</p>
             </div>
             <div>
               <p class="text-sm text-gray-600">Email</p>
-              <p class="font-semibold text-gray-900">{{order.user?.email || 'N/A'}}</p>
+              <p class="font-semibold text-gray-900">{{subOrder.buyer?.email || 'N/A'}}</p>
             </div>
           </div>
         </div>
 
         <div class="bg-white rounded-lg shadow-md p-6">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">Shipping Address</h3>
-          <div class="space-y-1">
-            <p class="text-gray-900">{{order.shippingAddress.street}}</p>
-            <p class="text-gray-900">{{order.shippingAddress.city}}, {{order.shippingAddress.state}} {{order.shippingAddress.zipCode}}</p>
-            <p class="text-gray-900">{{order.shippingAddress.country}}</p>
-            <p class="text-gray-900 mt-2">
-              <span class="text-sm text-gray-600">Phone:</span> {{order.shippingAddress.phone}}
-            </p>
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Master Order</h3>
+          <div class="space-y-2">
+            <div>
+              <p class="text-sm text-gray-600">Master Order ID</p>
+              <p class="font-semibold text-gray-900">#{{subOrder.masterOrder?._id?.slice(-8).toUpperCase() || 'N/A'}}</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-600">Reference</p>
+              <p class="text-sm text-gray-700">This is part of a larger order</p>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Your Items (Seller's Products) -->
       <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Your Items in This Order</h3>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Order Items</h3>
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
@@ -129,7 +131,7 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <tr *ngFor="let item of sellerItems">
+              <tr *ngFor="let item of subOrder.orderItems">
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="flex items-center">
                     <img [src]="item.image || 'https://via.placeholder.com/50'" alt="{{item.name}}" class="h-12 w-12 rounded-lg object-cover">
@@ -155,18 +157,22 @@
 
       <!-- Seller's Earnings Summary -->
       <div class="bg-white rounded-lg shadow-md p-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Your Earnings from This Order</h3>
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Earnings Breakdown</h3>
         <div class="space-y-3">
           <div class="flex justify-between text-gray-700">
-            <span>Items Total:</span>
-            <span>${{calculateSellerTotal().toFixed(2)}}</span>
+            <span>Subtotal:</span>
+            <span class="font-semibold">${{subOrder.subtotal.toFixed(2)}}</span>
+          </div>
+          <div class="flex justify-between text-red-600">
+            <span>Platform Commission ({{subOrder.commissionRate}}%):</span>
+            <span class="font-semibold">-${{subOrder.commission.toFixed(2)}}</span>
           </div>
           <div class="border-t pt-3 flex justify-between text-xl font-bold text-green-600">
             <span>Your Earnings:</span>
-            <span>${{calculateSellerTotal().toFixed(2)}}</span>
+            <span>${{subOrder.sellerEarnings.toFixed(2)}}</span>
           </div>
           <p class="text-sm text-gray-500 mt-2">
-            * Platform fees and taxes are handled separately
+            * This amount will be transferred to your account after order delivery
           </p>
         </div>
       </div>

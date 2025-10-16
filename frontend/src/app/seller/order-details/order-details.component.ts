@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { OrderService } from '../../core/services/order.service';
+import { SubOrderService } from '../../core/services/sub-order.service';
 
 @Component({
   selector: 'app-seller-order-details',
@@ -8,10 +8,9 @@ import { OrderService } from '../../core/services/order.service';
   styleUrls: ['./order-details.component.css']
 })
 export class SellerOrderDetailsComponent implements OnInit {
-  order: any = null;
+  subOrder: any = null;
   loading = false;
-  orderId: string = '';
-  sellerItems: any[] = [];
+  subOrderId: string = '';
 
   orderStatuses = [
     { value: 'pending', label: 'Pending' },
@@ -24,26 +23,21 @@ export class SellerOrderDetailsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private orderService: OrderService
+    private subOrderService: SubOrderService
   ) {}
 
   ngOnInit(): void {
-    this.orderId = this.route.snapshot.params['id'];
-    if (this.orderId) {
+    this.subOrderId = this.route.snapshot.params['id'];
+    if (this.subOrderId) {
       this.loadOrderDetails();
     }
   }
 
   loadOrderDetails(): void {
     this.loading = true;
-    this.orderService.getOrderById(this.orderId).subscribe({
-      next: (order) => {
-        this.order = order;
-        // Filter items that belong to this seller
-        const currentUserId = this.getCurrentUserId();
-        this.sellerItems = order.orderItems.filter((item: any) => 
-          item.seller && item.seller._id === currentUserId
-        );
+    this.subOrderService.getSubOrderById(this.subOrderId).subscribe({
+      next: (subOrder) => {
+        this.subOrder = subOrder;
         this.loading = false;
       },
       error: (error) => {
@@ -55,14 +49,10 @@ export class SellerOrderDetailsComponent implements OnInit {
     });
   }
 
-  getCurrentUserId(): string {
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    return user._id || '';
-  }
 
   updateOrderStatus(newStatus: string): void {
     if (confirm(`Update order status to ${newStatus}?`)) {
-      this.orderService.updateOrderStatus(this.orderId, newStatus).subscribe({
+      this.subOrderService.updateSubOrderStatus(this.subOrderId, newStatus).subscribe({
         next: () => {
           alert('Order status updated successfully');
           this.loadOrderDetails();
@@ -106,9 +96,6 @@ export class SellerOrderDetailsComponent implements OnInit {
     });
   }
 
-  calculateSellerTotal(): number {
-    return this.sellerItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  }
 
   goBack(): void {
     this.router.navigate(['/seller/orders']);
