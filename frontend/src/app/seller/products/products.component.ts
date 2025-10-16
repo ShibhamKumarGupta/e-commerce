@@ -25,7 +25,8 @@ export class SellerProductsComponent implements OnInit {
 
   loadProducts(): void {
     this.loading = true;
-    this.productService.getAllProducts({ page: this.currentPage, limit: 10 }).subscribe({
+    // Use seller-specific endpoint to only load seller's own products
+    this.productService.getSellerProducts({ page: this.currentPage, limit: 10 }).subscribe({
       next: (response) => {
         this.products = response.products;
         this.totalPages = response.pages;

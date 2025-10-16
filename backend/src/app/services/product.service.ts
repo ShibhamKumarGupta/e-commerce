@@ -194,6 +194,80 @@ export class ProductService {
     };
   }
 
+  // Get seller-specific products
+  async getSellerProducts(sellerId: string, query: ProductQuery): Promise<{ products: IProduct[]; total: number; page: number; pages: number }> {
+    const {
+      category,
+      minPrice,
+      maxPrice,
+      minRating,
+      search,
+      page = 1,
+      limit = 12,
+      sortBy = 'createdAt',
+      sortOrder = 'desc'
+    } = query;
+
+    const filter: any = { seller: sellerId };
+
+    if (category) {
+      filter.category = category;
+    }
+
+    if (minPrice !== undefined || maxPrice !== undefined) {
+      filter.price = {};
+      if (minPrice !== undefined) filter.price.$gte = minPrice;
+      if (maxPrice !== undefined) filter.price.$lte = maxPrice;
+    }
+
+    if (minRating !== undefined) {
+      filter.rating = { $gte: minRating };
+    }
+
+    if (search) {
+      filter.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
+        { brand: { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    const skip = (page - 1) * limit;
+    const total = await Product.countDocuments(filter);
+    
+    const sortOptions: any = {};
+    sortOptions[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+    const products = await Product.find(filter)
+      .populate('seller', 'name email')
+      .limit(limit)
+      .skip(skip)
+      .sort(sortOptions);
+
+    return {
+      products,
+      total,
+      page,
+      pages: Math.ceil(total / limit)
+    };
+  }
+
+  // Get seller-specific stats
+  async getSellerProductStats(sellerId: string): Promise<any> {
+    const totalProducts = await Product.countDocuments({ seller: sellerId });
+    const activeProducts = await Product.countDocuments({ seller: sellerId, isActive: true });
+    const outOfStock = await Product.countDocuments({ seller: sellerId, stock: 0 });
+    const lowStock = await Product.countDocuments({ seller: sellerId, stock: { $gt: 0, $lte: 10 } });
+
+    return {
+      totalProducts,
+      activeProducts,
+      inactiveProducts: totalProducts - activeProducts,
+      outOfStock,
+      lowStock
+    };
+  }
+
   // Admin method to update any product
   async adminUpdateProduct(productId: string, data: Partial<IProduct>): Promise<IProduct> {
     const product = await Product.findByIdAndUpdate(

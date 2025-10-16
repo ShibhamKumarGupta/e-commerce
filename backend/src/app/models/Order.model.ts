@@ -55,6 +55,8 @@ export interface IOrder extends Document {
   totalPrice: number;
   orderStatus: OrderStatus;
   deliveredAt?: Date;
+  isMasterOrder: boolean; // True if this is a master order with sub-orders
+  subOrders: mongoose.Types.ObjectId[]; // References to sub-orders
   createdAt: Date;
   updatedAt: Date;
 }
@@ -160,7 +162,15 @@ const orderSchema = new Schema<IOrder>(
     },
     deliveredAt: {
       type: Date
-    }
+    },
+    isMasterOrder: {
+      type: Boolean,
+      default: false
+    },
+    subOrders: [{
+      type: Schema.Types.ObjectId,
+      ref: 'SubOrder'
+    }]
   },
   {
     timestamps: true

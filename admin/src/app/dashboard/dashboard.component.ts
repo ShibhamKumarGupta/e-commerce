@@ -3,6 +3,7 @@ import { DashboardService } from '../core/services/dashboard.service';
 import { UserService } from '../core/services/user.service';
 import { ProductService } from '../core/services/product.service';
 import { OrderService } from '../core/services/order.service';
+import { SubOrderService } from '../core/services/sub-order.service';
 import { AuthService } from '../core/services/auth.service';
 import { Router } from '@angular/router';
 
@@ -38,6 +39,16 @@ export class DashboardComponent implements OnInit {
     }
   };
 
+  commissionData: any = {
+    totals: {
+      totalEarnings: 0,
+      totalCommission: 0,
+      totalSubtotal: 0,
+      orderCount: 0
+    },
+    breakdown: []
+  };
+
   recentOrders: any[] = [];
   topProducts: any[] = [];
 
@@ -46,6 +57,7 @@ export class DashboardComponent implements OnInit {
     private userService: UserService,
     private productService: ProductService,
     private orderService: OrderService,
+    private subOrderService: SubOrderService,
     private authService: AuthService,
     private router: Router
   ) {}
@@ -77,6 +89,18 @@ export class DashboardComponent implements OnInit {
     });
 
     this.loadRecentOrders();
+    this.loadCommissionBreakdown();
+  }
+
+  loadCommissionBreakdown(): void {
+    this.subOrderService.getCommissionBreakdown().subscribe({
+      next: (data) => {
+        this.commissionData = data;
+      },
+      error: (error) => {
+        console.error('Error loading commission breakdown:', error);
+      }
+    });
   }
 
   loadRecentOrders(): void {

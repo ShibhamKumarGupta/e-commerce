@@ -47,6 +47,21 @@ export class ProductRoutes {
       this.productController.addReview
     );
 
+    // Seller routes
+    this.router.get(
+      '/seller/my-products',
+      AuthMiddleware.authenticate,
+      AuthMiddleware.authorize(UserRole.SELLER, UserRole.ADMIN),
+      this.productController.getSellerProducts
+    );
+
+    this.router.get(
+      '/seller/stats',
+      AuthMiddleware.authenticate,
+      AuthMiddleware.authorize(UserRole.SELLER, UserRole.ADMIN),
+      this.productController.getSellerProductStats
+    );
+
     // Admin routes
     this.router.get(
       '/admin/stats',

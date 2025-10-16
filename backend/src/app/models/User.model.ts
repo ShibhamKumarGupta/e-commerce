@@ -22,6 +22,7 @@ export interface IUser extends Document {
   };
   avatar?: string;
   isActive: boolean;
+  commissionRate?: number; // Commission rate for sellers (percentage)
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
@@ -73,6 +74,12 @@ const userSchema = new Schema<IUser>(
     isActive: {
       type: Boolean,
       default: true
+    },
+    commissionRate: {
+      type: Number,
+      default: 10, // Default 10% commission
+      min: 0,
+      max: 100
     }
   },
   {

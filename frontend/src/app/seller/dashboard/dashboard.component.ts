@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductService } from '../../core/services/product.service';
-import { OrderService } from '../../core/services/order.service';
+import { SubOrderService } from '../../core/services/sub-order.service';
 
 @Component({
   selector: 'app-seller-dashboard',
@@ -14,13 +14,14 @@ export class SellerDashboardComponent implements OnInit {
     activeProducts: 0,
     totalOrders: 0,
     pendingOrders: 0,
-    totalRevenue: 0
+    totalEarnings: 0,
+    totalCommission: 0
   };
   recentOrders: any[] = [];
 
   constructor(
     private productService: ProductService,
-    private orderService: OrderService
+    private subOrderService: SubOrderService
   ) {}
 
   ngOnInit(): void {
@@ -30,23 +31,28 @@ export class SellerDashboardComponent implements OnInit {
   loadDashboardData(): void {
     this.loading = true;
     
-    // Load seller products
-    this.productService.getAllProducts({ limit: 100 }).subscribe({
-      next: (response) => {
-        this.stats.totalProducts = response.total;
-        this.stats.activeProducts = response.products.filter(p => p.isActive).length;
+    // Load seller-specific product stats
+    this.productService.getSellerProductStats().subscribe({
+      next: (stats) => {
+        this.stats.totalProducts = stats.totalProducts;
+        this.stats.activeProducts = stats.activeProducts;
       }
     });
 
-    // Load seller orders
-    this.orderService.getMyOrders(1, 5).subscribe({
+    // Load seller-specific order stats and earnings
+    this.subOrderService.getSellerStats().subscribe({
+      next: (stats) => {
+        this.stats.totalOrders = stats.totalSubOrders;
+        this.stats.pendingOrders = stats.pendingOrders;
+        this.stats.totalEarnings = stats.totalEarnings || 0;
+        this.stats.totalCommission = stats.totalCommission || 0;
+      }
+    });
+
+    // Load recent sub-orders
+    this.subOrderService.getSellerSubOrders(1, 5).subscribe({
       next: (response) => {
-        this.recentOrders = response.orders;
-        this.stats.totalOrders = response.total;
-        this.stats.pendingOrders = response.orders.filter((o: any) => o.orderStatus === 'pending').length;
-        this.stats.totalRevenue = response.orders
-          .filter((o: any) => o.paymentStatus === 'paid')
-          .reduce((sum: number, o: any) => sum + o.totalPrice, 0);
+        this.recentOrders = response.subOrders;
         this.loading = false;
       },
       error: () => {

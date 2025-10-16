@@ -1,5 +1,7 @@
 import { Order, IOrder, OrderStatus, PaymentStatus, PaymentMethod } from '../models/Order.model';
 import { Product } from '../models/Product.model';
+import { User } from '../models/User.model';
+import { SubOrderService } from './subOrder.service';
 import { ApiError } from '../utils/ApiError.util';
 
 export interface CreateOrderDTO {
@@ -29,6 +31,12 @@ export interface OrderQuery {
 }
 
 export class OrderService {
+  private subOrderService: SubOrderService;
+
+  constructor() {
+    this.subOrderService = new SubOrderService();
+  }
+
   async createOrder(data: CreateOrderDTO): Promise<IOrder> {
     // Fetch product details and validate
     const orderItems = await Promise.all(
@@ -60,7 +68,7 @@ export class OrderService {
     const shippingPrice = itemsPrice > 100 ? 0 : 10; // Free shipping over $100
     const totalPrice = itemsPrice + taxPrice + shippingPrice;
 
-    // Create order
+    // Create master order
     const order = await Order.create({
       user: data.user,
       orderItems,
@@ -68,8 +76,46 @@ export class OrderService {
       paymentMethod: data.paymentMethod,
       taxPrice,
       shippingPrice,
-      totalPrice
+      totalPrice,
+      isMasterOrder: true
     });
+
+    // Group items by seller
+    const itemsBySeller = new Map<string, any[]>();
+    orderItems.forEach(item => {
+      const sellerId = item.seller.toString();
+      if (!itemsBySeller.has(sellerId)) {
+        itemsBySeller.set(sellerId, []);
+      }
+      itemsBySeller.get(sellerId)!.push({
+        product: item.product,
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price,
+        image: item.image
+      });
+    });
+
+    // Create sub-orders for each seller
+    const subOrderIds: any[] = [];
+    for (const [sellerId, items] of itemsBySeller) {
+      // Get seller's commission rate
+      const seller = await User.findById(sellerId);
+      const commissionRate = seller?.commissionRate || 10;
+
+      const subOrder = await this.subOrderService.createSubOrder(
+        (order._id as any).toString(),
+        sellerId,
+        data.user,
+        items,
+        commissionRate
+      );
+      subOrderIds.push(subOrder._id);
+    }
+
+    // Update master order with sub-order references
+    order.subOrders = subOrderIds as any;
+    await order.save();
 
     // Update product stock
     await Promise.all(

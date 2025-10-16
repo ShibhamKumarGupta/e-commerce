@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { OrderService } from '../../core/services/order.service';
+import { SubOrderService } from '../../core/services/sub-order.service';
 
 @Component({
   selector: 'app-seller-orders',
@@ -22,7 +22,7 @@ export class SellerOrdersComponent implements OnInit {
   searchQuery = '';
 
   constructor(
-    private orderService: OrderService,
+    private subOrderService: SubOrderService,
     private router: Router
   ) {}
 
@@ -33,30 +33,25 @@ export class SellerOrdersComponent implements OnInit {
   loadOrders(): void {
     this.loading = true;
 
-    this.orderService.getMyOrders(this.currentPage, this.limit).subscribe({
+    // Use sub-order service to get seller-specific orders
+    this.subOrderService.getSellerSubOrders(
+      this.currentPage,
+      this.limit,
+      this.selectedStatus || undefined
+    ).subscribe({
       next: (response) => {
-        // Filter orders where current user is the seller
-        this.orders = response.orders.filter((order: any) => {
-          return order.orderItems.some((item: any) => 
-            item.seller && item.seller._id === this.getCurrentUserId()
-          );
-        });
+        this.orders = response.subOrders;
         
-        // Apply status filter if selected
-        if (this.selectedStatus) {
-          this.orders = this.orders.filter(order => order.orderStatus === this.selectedStatus);
-        }
-
         // Apply search filter
         if (this.searchQuery) {
           this.orders = this.orders.filter(order => 
             order._id.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-            order.user?.name?.toLowerCase().includes(this.searchQuery.toLowerCase())
+            order.buyer?.name?.toLowerCase().includes(this.searchQuery.toLowerCase())
           );
         }
 
-        this.totalOrders = this.orders.length;
-        this.totalPages = Math.ceil(this.totalOrders / this.limit);
+        this.totalOrders = response.total;
+        this.totalPages = response.pages;
         this.loading = false;
       },
       error: (error) => {
@@ -66,11 +61,6 @@ export class SellerOrdersComponent implements OnInit {
     });
   }
 
-  getCurrentUserId(): string {
-    // Get current user ID from auth service or local storage
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    return user._id || '';
-  }
 
   onSearch(): void {
     this.currentPage = 1;
@@ -95,7 +85,7 @@ export class SellerOrdersComponent implements OnInit {
 
   updateOrderStatus(orderId: string, newStatus: string): void {
     if (confirm(`Update order status to ${newStatus}?`)) {
-      this.orderService.updateOrderStatus(orderId, newStatus).subscribe({
+      this.subOrderService.updateSubOrderStatus(orderId, newStatus).subscribe({
         next: () => {
           alert('Order status updated successfully');
           this.loadOrders();

@@ -66,6 +66,17 @@ export class ProductController {
     ApiResponse.success(res, stats, 'Product statistics retrieved successfully');
   });
 
+  // Seller methods
+  getSellerProducts = asyncHandler(async (req: AuthRequest, res: Response) => {
+    const result = await this.productService.getSellerProducts(req.user._id, req.query);
+    ApiResponse.success(res, result, 'Seller products retrieved successfully');
+  });
+
+  getSellerProductStats = asyncHandler(async (req: AuthRequest, res: Response) => {
+    const stats = await this.productService.getSellerProductStats(req.user._id);
+    ApiResponse.success(res, stats, 'Seller product statistics retrieved successfully');
+  });
+
   // Admin methods
   adminUpdateProduct = asyncHandler(async (req: AuthRequest, res: Response) => {
     const product = await this.productService.adminUpdateProduct(req.params.id, req.body);

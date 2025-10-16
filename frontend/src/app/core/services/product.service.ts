@@ -50,4 +50,17 @@ export class ProductService {
   deleteProduct(id: string): Observable<any> {
     return this.apiService.delete<any>(`/products/${id}`);
   }
+
+  // Seller-specific methods
+  getSellerProducts(query?: ProductQuery): Observable<ProductResponse> {
+    return this.apiService.get<any>('/products/seller/my-products', query).pipe(
+      map(response => response.data)
+    );
+  }
+
+  getSellerProductStats(): Observable<any> {
+    return this.apiService.get<any>('/products/seller/stats').pipe(
+      map(response => response.data)
+    );
+  }
 }
