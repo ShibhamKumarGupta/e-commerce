@@ -79,10 +79,19 @@ export class ReportsComponent implements OnInit, AfterViewInit {
   }
 
   initializeCharts(): void {
-    this.createRevenueChart();
-    this.createOrderStatusChart();
-    this.createTopProductsChart();
-    this.createUserGrowthChart();
+    // Wait for Chart.js to be loaded
+    if (typeof Chart === 'undefined') {
+      setTimeout(() => this.initializeCharts(), 100);
+      return;
+    }
+    
+    // Use setTimeout to ensure DOM is ready
+    setTimeout(() => {
+      this.createRevenueChart();
+      this.createOrderStatusChart();
+      this.createTopProductsChart();
+      this.createUserGrowthChart();
+    }, 0);
   }
 
   createRevenueChart(): void {
