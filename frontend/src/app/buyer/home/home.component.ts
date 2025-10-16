@@ -16,14 +16,14 @@ export class HomeComponent implements OnInit {
   currentSlide = 0;
 
   categories = [
-    { name: 'Electronics', icon: '📱', route: '/products?category=electronics' },
-    { name: 'Fashion', icon: '👕', route: '/products?category=fashion' },
-    { name: 'Home & Kitchen', icon: '🏠', route: '/products?category=home-kitchen' },
-    { name: 'Books', icon: '📚', route: '/products?category=books' },
-    { name: 'Sports', icon: '⚽', route: '/products?category=sports' },
-    { name: 'Beauty', icon: '💄', route: '/products?category=beauty' },
-    { name: 'Toys', icon: '🧸', route: '/products?category=toys' },
-    { name: 'Groceries', icon: '🛒', route: '/products?category=groceries' }
+    { name: 'Electronics', icon: '📱', category: 'electronics' },
+    { name: 'Fashion', icon: '👕', category: 'fashion' },
+    { name: 'Home & Kitchen', icon: '🏠', category: 'home-kitchen' },
+    { name: 'Books', icon: '📚', category: 'books' },
+    { name: 'Sports', icon: '⚽', category: 'sports' },
+    { name: 'Beauty', icon: '💄', category: 'beauty' },
+    { name: 'Toys', icon: '🧸', category: 'toys' },
+    { name: 'Groceries', icon: '🛒', category: 'groceries' }
   ];
 
   heroSlides = [
@@ -105,8 +105,8 @@ export class HomeComponent implements OnInit {
     this.currentSlide = index;
   }
 
-  navigateToCategory(route: string): void {
-    this.router.navigateByUrl(route);
+  navigateToCategory(category: string): void {
+    this.router.navigate(['/products'], { queryParams: { category } });
   }
 
   navigateToProduct(productId: string): void {

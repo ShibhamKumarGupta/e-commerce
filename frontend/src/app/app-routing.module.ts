@@ -13,6 +13,7 @@ import { ProductDetailComponent } from './buyer/product-detail/product-detail.co
 import { CartComponent } from './buyer/cart/cart.component';
 import { CheckoutComponent } from './buyer/checkout/checkout.component';
 import { OrdersComponent } from './buyer/orders/orders.component';
+import { OrderDetailComponent } from './buyer/order-detail/order-detail.component';
 import { ProfileComponent } from './buyer/profile/profile.component';
 import { PaymentSuccessComponent } from './buyer/payment-success/payment-success.component';
 import { PaymentCancelComponent } from './buyer/payment-cancel/payment-cancel.component';
@@ -44,6 +45,7 @@ const routes: Routes = [
       { path: 'cart', component: CartComponent },
       { path: 'checkout', component: CheckoutComponent },
       { path: 'orders', component: OrdersComponent },
+      { path: 'orders/:id', component: OrderDetailComponent },
       { path: 'profile', component: ProfileComponent },
       { path: 'payment-success', component: PaymentSuccessComponent },
       { path: 'payment-cancel', component: PaymentCancelComponent }

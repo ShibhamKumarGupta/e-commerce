@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { ProductService } from '../../core/services/product.service';
 import { CartService } from '../../core/services/cart.service';
 import { ToastService } from '../../core/services/toast.service';
@@ -30,6 +31,7 @@ export class ProductsComponent implements OnInit {
   sortOrder: 'asc' | 'desc' = 'desc';
 
   constructor(
+    private route: ActivatedRoute,
     private productService: ProductService,
     private cartService: CartService,
     private toastService: ToastService
@@ -37,7 +39,17 @@ export class ProductsComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadCategories();
-    this.loadProducts();
+    
+    // Read query params from URL
+    this.route.queryParams.subscribe(params => {
+      if (params['search']) {
+        this.searchQuery = params['search'];
+      }
+      if (params['category']) {
+        this.selectedCategory = params['category'];
+      }
+      this.loadProducts();
+    });
   }
 
   loadCategories(): void {
@@ -109,7 +121,7 @@ export class ProductsComponent implements OnInit {
     }
     
     this.cartService.addToCart(product, 1);
-    this.toastService.success(`${product.name} added to cart!`);
+    // Toast is already shown by CartService
   }
 
   clearFilters(): void {

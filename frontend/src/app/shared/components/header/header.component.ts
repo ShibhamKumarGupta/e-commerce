@@ -13,6 +13,8 @@ export class HeaderComponent implements OnInit {
   currentUser: User | null = null;
   cartItemCount = 0;
   isMenuOpen = false;
+  isMobileMenuOpen = false;
+  searchQuery = '';
 
   constructor(
     public authService: AuthService,
@@ -39,10 +41,16 @@ export class HeaderComponent implements OnInit {
     this.isMenuOpen = !this.isMenuOpen;
   }
 
-  isMobileMenuOpen = false;
-
   toggleMobileMenu(): void {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
+  }
+
+  onSearch(event: Event): void {
+    event.preventDefault();
+    if (this.searchQuery.trim()) {
+      this.router.navigate(['/products'], { queryParams: { search: this.searchQuery } });
+      this.isMobileMenuOpen = false;
+    }
   }
 
   navigateToDashboard(): void {

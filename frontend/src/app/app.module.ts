@@ -18,6 +18,7 @@ import { ProductDetailComponent } from './buyer/product-detail/product-detail.co
 import { CartComponent } from './buyer/cart/cart.component';
 import { CheckoutComponent } from './buyer/checkout/checkout.component';
 import { OrdersComponent } from './buyer/orders/orders.component';
+import { OrderDetailComponent } from './buyer/order-detail/order-detail.component';
 import { ProfileComponent } from './buyer/profile/profile.component';
 import { PaymentSuccessComponent } from './buyer/payment-success/payment-success.component';
 import { PaymentCancelComponent } from './buyer/payment-cancel/payment-cancel.component';
@@ -42,6 +43,7 @@ import { HomeComponent } from './buyer/home/home.component';
     CartComponent,
     CheckoutComponent,
     OrdersComponent,
+    OrderDetailComponent,
     ProfileComponent,
     PaymentSuccessComponent,
     PaymentCancelComponent,
