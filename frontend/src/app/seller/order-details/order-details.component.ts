@@ -59,7 +59,8 @@ export class SellerOrderDetailsComponent implements OnInit {
         },
         error: (error: any) => {
           console.error('Error updating order status:', error);
-          alert('Failed to update order status');
+          const errorMessage = error?.error?.message || error?.message || 'Failed to update order status';
+          alert(errorMessage);
         }
       });
     }
