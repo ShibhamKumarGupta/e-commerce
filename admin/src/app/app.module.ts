@@ -9,6 +9,11 @@ import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { LoginComponent } from './login/login.component';
 import { UsersComponent } from './users/users.component';
+import { ProductsComponent } from './products/products.component';
+import { OrdersComponent } from './orders/orders.component';
+import { ProfileComponent } from './profile/profile.component';
+import { ReportsComponent } from './reports/reports.component';
+import { OrderDetailsComponent } from './order-details/order-details.component';
 import { NavbarComponent } from './shared/navbar/navbar.component';
 import { ErrorInterceptor } from './core/interceptors/error.interceptor';
 
@@ -18,6 +23,11 @@ import { ErrorInterceptor } from './core/interceptors/error.interceptor';
     DashboardComponent,
     LoginComponent,
     UsersComponent,
+    ProductsComponent,
+    OrdersComponent,
+    ProfileComponent,
+    ReportsComponent,
+    OrderDetailsComponent,
     NavbarComponent
   ],
   imports: [

@@ -3,6 +3,11 @@ import { RouterModule, Routes } from '@angular/router';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { LoginComponent } from './login/login.component';
 import { UsersComponent } from './users/users.component';
+import { ProductsComponent } from './products/products.component';
+import { OrdersComponent } from './orders/orders.component';
+import { ProfileComponent } from './profile/profile.component';
+import { ReportsComponent } from './reports/reports.component';
+import { OrderDetailsComponent } from './order-details/order-details.component';
 import { AuthGuard } from './core/guards/auth.guard';
 
 const routes: Routes = [
@@ -14,6 +19,11 @@ const routes: Routes = [
       { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: DashboardComponent },
       { path: 'users', component: UsersComponent },
+      { path: 'products', component: ProductsComponent },
+      { path: 'orders', component: OrdersComponent },
+      { path: 'orders/:id', component: OrderDetailsComponent },
+      { path: 'reports', component: ReportsComponent },
+      { path: 'profile', component: ProfileComponent },
       { path: '**', redirectTo: '/dashboard' }
     ]
   }
