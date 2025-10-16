@@ -73,15 +73,22 @@
                      [(ngModel)]="paymentMethod" [ngModelOptions]="{standalone: true}" class="mr-3">
               <div>
                 <div class="font-semibold">Credit/Debit Card</div>
-                <div class="text-sm text-gray-600">Pay securely with Stripe</div>
+                <div class="text-sm text-gray-600">Pay securely with Stripe (redirects to payment page)</div>
               </div>
             </label>
           </div>
 
-          <!-- Stripe Card Element -->
-          <div *ngIf="paymentMethod === PaymentMethod.STRIPE" class="mt-4">
-            <label class="block text-sm font-medium mb-2">Card Details</label>
-            <div id="card-element" class="p-3 border rounded-lg"></div>
+          <!-- Stripe Payment Info -->
+          <div *ngIf="paymentMethod === PaymentMethod.STRIPE" class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div class="flex items-start">
+              <svg class="w-5 h-5 text-blue-600 mt-0.5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+              </svg>
+              <div>
+                <p class="text-sm font-medium text-blue-900">Secure Payment</p>
+                <p class="text-xs text-blue-700 mt-1">You will be redirected to Stripe's secure payment page to complete your purchase.</p>
+              </div>
+            </div>
           </div>
         </div>
       </form>

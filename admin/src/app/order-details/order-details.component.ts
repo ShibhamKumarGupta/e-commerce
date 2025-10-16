@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { OrderService } from '../core/services/order.service';
+import { PaymentService } from '../core/services/payment.service';
 
 @Component({
   selector: 'app-order-details',
@@ -11,6 +12,7 @@ export class OrderDetailsComponent implements OnInit {
   order: any = null;
   loading = false;
   orderId: string = '';
+  refundLoading = false;
 
   orderStatuses = [
     { value: 'pending', label: 'Pending' },
@@ -23,7 +25,8 @@ export class OrderDetailsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private orderService: OrderService
+    private orderService: OrderService,
+    private paymentService: PaymentService
   ) {}
 
   ngOnInit(): void {
@@ -101,5 +104,62 @@ export class OrderDetailsComponent implements OnInit {
 
   printOrder(): void {
     window.print();
+  }
+
+  refundPayment(): void {
+    if (!this.order.paymentResult || !this.order.paymentResult.id) {
+      alert('No payment information found for this order');
+      return;
+    }
+
+    if (this.order.paymentStatus === 'refunded') {
+      alert('This payment has already been refunded');
+      return;
+    }
+
+    if (this.order.paymentMethod !== 'stripe') {
+      alert('Refunds are only available for Stripe payments');
+      return;
+    }
+
+    const confirmRefund = confirm(
+      `Are you sure you want to refund $${this.order.totalPrice.toFixed(2)} to the customer?\n\n` +
+      `Payment ID: ${this.order.paymentResult.id}`
+    );
+
+    if (!confirmRefund) {
+      return;
+    }
+
+    this.refundLoading = true;
+    this.paymentService.refundPayment(this.order.paymentResult.id).subscribe({
+      next: (result) => {
+        alert(`Refund successful! Refund ID: ${result.id}`);
+        // Update payment status to refunded
+        this.orderService.updatePaymentStatus(this.orderId, 'refunded', result).subscribe({
+          next: () => {
+            this.loadOrderDetails();
+            this.refundLoading = false;
+          },
+          error: (error) => {
+            console.error('Error updating payment status:', error);
+            this.refundLoading = false;
+          }
+        });
+      },
+      error: (error) => {
+        console.error('Error processing refund:', error);
+        alert('Failed to process refund: ' + (error.message || 'Unknown error'));
+        this.refundLoading = false;
+      }
+    });
+  }
+
+  canRefund(): boolean {
+    return this.order && 
+           this.order.paymentMethod === 'stripe' && 
+           this.order.paymentStatus === 'paid' && 
+           this.order.paymentResult && 
+           this.order.paymentResult.id;
   }
 }

@@ -43,4 +43,13 @@ export class PaymentService {
       map(response => response.data)
     );
   }
+
+  refundPayment(paymentIntentId: string, amount?: number): Observable<any> {
+    return this.apiService.post<any>('/payment/refund', {
+      paymentIntentId,
+      amount
+    }).pipe(
+      map(response => response.data)
+    );
+  }
 }

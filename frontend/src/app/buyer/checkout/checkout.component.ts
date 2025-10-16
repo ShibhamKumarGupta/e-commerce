@@ -6,7 +6,6 @@ import { OrderService } from '../../core/services/order.service';
 import { PaymentService } from '../../core/services/payment.service';
 import { Cart } from '../../core/models/cart.model';
 import { PaymentMethod } from '../../core/models/order.model';
-import { loadStripe, Stripe, StripeElements, StripeCardElement } from '@stripe/stripe-js';
 
 @Component({
   selector: 'app-checkout',
@@ -20,11 +19,6 @@ export class CheckoutComponent implements OnInit {
   
   paymentMethod: PaymentMethod = PaymentMethod.COD;
   PaymentMethod = PaymentMethod;
-  
-  // Stripe
-  stripe: Stripe | null = null;
-  elements: StripeElements | null = null;
-  cardElement: StripeCardElement | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -43,38 +37,13 @@ export class CheckoutComponent implements OnInit {
     });
   }
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     this.cartService.cart$.subscribe(cart => {
       this.cart = cart;
       if (cart.items.length === 0) {
         this.router.navigate(['/buyer/cart']);
       }
     });
-
-    // Initialize Stripe
-    this.stripe = await this.paymentService.initializeStripe();
-    if (this.stripe) {
-      this.elements = this.stripe.elements();
-      setTimeout(() => this.mountCardElement(), 100);
-    }
-  }
-
-  mountCardElement(): void {
-    if (this.elements) {
-      this.cardElement = this.elements.create('card', {
-        style: {
-          base: {
-            fontSize: '16px',
-            color: '#32325d',
-            '::placeholder': { color: '#aab7c4' }
-          }
-        }
-      });
-      const cardContainer = document.getElementById('card-element');
-      if (cardContainer) {
-        this.cardElement.mount('#card-element');
-      }
-    }
   }
 
   get totalAmount(): number {
@@ -105,50 +74,48 @@ export class CheckoutComponent implements OnInit {
     if (this.paymentMethod === PaymentMethod.COD) {
       this.createOrder(orderData);
     } else {
-      await this.processStripePayment(orderData);
+      // Create order first, then redirect to Stripe
+      this.createOrderAndRedirectToStripe(orderData);
     }
   }
 
-  async processStripePayment(orderData: any): Promise<void> {
-    try {
-      // Create payment intent
-      const paymentIntent = await this.paymentService.createPaymentIntent(
-        this.totalAmount,
-        'usd'
-      ).toPromise();
-
-      if (!this.stripe || !this.cardElement) {
-        throw new Error('Stripe not initialized');
-      }
-
-      // Confirm payment
-      const { error, paymentIntent: confirmedPayment } = await this.stripe.confirmCardPayment(
-        paymentIntent.clientSecret,
-        { payment_method: { card: this.cardElement } }
-      );
-
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      // Create order with payment info
-      this.createOrder(orderData, {
-        id: confirmedPayment.id,
-        status: confirmedPayment.status,
-        update_time: new Date().toISOString()
-      });
-    } catch (error: any) {
-      alert(error.message || 'Payment failed');
-      this.loading = false;
-    }
-  }
-
-  createOrder(orderData: any, paymentResult?: any): void {
+  createOrderAndRedirectToStripe(orderData: any): void {
     this.orderService.createOrder(orderData).subscribe({
       next: (order) => {
-        if (paymentResult) {
-          this.orderService.updatePaymentStatus(order._id, 'paid', paymentResult).subscribe();
-        }
+        // Prepare items for Stripe checkout
+        const checkoutItems = this.cart.items.map(item => ({
+          name: item.product.name,
+          price: item.product.price,
+          quantity: item.quantity,
+          image: item.product.images && item.product.images.length > 0 ? item.product.images[0] : null
+        }));
+
+        // Create Stripe checkout session
+        this.paymentService.createCheckoutSession(
+          this.totalAmount,
+          checkoutItems,
+          order._id
+        ).subscribe({
+          next: (session) => {
+            // Redirect to Stripe checkout page
+            window.location.href = session.url;
+          },
+          error: (error) => {
+            alert('Failed to create payment session: ' + (error.message || 'Unknown error'));
+            this.loading = false;
+          }
+        });
+      },
+      error: (error) => {
+        alert(error.message || 'Failed to place order');
+        this.loading = false;
+      }
+    });
+  }
+
+  createOrder(orderData: any): void {
+    this.orderService.createOrder(orderData).subscribe({
+      next: (order) => {
         this.cartService.clearCart();
         alert('Order placed successfully!');
         this.router.navigate(['/buyer/orders']);

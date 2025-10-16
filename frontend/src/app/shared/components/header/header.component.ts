@@ -39,6 +39,12 @@ export class HeaderComponent implements OnInit {
     this.isMenuOpen = !this.isMenuOpen;
   }
 
+  isMobileMenuOpen = false;
+
+  toggleMobileMenu(): void {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+  }
+
   navigateToDashboard(): void {
     if (this.currentUser?.role === 'seller') {
       this.router.navigate(['/seller/dashboard']);

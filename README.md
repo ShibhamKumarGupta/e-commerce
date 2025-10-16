@@ -64,6 +64,7 @@ e-commerce/
 ├── frontend/         # Angular (Buyer + Seller Panel)
 ├── admin/            # Angular (Admin Panel)
 ├── SETUP_GUIDE.md    # Detailed setup instructions
+├── STRIPE_SETUP.md   # Stripe payment integration guide
 └── README.md         # This file
 ```
 
@@ -112,6 +113,8 @@ npm start
 - **API:** http://localhost:5000
 
 📖 **For detailed setup instructions, see [SETUP_GUIDE.md](./SETUP_GUIDE.md)**
+
+💳 **For Stripe payment setup, see [STRIPE_SETUP.md](./STRIPE_SETUP.md)**
 
 ## 🏗️ Architecture
 
@@ -190,6 +193,7 @@ admin/src/app/
 - `GET /api/payment/config` - Get Stripe key
 - `POST /api/payment/create-intent` - Create payment
 - `POST /api/payment/confirm` - Confirm payment
+- `POST /api/payment/refund` - Refund payment (Admin)
 
 ### Admin
 - `GET /api/users` - Get all users

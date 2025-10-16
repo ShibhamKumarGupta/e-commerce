@@ -7,12 +7,15 @@ import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
 
 // Buyer
+import { HomeComponent } from './buyer/home/home.component';
 import { ProductsComponent } from './buyer/products/products.component';
 import { ProductDetailComponent } from './buyer/product-detail/product-detail.component';
 import { CartComponent } from './buyer/cart/cart.component';
 import { CheckoutComponent } from './buyer/checkout/checkout.component';
 import { OrdersComponent } from './buyer/orders/orders.component';
 import { ProfileComponent } from './buyer/profile/profile.component';
+import { PaymentSuccessComponent } from './buyer/payment-success/payment-success.component';
+import { PaymentCancelComponent } from './buyer/payment-cancel/payment-cancel.component';
 
 // Seller
 import { SellerDashboardComponent } from './seller/dashboard/dashboard.component';
@@ -23,7 +26,7 @@ import { SellerOrderDetailsComponent } from './seller/order-details/order-detail
 import { SellerReportsComponent } from './seller/reports/reports.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/products', pathMatch: 'full' },
+  { path: '', component: HomeComponent },
   
   // Auth Routes
   { path: 'auth/login', component: LoginComponent },
@@ -41,7 +44,9 @@ const routes: Routes = [
       { path: 'cart', component: CartComponent },
       { path: 'checkout', component: CheckoutComponent },
       { path: 'orders', component: OrdersComponent },
-      { path: 'profile', component: ProfileComponent }
+      { path: 'profile', component: ProfileComponent },
+      { path: 'payment-success', component: PaymentSuccessComponent },
+      { path: 'payment-cancel', component: PaymentCancelComponent }
     ]
   },
   

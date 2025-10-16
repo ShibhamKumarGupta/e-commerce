@@ -60,6 +60,17 @@ export class OrdersComponent implements OnInit {
     }
   }
 
+  getStatusBadgeClass(status: string): string {
+    const statusClasses: { [key: string]: string } = {
+      'pending': 'bg-yellow-100 text-yellow-700',
+      'processing': 'bg-blue-100 text-blue-700',
+      'shipped': 'bg-purple-100 text-purple-700',
+      'delivered': 'bg-green-100 text-green-700',
+      'cancelled': 'bg-red-100 text-red-700'
+    };
+    return statusClasses[status.toLowerCase()] || 'bg-gray-100 text-gray-700';
+  }
+
   onPageChange(page: number): void {
     this.currentPage = page;
     this.loadOrders();

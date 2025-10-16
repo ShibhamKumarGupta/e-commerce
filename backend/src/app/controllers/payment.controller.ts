@@ -33,4 +33,10 @@ export class PaymentController {
     const publishableKey = this.paymentService.getPublishableKey();
     ApiResponse.success(res, { publishableKey }, 'Publishable key retrieved successfully');
   });
+
+  createCheckoutSession = asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { amount, orderItems, orderId } = req.body;
+    const result = await this.paymentService.createCheckoutSession(amount, orderItems, orderId);
+    ApiResponse.success(res, result, 'Checkout session created successfully');
+  });
 }

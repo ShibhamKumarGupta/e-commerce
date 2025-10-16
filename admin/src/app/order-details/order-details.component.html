@@ -66,6 +66,19 @@
                 {{order.paymentStatus}}
               </span>
             </div>
+            <div *ngIf="order.paymentResult">
+              <p class="text-sm text-gray-600">Payment ID</p>
+              <p class="text-xs font-mono text-gray-900 break-all">{{order.paymentResult.id}}</p>
+            </div>
+            <div *ngIf="canRefund()">
+              <button
+                (click)="refundPayment()"
+                [disabled]="refundLoading"
+                class="w-full mt-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {{refundLoading ? 'Processing Refund...' : 'Refund Payment'}}
+              </button>
+            </div>
           </div>
         </div>
 

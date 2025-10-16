@@ -20,6 +20,7 @@ export class PaymentRoutes {
     this.router.use(AuthMiddleware.authenticate);
     
     this.router.post('/create-intent', this.paymentController.createPaymentIntent);
+    this.router.post('/create-checkout-session', this.paymentController.createCheckoutSession);
     this.router.post('/confirm', this.paymentController.confirmPayment);
     this.router.post('/refund', AuthMiddleware.isAdmin, this.paymentController.refundPayment);
   }

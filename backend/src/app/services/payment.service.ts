@@ -71,4 +71,38 @@ export class PaymentService {
   getPublishableKey(): string {
     return process.env.STRIPE_PUBLISHABLE_KEY || '';
   }
+
+  async createCheckoutSession(amount: number, orderItems: any[], orderId: string): Promise<any> {
+    try {
+      const lineItems = orderItems.map(item => ({
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: item.name,
+            images: item.image ? [item.image] : [],
+          },
+          unit_amount: Math.round(item.price * 100), // Convert to cents
+        },
+        quantity: item.quantity,
+      }));
+
+      const session = await this.stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: lineItems,
+        mode: 'payment',
+        success_url: `${process.env.FRONTEND_URL}/buyer/payment-success?session_id={CHECKOUT_SESSION_ID}&order_id=${orderId}`,
+        cancel_url: `${process.env.FRONTEND_URL}/buyer/payment-cancel?order_id=${orderId}`,
+        metadata: {
+          orderId: orderId
+        }
+      });
+
+      return {
+        sessionId: session.id,
+        url: session.url
+      };
+    } catch (error: any) {
+      throw ApiError.internal(`Checkout session creation failed: ${error.message}`);
+    }
+  }
 }

@@ -14,7 +14,6 @@ A professional, full-stack e-commerce platform built with MongoDB Atlas, Express
 - [API Documentation](#api-documentation)
 
 ---
-
 ## 📁 Project Structure
 
 ```

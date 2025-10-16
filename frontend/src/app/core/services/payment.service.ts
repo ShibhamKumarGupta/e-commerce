@@ -43,4 +43,14 @@ export class PaymentService {
       map(response => response.data)
     );
   }
+
+  createCheckoutSession(amount: number, orderItems: any[], orderId: string): Observable<any> {
+    return this.apiService.post<any>('/payment/create-checkout-session', {
+      amount,
+      orderItems,
+      orderId
+    }).pipe(
+      map(response => response.data)
+    );
+  }
 }

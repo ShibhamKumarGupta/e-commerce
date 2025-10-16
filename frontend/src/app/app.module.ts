@@ -19,6 +19,8 @@ import { CartComponent } from './buyer/cart/cart.component';
 import { CheckoutComponent } from './buyer/checkout/checkout.component';
 import { OrdersComponent } from './buyer/orders/orders.component';
 import { ProfileComponent } from './buyer/profile/profile.component';
+import { PaymentSuccessComponent } from './buyer/payment-success/payment-success.component';
+import { PaymentCancelComponent } from './buyer/payment-cancel/payment-cancel.component';
 
 // Seller Components
 import { SellerDashboardComponent } from './seller/dashboard/dashboard.component';
@@ -28,6 +30,7 @@ import { SellerOrdersComponent } from './seller/orders/orders.component';
 import { SellerOrderDetailsComponent } from './seller/order-details/order-details.component';
 import { SellerReportsComponent } from './seller/reports/reports.component';
 import { SellerNavbarComponent } from './seller/shared/seller-navbar/seller-navbar.component';
+import { HomeComponent } from './buyer/home/home.component';
 
 @NgModule({
   declarations: [
@@ -40,13 +43,16 @@ import { SellerNavbarComponent } from './seller/shared/seller-navbar/seller-navb
     CheckoutComponent,
     OrdersComponent,
     ProfileComponent,
+    PaymentSuccessComponent,
+    PaymentCancelComponent,
     SellerDashboardComponent,
     SellerProductsComponent,
     ProductFormComponent,
     SellerOrdersComponent,
     SellerOrderDetailsComponent,
     SellerReportsComponent,
-    SellerNavbarComponent
+    SellerNavbarComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,

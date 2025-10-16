@@ -1,0 +1,50 @@
+<div class="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-12">
+  <div class="max-w-md w-full">
+    <!-- Loading State -->
+    <div *ngIf="loading" class="bg-white rounded-lg shadow-lg p-8 text-center">
+      <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto mb-4"></div>
+      <p class="text-gray-600">Processing your payment...</p>
+    </div>
+
+    <!-- Success State -->
+    <div *ngIf="!loading" class="bg-white rounded-lg shadow-lg p-8 text-center">
+      <!-- Success Icon -->
+      <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
+        <svg class="h-10 w-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+      </div>
+
+      <!-- Success Message -->
+      <h2 class="text-2xl font-bold text-gray-900 mb-2">Payment Successful!</h2>
+      <p class="text-gray-600 mb-6">Thank you for your purchase. Your order has been confirmed.</p>
+
+      <!-- Order Details -->
+      <div class="bg-gray-50 rounded-lg p-4 mb-6">
+        <p class="text-sm text-gray-600 mb-1">Order ID</p>
+        <p class="font-mono text-sm font-semibold text-gray-900">#{{orderId.slice(-8).toUpperCase()}}</p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="space-y-3">
+        <button
+          (click)="goToOrders()"
+          class="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+        >
+          View My Orders
+        </button>
+        <button
+          (click)="goToHome()"
+          class="w-full bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+        >
+          Continue Shopping
+        </button>
+      </div>
+
+      <!-- Additional Info -->
+      <p class="text-xs text-gray-500 mt-6">
+        A confirmation email has been sent to your registered email address.
+      </p>
+    </div>
+  </div>
+</div>
