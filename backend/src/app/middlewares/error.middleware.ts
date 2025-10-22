@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { ApiError } from '../utils/ApiError.util';
+import { ErrorHelper } from '../helpers/error.helper';
+import { EnvironmentConfig } from '../config/environment.config';
 
 export class ErrorMiddleware {
   static handle(err: any, req: Request, res: Response, next: NextFunction) {
@@ -10,29 +11,29 @@ export class ErrorMiddleware {
       const message = Object.values(err.errors)
         .map((e: any) => e.message)
         .join(', ');
-      error = ApiError.badRequest(message);
+      error = ErrorHelper.badRequest(message);
     }
 
     // Mongoose duplicate key error
     if (err.code === 11000) {
       const field = Object.keys(err.keyPattern)[0];
       const message = `${field} already exists`;
-      error = ApiError.conflict(message);
+      error = ErrorHelper.conflict(message);
     }
 
     // Mongoose cast error
     if (err.name === 'CastError') {
       const message = `Invalid ${err.path}: ${err.value}`;
-      error = ApiError.badRequest(message);
+      error = ErrorHelper.badRequest(message);
     }
 
     // JWT errors
     if (err.name === 'JsonWebTokenError') {
-      error = ApiError.unauthorized('Invalid token');
+      error = ErrorHelper.unauthorized('Invalid token');
     }
 
     if (err.name === 'TokenExpiredError') {
-      error = ApiError.unauthorized('Token expired');
+      error = ErrorHelper.unauthorized('Token expired');
     }
 
     const statusCode = error.statusCode || 500;
@@ -41,12 +42,12 @@ export class ErrorMiddleware {
     res.status(statusCode).json({
       success: false,
       message,
-      ...(process.env.NODE_ENV === 'development' && { stack: error.stack })
+      ...(EnvironmentConfig.isDevelopment && { stack: error.stack })
     });
   }
 
   static notFound(req: Request, res: Response, next: NextFunction) {
-    const error = ApiError.notFound(`Route ${req.originalUrl} not found`);
+    const error = ErrorHelper.notFound(`Route ${req.originalUrl} not found`);
     next(error);
   }
 }

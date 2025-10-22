@@ -2,10 +2,10 @@
   "name": "ecommerce-backend",
   "version": "1.0.0",
   "description": "E-commerce backend with TypeScript and OOP",
-  "main": "dist/server.js",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "node dist/server.js",
-    "dev": "nodemon src/server.ts",
+    "start": "node dist/index.js",
+    "dev": "nodemon index.ts",
     "build": "tsc",
     "watch": "tsc -w"
   },

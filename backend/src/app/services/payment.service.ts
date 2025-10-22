@@ -1,25 +1,31 @@
 import Stripe from 'stripe';
-import { ApiError } from '../utils/ApiError.util';
+import { ErrorHelper } from '../helpers/error.helper';
+import { EnvironmentConfig } from '../config/environment.config';
 
 export class PaymentService {
-  private stripe: Stripe;
+  private stripe: Stripe | null = null;
 
   constructor() {
-    const secretKey = process.env.STRIPE_SECRET_KEY;
+    const secretKey = EnvironmentConfig.stripeSecretKey;
     
-    if (!secretKey) {
-      throw new Error('Stripe secret key is not configured');
+    if (secretKey) {
+      this.stripe = new Stripe(secretKey, {
+        apiVersion: '2023-10-16'
+      });
     }
+  }
 
-    this.stripe = new Stripe(secretKey, {
-      apiVersion: '2023-10-16'
-    });
+  private ensureStripeInitialized(): void {
+    if (!this.stripe) {
+      throw ErrorHelper.internal('Stripe is not configured. Please set STRIPE_SECRET_KEY in environment variables.');
+    }
   }
 
   async createPaymentIntent(amount: number, currency: string = 'usd', metadata?: any): Promise<any> {
+    this.ensureStripeInitialized();
     try {
-      const paymentIntent = await this.stripe.paymentIntents.create({
-        amount: Math.round(amount * 100), // Convert to cents
+      const paymentIntent = await this.stripe!.paymentIntents.create({
+        amount: Math.round(amount * 100),
         currency,
         metadata: metadata || {},
         automatic_payment_methods: {
@@ -32,13 +38,14 @@ export class PaymentService {
         paymentIntentId: paymentIntent.id
       };
     } catch (error: any) {
-      throw ApiError.internal(`Payment intent creation failed: ${error.message}`);
+      throw ErrorHelper.internal(`Payment intent creation failed: ${error.message}`);
     }
   }
 
   async confirmPayment(paymentIntentId: string): Promise<any> {
+    this.ensureStripeInitialized();
     try {
-      const paymentIntent = await this.stripe.paymentIntents.retrieve(paymentIntentId);
+      const paymentIntent = await this.stripe!.paymentIntents.retrieve(paymentIntentId);
       
       return {
         id: paymentIntent.id,
@@ -47,13 +54,14 @@ export class PaymentService {
         currency: paymentIntent.currency
       };
     } catch (error: any) {
-      throw ApiError.internal(`Payment confirmation failed: ${error.message}`);
+      throw ErrorHelper.internal(`Payment confirmation failed: ${error.message}`);
     }
   }
 
   async refundPayment(paymentIntentId: string, amount?: number): Promise<any> {
+    this.ensureStripeInitialized();
     try {
-      const refund = await this.stripe.refunds.create({
+      const refund = await this.stripe!.refunds.create({
         payment_intent: paymentIntentId,
         amount: amount ? Math.round(amount * 100) : undefined
       });
@@ -64,15 +72,16 @@ export class PaymentService {
         amount: refund.amount / 100
       };
     } catch (error: any) {
-      throw ApiError.internal(`Refund failed: ${error.message}`);
+      throw ErrorHelper.internal(`Refund failed: ${error.message}`);
     }
   }
 
   getPublishableKey(): string {
-    return process.env.STRIPE_PUBLISHABLE_KEY || '';
+    return EnvironmentConfig.stripePublishableKey;
   }
 
   async createCheckoutSession(amount: number, orderItems: any[], orderId: string): Promise<any> {
+    this.ensureStripeInitialized();
     try {
       const lineItems = orderItems.map(item => ({
         price_data: {
@@ -81,17 +90,17 @@ export class PaymentService {
             name: item.name,
             images: item.image ? [item.image] : [],
           },
-          unit_amount: Math.round(item.price * 100), // Convert to cents
+          unit_amount: Math.round(item.price * 100),
         },
         quantity: item.quantity,
       }));
 
-      const session = await this.stripe.checkout.sessions.create({
+      const session = await this.stripe!.checkout.sessions.create({
         payment_method_types: ['card'],
         line_items: lineItems,
         mode: 'payment',
-        success_url: `${process.env.FRONTEND_URL}/buyer/payment-success?session_id={CHECKOUT_SESSION_ID}&order_id=${orderId}`,
-        cancel_url: `${process.env.FRONTEND_URL}/buyer/payment-cancel?order_id=${orderId}`,
+        success_url: `${EnvironmentConfig.corsOrigins[0]}/buyer/payment-success?session_id={CHECKOUT_SESSION_ID}&order_id=${orderId}`,
+        cancel_url: `${EnvironmentConfig.corsOrigins[0]}/buyer/payment-cancel?order_id=${orderId}`,
         metadata: {
           orderId: orderId
         }
@@ -102,7 +111,7 @@ export class PaymentService {
         url: session.url
       };
     } catch (error: any) {
-      throw ApiError.internal(`Checkout session creation failed: ${error.message}`);
+      throw ErrorHelper.internal(`Checkout session creation failed: ${error.message}`);
     }
   }
 }

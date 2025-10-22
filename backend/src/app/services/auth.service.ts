@@ -1,6 +1,7 @@
-import { User, IUser, UserRole } from '../models/User.model';
-import { ApiError } from '../utils/ApiError.util';
-import { JWTUtil } from '../utils/jwt.util';
+import { UserRepository } from '../domain/repositories/user.repository';
+import { IUser, UserRole } from '../domain/interfaces/user.interface';
+import { ErrorHelper } from '../helpers/error.helper';
+import { JWTHelper } from '../helpers/jwt.helper';
 
 export interface RegisterDTO {
   name: string;
@@ -16,17 +17,22 @@ export interface LoginDTO {
 }
 
 export class AuthService {
+  private userRepository: UserRepository;
+
+  constructor() {
+    this.userRepository = new UserRepository();
+  }
+
   async register(data: RegisterDTO): Promise<{ user: IUser; token: string }> {
-    const existingUser = await User.findOne({ email: data.email });
+    const existingUser = await this.userRepository.findByEmail(data.email);
     
     if (existingUser) {
-      throw ApiError.conflict('Email already registered');
+      throw ErrorHelper.conflict('Email already registered');
     }
 
-    const user = await User.create(data);
-    const token = JWTUtil.generateToken(user);
+    const user = await this.userRepository.create(data as any);
+    const token = JWTHelper.generateToken(user);
 
-    // Remove password from response
     const userObject = user.toObject();
     const { password, ...userWithoutPassword } = userObject;
 
@@ -34,25 +40,24 @@ export class AuthService {
   }
 
   async login(data: LoginDTO): Promise<{ user: IUser; token: string }> {
-    const user = await User.findOne({ email: data.email }).select('+password');
+    const user = await this.userRepository.findByEmail(data.email);
 
     if (!user) {
-      throw ApiError.unauthorized('Invalid email or password');
+      throw ErrorHelper.unauthorized('Invalid email or password');
     }
 
     if (!user.isActive) {
-      throw ApiError.forbidden('Account is deactivated');
+      throw ErrorHelper.forbidden('Account is deactivated');
     }
 
     const isPasswordValid = await user.comparePassword(data.password);
 
     if (!isPasswordValid) {
-      throw ApiError.unauthorized('Invalid email or password');
+      throw ErrorHelper.unauthorized('Invalid email or password');
     }
 
-    const token = JWTUtil.generateToken(user);
+    const token = JWTHelper.generateToken(user);
 
-    // Remove password from response
     const userObject = user.toObject();
     const { password, ...userWithoutPassword } = userObject;
 
@@ -60,45 +65,40 @@ export class AuthService {
   }
 
   async getProfile(userId: string): Promise<IUser> {
-    const user = await User.findById(userId);
+    const user = await this.userRepository.findById(userId);
 
     if (!user) {
-      throw ApiError.notFound('User not found');
+      throw ErrorHelper.notFound('User not found');
     }
 
     return user;
   }
 
   async updateProfile(userId: string, data: Partial<IUser>): Promise<IUser> {
-    // Prevent updating sensitive fields
     delete data.password;
     delete data.role;
     delete (data as any).isActive;
 
-    const user = await User.findByIdAndUpdate(
-      userId,
-      { $set: data },
-      { new: true, runValidators: true }
-    );
+    const user = await this.userRepository.updateById(userId, { $set: data } as any);
 
     if (!user) {
-      throw ApiError.notFound('User not found');
+      throw ErrorHelper.notFound('User not found');
     }
 
     return user;
   }
 
   async changePassword(userId: string, currentPassword: string, newPassword: string): Promise<void> {
-    const user = await User.findById(userId).select('+password');
+    const user = await this.userRepository.findOne({ _id: userId } as any, { select: '+password' });
 
     if (!user) {
-      throw ApiError.notFound('User not found');
+      throw ErrorHelper.notFound('User not found');
     }
 
     const isPasswordValid = await user.comparePassword(currentPassword);
 
     if (!isPasswordValid) {
-      throw ApiError.unauthorized('Current password is incorrect');
+      throw ErrorHelper.unauthorized('Current password is incorrect');
     }
 
     user.password = newPassword;

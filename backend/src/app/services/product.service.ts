@@ -1,5 +1,7 @@
-import { Product, IProduct } from '../models/Product.model';
-import { ApiError } from '../utils/ApiError.util';
+import { AbstractService } from './abstracts/service.abstract';
+import { ProductRepository } from '../domain/repositories/product.repository';
+import { IProduct } from '../domain/interfaces/product.interface';
+import { ErrorHelper } from '../helpers/error.helper';
 import mongoose from 'mongoose';
 
 export interface ProductQuery {
@@ -26,9 +28,17 @@ export interface CreateProductDTO {
   stock: number;
 }
 
-export class ProductService {
+export class ProductService extends AbstractService<IProduct> {
+  private productRepository: ProductRepository;
+
+  constructor() {
+    const repository = new ProductRepository();
+    super(repository);
+    this.productRepository = repository;
+  }
+
   async createProduct(data: CreateProductDTO): Promise<IProduct> {
-    const product = await Product.create(data);
+    const product = await this.productRepository.create(data as any);
     return product;
   }
 
@@ -74,17 +84,17 @@ export class ProductService {
       filter.seller = seller;
     }
 
-    const skip = (page - 1) * limit;
-    const total = await Product.countDocuments(filter);
+    const total = await this.productRepository.count(filter);
     
     const sortOptions: any = {};
     sortOptions[sortBy] = sortOrder === 'asc' ? 1 : -1;
 
-    const products = await Product.find(filter)
-      .populate('seller', 'name email')
-      .limit(limit)
-      .skip(skip)
-      .sort(sortOptions);
+    const products = await this.productRepository.find(filter, {
+      populate: 'seller',
+      limit,
+      page,
+      sort: sortOptions
+    });
 
     return {
       products,
@@ -95,67 +105,59 @@ export class ProductService {
   }
 
   async getProductById(productId: string): Promise<IProduct> {
-    const product = await Product.findById(productId)
-      .populate('seller', 'name email')
-      .populate('reviews.user', 'name avatar');
+    const product = await this.productRepository.findById(productId, {
+      populate: ['seller', 'reviews.user']
+    });
 
     if (!product) {
-      throw ApiError.notFound('Product not found');
+      throw ErrorHelper.notFound('Product not found');
     }
 
     return product;
   }
 
   async updateProduct(productId: string, sellerId: string, data: Partial<IProduct>): Promise<IProduct> {
-    const product = await Product.findById(productId);
+    const product = await this.productRepository.findById(productId);
 
     if (!product) {
-      throw ApiError.notFound('Product not found');
+      throw ErrorHelper.notFound('Product not found');
     }
 
-    // Check if the seller owns this product
     if (product.seller.toString() !== sellerId) {
-      throw ApiError.forbidden('You can only update your own products');
+      throw ErrorHelper.forbidden('You can only update your own products');
     }
 
-    const updatedProduct = await Product.findByIdAndUpdate(
-      productId,
-      { $set: data },
-      { new: true, runValidators: true }
-    ).populate('seller', 'name email');
-
+    const updatedProduct = await this.productRepository.updateById(productId, { $set: data } as any);
     return updatedProduct!;
   }
 
   async deleteProduct(productId: string, sellerId: string): Promise<void> {
-    const product = await Product.findById(productId);
+    const product = await this.productRepository.findById(productId);
 
     if (!product) {
-      throw ApiError.notFound('Product not found');
+      throw ErrorHelper.notFound('Product not found');
     }
 
-    // Check if the seller owns this product
     if (product.seller.toString() !== sellerId) {
-      throw ApiError.forbidden('You can only delete your own products');
+      throw ErrorHelper.forbidden('You can only delete your own products');
     }
 
-    await Product.findByIdAndDelete(productId);
+    await this.productRepository.deleteById(productId);
   }
 
   async addReview(productId: string, userId: string, userName: string, rating: number, comment: string): Promise<IProduct> {
-    const product = await Product.findById(productId);
+    const product = await this.productRepository.findById(productId);
 
     if (!product) {
-      throw ApiError.notFound('Product not found');
+      throw ErrorHelper.notFound('Product not found');
     }
 
-    // Check if user already reviewed
     const alreadyReviewed = product.reviews.find(
       (review) => review.user.toString() === userId
     );
 
     if (alreadyReviewed) {
-      throw ApiError.badRequest('You have already reviewed this product');
+      throw ErrorHelper.badRequest('You have already reviewed this product');
     }
 
     const review = {
@@ -175,15 +177,15 @@ export class ProductService {
   }
 
   async getCategories(): Promise<string[]> {
-    const categories = await Product.distinct('category');
+    const categories = await this.productRepository.model.distinct('category');
     return categories;
   }
 
   async getProductStats(): Promise<any> {
-    const totalProducts = await Product.countDocuments();
-    const activeProducts = await Product.countDocuments({ isActive: true });
-    const outOfStock = await Product.countDocuments({ stock: 0 });
-    const lowStock = await Product.countDocuments({ stock: { $gt: 0, $lte: 10 } });
+    const totalProducts = await this.productRepository.count({});
+    const activeProducts = await this.productRepository.count({ isActive: true });
+    const outOfStock = await this.productRepository.count({ stock: 0 });
+    const lowStock = await this.productRepository.count({ stock: { $gt: 0, $lte: 10 } });
 
     return {
       totalProducts,
@@ -194,7 +196,6 @@ export class ProductService {
     };
   }
 
-  // Get seller-specific products
   async getSellerProducts(sellerId: string, query: ProductQuery): Promise<{ products: IProduct[]; total: number; page: number; pages: number }> {
     const {
       category,
@@ -232,17 +233,17 @@ export class ProductService {
       ];
     }
 
-    const skip = (page - 1) * limit;
-    const total = await Product.countDocuments(filter);
+    const total = await this.productRepository.count(filter);
     
     const sortOptions: any = {};
     sortOptions[sortBy] = sortOrder === 'asc' ? 1 : -1;
 
-    const products = await Product.find(filter)
-      .populate('seller', 'name email')
-      .limit(limit)
-      .skip(skip)
-      .sort(sortOptions);
+    const products = await this.productRepository.find(filter, {
+      populate: 'seller',
+      limit,
+      page,
+      sort: sortOptions
+    });
 
     return {
       products,
@@ -252,12 +253,11 @@ export class ProductService {
     };
   }
 
-  // Get seller-specific stats
   async getSellerProductStats(sellerId: string): Promise<any> {
-    const totalProducts = await Product.countDocuments({ seller: sellerId });
-    const activeProducts = await Product.countDocuments({ seller: sellerId, isActive: true });
-    const outOfStock = await Product.countDocuments({ seller: sellerId, stock: 0 });
-    const lowStock = await Product.countDocuments({ seller: sellerId, stock: { $gt: 0, $lte: 10 } });
+    const totalProducts = await this.productRepository.count({ seller: sellerId });
+    const activeProducts = await this.productRepository.count({ seller: sellerId, isActive: true });
+    const outOfStock = await this.productRepository.count({ seller: sellerId, stock: 0 });
+    const lowStock = await this.productRepository.count({ seller: sellerId, stock: { $gt: 0, $lte: 10 } });
 
     return {
       totalProducts,
@@ -268,27 +268,21 @@ export class ProductService {
     };
   }
 
-  // Admin method to update any product
   async adminUpdateProduct(productId: string, data: Partial<IProduct>): Promise<IProduct> {
-    const product = await Product.findByIdAndUpdate(
-      productId,
-      { $set: data },
-      { new: true, runValidators: true }
-    ).populate('seller', 'name email');
+    const product = await this.productRepository.updateById(productId, { $set: data } as any);
 
     if (!product) {
-      throw ApiError.notFound('Product not found');
+      throw ErrorHelper.notFound('Product not found');
     }
 
     return product;
   }
 
-  // Admin method to delete any product
   async adminDeleteProduct(productId: string): Promise<void> {
-    const product = await Product.findByIdAndDelete(productId);
+    const product = await this.productRepository.deleteById(productId);
 
     if (!product) {
-      throw ApiError.notFound('Product not found');
+      throw ErrorHelper.notFound('Product not found');
     }
   }
 }

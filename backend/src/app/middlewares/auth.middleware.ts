@@ -1,50 +1,50 @@
-import { Request, Response, NextFunction } from 'express';
-import { JWTUtil } from '../utils/jwt.util';
-import { ApiError } from '../utils/ApiError.util';
-import { User, UserRole } from '../models/User.model';
-import { asyncHandler } from '../utils/asyncHandler.util';
-
-export interface AuthRequest extends Request {
-  user?: any;
-}
+import { Response, NextFunction } from 'express';
+import { JWTHelper } from '../helpers/jwt.helper';
+import { ErrorHelper } from '../helpers/error.helper';
+import { UserRepository } from '../domain/repositories/user.repository';
+import { UserRole } from '../domain/interfaces/user.interface';
+import { asyncHandler } from '../utils/async.utils';
+import { AuthRequest } from '../types/core.types';
 
 export class AuthMiddleware {
+  private static userRepository = new UserRepository();
+
   static authenticate = asyncHandler(async (req: AuthRequest, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw ApiError.unauthorized('No token provided');
+      throw ErrorHelper.unauthorized('No token provided');
     }
 
     const token = authHeader.split(' ')[1];
 
     try {
-      const decoded = JWTUtil.verifyToken(token);
-      const user = await User.findById(decoded.id).select('-password');
+      const decoded = JWTHelper.verifyToken(token);
+      const user = await AuthMiddleware.userRepository.findById(decoded.id, { select: '-password' });
 
       if (!user) {
-        throw ApiError.unauthorized('User not found');
+        throw ErrorHelper.unauthorized('User not found');
       }
 
       if (!user.isActive) {
-        throw ApiError.forbidden('Account is deactivated');
+        throw ErrorHelper.forbidden('Account is deactivated');
       }
 
       req.user = user;
       next();
     } catch (error) {
-      throw ApiError.unauthorized('Invalid token');
+      throw ErrorHelper.unauthorized('Invalid token');
     }
   });
 
   static authorize(...roles: UserRole[]) {
     return (req: AuthRequest, res: Response, next: NextFunction) => {
       if (!req.user) {
-        throw ApiError.unauthorized('User not authenticated');
+        throw ErrorHelper.unauthorized('User not authenticated');
       }
 
       if (!roles.includes(req.user.role)) {
-        throw ApiError.forbidden('You do not have permission to perform this action');
+        throw ErrorHelper.forbidden('You do not have permission to perform this action');
       }
 
       next();

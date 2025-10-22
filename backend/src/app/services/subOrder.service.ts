@@ -1,7 +1,8 @@
-import { SubOrder, ISubOrder } from '../models/subOrder.model';
-import { User } from '../models/User.model';
-import { OrderStatus, PaymentStatus } from '../models/Order.model';
-import { ApiError } from '../utils/ApiError.util';
+import { AbstractService } from './abstracts/service.abstract';
+import { SubOrderRepository } from '../domain/repositories/subOrder.repository';
+import { ISubOrder } from '../domain/interfaces/subOrder.interface';
+import { OrderStatus, PaymentStatus } from '../domain/interfaces/order.interface';
+import { ErrorHelper } from '../helpers/error.helper';
 
 export interface SubOrderQuery {
   seller?: string;
@@ -13,7 +14,15 @@ export interface SubOrderQuery {
   limit?: number;
 }
 
-export class SubOrderService {
+export class SubOrderService extends AbstractService<ISubOrder> {
+  private subOrderRepository: SubOrderRepository;
+
+  constructor() {
+    const repository = new SubOrderRepository();
+    super(repository);
+    this.subOrderRepository = repository;
+  }
+
   async createSubOrder(
     masterOrderId: string,
     sellerId: string,
@@ -21,14 +30,11 @@ export class SubOrderService {
     orderItems: any[],
     commissionRate: number
   ): Promise<ISubOrder> {
-    // Calculate subtotal
     const subtotal = orderItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-    
-    // Calculate commission and seller earnings
     const commission = (subtotal * commissionRate) / 100;
     const sellerEarnings = subtotal - commission;
 
-    const subOrder = await SubOrder.create({
+    const subOrder = await this.subOrderRepository.create({
       masterOrder: masterOrderId,
       seller: sellerId,
       buyer: buyerId,
@@ -39,29 +45,28 @@ export class SubOrderService {
       sellerEarnings,
       orderStatus: OrderStatus.PENDING,
       paymentStatus: PaymentStatus.PENDING
-    });
+    } as any);
 
     return subOrder;
   }
 
   async getSubOrderById(subOrderId: string): Promise<ISubOrder> {
-    const subOrder = await SubOrder.findById(subOrderId)
-      .populate('seller', 'name email')
-      .populate('buyer', 'name email')
-      .populate('masterOrder')
-      .populate('orderItems.product', 'name');
+    const subOrder = await this.subOrderRepository.findById(subOrderId, {
+      populate: ['seller', 'buyer', 'masterOrder', 'orderItems.product']
+    });
 
     if (!subOrder) {
-      throw ApiError.notFound('Sub-order not found');
+      throw ErrorHelper.notFound('Sub-order not found');
     }
 
     return subOrder;
   }
 
   async getSubOrdersByMasterOrder(masterOrderId: string): Promise<ISubOrder[]> {
-    const subOrders = await SubOrder.find({ masterOrder: masterOrderId })
-      .populate('seller', 'name email')
-      .populate('orderItems.product', 'name');
+    const subOrders = await this.subOrderRepository.find(
+      { masterOrder: masterOrderId } as any,
+      { populate: ['seller', 'orderItems.product'] }
+    );
 
     return subOrders;
   }
@@ -81,15 +86,13 @@ export class SubOrderService {
       filter.paymentStatus = paymentStatus;
     }
 
-    const skip = (page - 1) * limit;
-    const total = await SubOrder.countDocuments(filter);
-    const subOrders = await SubOrder.find(filter)
-      .populate('buyer', 'name email')
-      .populate('masterOrder', 'createdAt')
-      .populate('orderItems.product', 'name')
-      .limit(limit)
-      .skip(skip)
-      .sort({ createdAt: -1 });
+    const total = await this.subOrderRepository.count(filter);
+    const subOrders = await this.subOrderRepository.find(filter, {
+      populate: ['buyer', 'masterOrder', 'orderItems.product'],
+      limit,
+      page,
+      sort: { createdAt: -1 }
+    });
 
     return {
       subOrders,
@@ -100,15 +103,14 @@ export class SubOrderService {
   }
 
   async updateSubOrderStatus(subOrderId: string, status: OrderStatus, sellerId?: string): Promise<ISubOrder> {
-    const subOrder = await SubOrder.findById(subOrderId);
+    const subOrder = await this.subOrderRepository.findById(subOrderId);
 
     if (!subOrder) {
-      throw ApiError.notFound('Sub-order not found');
+      throw ErrorHelper.notFound('Sub-order not found');
     }
 
-    // If seller is provided, verify ownership
     if (sellerId && subOrder.seller.toString() !== sellerId) {
-      throw ApiError.forbidden('You can only update your own orders');
+      throw ErrorHelper.forbidden('You can only update your own orders');
     }
 
     subOrder.orderStatus = status;
@@ -125,10 +127,10 @@ export class SubOrderService {
     subOrderId: string,
     paymentStatus: PaymentStatus
   ): Promise<ISubOrder> {
-    const subOrder = await SubOrder.findById(subOrderId);
+    const subOrder = await this.subOrderRepository.findById(subOrderId);
 
     if (!subOrder) {
-      throw ApiError.notFound('Sub-order not found');
+      throw ErrorHelper.notFound('Sub-order not found');
     }
 
     subOrder.paymentStatus = paymentStatus;
@@ -153,7 +155,7 @@ export class SubOrderService {
       if (endDate) filter.createdAt.$lte = endDate;
     }
 
-    const result = await SubOrder.aggregate([
+    const result = await this.subOrderRepository.model.aggregate([
       { $match: filter },
       {
         $group: {
@@ -179,12 +181,12 @@ export class SubOrderService {
   }
 
   async getSellerStats(sellerId: string): Promise<any> {
-    const totalSubOrders = await SubOrder.countDocuments({ seller: sellerId });
-    const pendingOrders = await SubOrder.countDocuments({ seller: sellerId, orderStatus: OrderStatus.PENDING });
-    const processingOrders = await SubOrder.countDocuments({ seller: sellerId, orderStatus: OrderStatus.PROCESSING });
-    const shippedOrders = await SubOrder.countDocuments({ seller: sellerId, orderStatus: OrderStatus.SHIPPED });
-    const deliveredOrders = await SubOrder.countDocuments({ seller: sellerId, orderStatus: OrderStatus.DELIVERED });
-    const cancelledOrders = await SubOrder.countDocuments({ seller: sellerId, orderStatus: OrderStatus.CANCELLED });
+    const totalSubOrders = await this.subOrderRepository.count({ seller: sellerId });
+    const pendingOrders = await this.subOrderRepository.count({ seller: sellerId, orderStatus: OrderStatus.PENDING });
+    const processingOrders = await this.subOrderRepository.count({ seller: sellerId, orderStatus: OrderStatus.PROCESSING });
+    const shippedOrders = await this.subOrderRepository.count({ seller: sellerId, orderStatus: OrderStatus.SHIPPED });
+    const deliveredOrders = await this.subOrderRepository.count({ seller: sellerId, orderStatus: OrderStatus.DELIVERED });
+    const cancelledOrders = await this.subOrderRepository.count({ seller: sellerId, orderStatus: OrderStatus.CANCELLED });
 
     const earnings = await this.getSellerEarnings(sellerId);
 
@@ -199,7 +201,6 @@ export class SubOrderService {
     };
   }
 
-  // Admin method to get all sub-orders
   async getAllSubOrders(query: SubOrderQuery): Promise<{ subOrders: ISubOrder[]; total: number; page: number; pages: number }> {
     const { seller, buyer, masterOrder, status, paymentStatus, page = 1, limit = 10 } = query;
     const filter: any = {};
@@ -224,16 +225,13 @@ export class SubOrderService {
       filter.paymentStatus = paymentStatus;
     }
 
-    const skip = (page - 1) * limit;
-    const total = await SubOrder.countDocuments(filter);
-    const subOrders = await SubOrder.find(filter)
-      .populate('seller', 'name email')
-      .populate('buyer', 'name email')
-      .populate('masterOrder', 'createdAt totalPrice')
-      .populate('orderItems.product', 'name')
-      .limit(limit)
-      .skip(skip)
-      .sort({ createdAt: -1 });
+    const total = await this.subOrderRepository.count(filter);
+    const subOrders = await this.subOrderRepository.find(filter, {
+      populate: ['seller', 'buyer', 'masterOrder', 'orderItems.product'],
+      limit,
+      page,
+      sort: { createdAt: -1 }
+    });
 
     return {
       subOrders,
@@ -243,7 +241,6 @@ export class SubOrderService {
     };
   }
 
-  // Admin method to get commission breakdown
   async getCommissionBreakdown(startDate?: Date, endDate?: Date): Promise<any> {
     const filter: any = {
       paymentStatus: PaymentStatus.PAID
@@ -255,7 +252,7 @@ export class SubOrderService {
       if (endDate) filter.createdAt.$lte = endDate;
     }
 
-    const result = await SubOrder.aggregate([
+    const result = await this.subOrderRepository.model.aggregate([
       { $match: filter },
       {
         $group: {
@@ -293,7 +290,7 @@ export class SubOrderService {
       }
     ]);
 
-    const totalResult = await SubOrder.aggregate([
+    const totalResult = await this.subOrderRepository.model.aggregate([
       { $match: filter },
       {
         $group: {

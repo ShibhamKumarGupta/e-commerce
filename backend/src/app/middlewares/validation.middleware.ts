@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult, ValidationChain } from 'express-validator';
-import { ApiError } from '../utils/ApiError.util';
+import { ErrorHelper } from '../helpers/error.helper';
 
 export class ValidationMiddleware {
   static validate(validations: ValidationChain[]) {
@@ -17,7 +17,7 @@ export class ValidationMiddleware {
         message: err.msg
       }));
 
-      throw ApiError.badRequest('Validation failed');
+      throw ErrorHelper.badRequest('Validation failed');
     };
   }
 }

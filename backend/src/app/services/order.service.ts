@@ -1,8 +1,10 @@
-import { Order, IOrder, OrderStatus, PaymentStatus, PaymentMethod } from '../models/Order.model';
-import { Product } from '../models/Product.model';
-import { User } from '../models/User.model';
+import { AbstractService } from './abstracts/service.abstract';
+import { OrderRepository } from '../domain/repositories/order.repository';
+import { ProductRepository } from '../domain/repositories/product.repository';
+import { UserRepository } from '../domain/repositories/user.repository';
+import { IOrder, OrderStatus, PaymentStatus, PaymentMethod } from '../domain/interfaces/order.interface';
+import { ErrorHelper } from '../helpers/error.helper';
 import { SubOrderService } from './subOrder.service';
-import { ApiError } from '../utils/ApiError.util';
 
 export interface CreateOrderDTO {
   user: string;
@@ -30,25 +32,32 @@ export interface OrderQuery {
   limit?: number;
 }
 
-export class OrderService {
+export class OrderService extends AbstractService<IOrder> {
+  private orderRepository: OrderRepository;
+  private productRepository: ProductRepository;
+  private userRepository: UserRepository;
   private subOrderService: SubOrderService;
 
   constructor() {
+    const repository = new OrderRepository();
+    super(repository);
+    this.orderRepository = repository;
+    this.productRepository = new ProductRepository();
+    this.userRepository = new UserRepository();
     this.subOrderService = new SubOrderService();
   }
 
   async createOrder(data: CreateOrderDTO): Promise<IOrder> {
-    // Fetch product details and validate
     const orderItems = await Promise.all(
       data.orderItems.map(async (item) => {
-        const product = await Product.findById(item.product);
+        const product = await this.productRepository.findById(item.product);
 
         if (!product) {
-          throw ApiError.notFound(`Product ${item.product} not found`);
+          throw ErrorHelper.notFound(`Product ${item.product} not found`);
         }
 
         if (product.stock < item.quantity) {
-          throw ApiError.badRequest(`Insufficient stock for ${product.name}`);
+          throw ErrorHelper.badRequest(`Insufficient stock for ${product.name}`);
         }
 
         return {
@@ -62,14 +71,12 @@ export class OrderService {
       })
     );
 
-    // Calculate prices
     const itemsPrice = orderItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-    const taxPrice = itemsPrice * 0.1; // 10% tax
-    const shippingPrice = itemsPrice > 100 ? 0 : 10; // Free shipping over $100
+    const taxPrice = itemsPrice * 0.1;
+    const shippingPrice = itemsPrice > 100 ? 0 : 10;
     const totalPrice = itemsPrice + taxPrice + shippingPrice;
 
-    // Create master order
-    const order = await Order.create({
+    const order = await this.orderRepository.create({
       user: data.user,
       orderItems,
       shippingAddress: data.shippingAddress,
@@ -78,9 +85,8 @@ export class OrderService {
       shippingPrice,
       totalPrice,
       isMasterOrder: true
-    });
+    } as any);
 
-    // Group items by seller
     const itemsBySeller = new Map<string, any[]>();
     orderItems.forEach(item => {
       const sellerId = item.seller.toString();
@@ -96,15 +102,13 @@ export class OrderService {
       });
     });
 
-    // Create sub-orders for each seller
     const subOrderIds: any[] = [];
     for (const [sellerId, items] of itemsBySeller) {
-      // Get seller's commission rate
-      const seller = await User.findById(sellerId);
+      const seller = await this.userRepository.findById(sellerId);
       const commissionRate = seller?.commissionRate || 10;
 
       const subOrder = await this.subOrderService.createSubOrder(
-        (order._id as any).toString(),
+        order._id.toString(),
         sellerId,
         data.user,
         items,
@@ -113,16 +117,14 @@ export class OrderService {
       subOrderIds.push(subOrder._id);
     }
 
-    // Update master order with sub-order references
     order.subOrders = subOrderIds as any;
     await order.save();
 
-    // Update product stock
     await Promise.all(
       data.orderItems.map(async (item) => {
-        await Product.findByIdAndUpdate(item.product, {
+        await this.productRepository.updateById(item.product, {
           $inc: { stock: -item.quantity }
-        });
+        } as any);
       })
     );
 
@@ -130,13 +132,12 @@ export class OrderService {
   }
 
   async getOrderById(orderId: string): Promise<IOrder> {
-    const order = await Order.findById(orderId)
-      .populate('user', 'name email')
-      .populate('orderItems.product', 'name')
-      .populate('orderItems.seller', 'name email');
+    const order = await this.orderRepository.findById(orderId, {
+      populate: ['user', 'orderItems.product', 'orderItems.seller']
+    });
 
     if (!order) {
-      throw ApiError.notFound('Order not found');
+      throw ErrorHelper.notFound('Order not found');
     }
 
     return order;
@@ -162,15 +163,13 @@ export class OrderService {
       filter.paymentStatus = paymentStatus;
     }
 
-    const skip = (page - 1) * limit;
-    const total = await Order.countDocuments(filter);
-    const orders = await Order.find(filter)
-      .populate('user', 'name email')
-      .populate('orderItems.product', 'name')
-      .populate('orderItems.seller', 'name email')
-      .limit(limit)
-      .skip(skip)
-      .sort({ createdAt: -1 });
+    const total = await this.orderRepository.count(filter);
+    const orders = await this.orderRepository.find(filter, {
+      populate: ['user', 'orderItems.product', 'orderItems.seller'],
+      limit,
+      page,
+      sort: { createdAt: -1 }
+    });
 
     return {
       orders,
@@ -189,10 +188,10 @@ export class OrderService {
   }
 
   async updateOrderStatus(orderId: string, status: OrderStatus): Promise<IOrder> {
-    const order = await Order.findById(orderId);
+    const order = await this.orderRepository.findById(orderId);
 
     if (!order) {
-      throw ApiError.notFound('Order not found');
+      throw ErrorHelper.notFound('Order not found');
     }
 
     order.orderStatus = status;
@@ -206,10 +205,10 @@ export class OrderService {
   }
 
   async updatePaymentStatus(orderId: string, paymentStatus: PaymentStatus, paymentResult?: any): Promise<IOrder> {
-    const order = await Order.findById(orderId);
+    const order = await this.orderRepository.findById(orderId);
 
     if (!order) {
-      throw ApiError.notFound('Order not found');
+      throw ErrorHelper.notFound('Order not found');
     }
 
     order.paymentStatus = paymentStatus;
@@ -227,28 +226,27 @@ export class OrderService {
   }
 
   async cancelOrder(orderId: string, userId: string): Promise<IOrder> {
-    const order = await Order.findById(orderId);
+    const order = await this.orderRepository.findById(orderId);
 
     if (!order) {
-      throw ApiError.notFound('Order not found');
+      throw ErrorHelper.notFound('Order not found');
     }
 
     if (order.user.toString() !== userId) {
-      throw ApiError.forbidden('You can only cancel your own orders');
+      throw ErrorHelper.forbidden('You can only cancel your own orders');
     }
 
     if (order.orderStatus === OrderStatus.SHIPPED || order.orderStatus === OrderStatus.DELIVERED) {
-      throw ApiError.badRequest('Cannot cancel order that has been shipped or delivered');
+      throw ErrorHelper.badRequest('Cannot cancel order that has been shipped or delivered');
     }
 
     order.orderStatus = OrderStatus.CANCELLED;
 
-    // Restore product stock
     await Promise.all(
       order.orderItems.map(async (item) => {
-        await Product.findByIdAndUpdate(item.product, {
+        await this.productRepository.updateById(item.product.toString(), {
           $inc: { stock: item.quantity }
-        });
+        } as any);
       })
     );
 
@@ -257,14 +255,14 @@ export class OrderService {
   }
 
   async getOrderStats(): Promise<any> {
-    const totalOrders = await Order.countDocuments();
-    const pendingOrders = await Order.countDocuments({ orderStatus: OrderStatus.PENDING });
-    const processingOrders = await Order.countDocuments({ orderStatus: OrderStatus.PROCESSING });
-    const shippedOrders = await Order.countDocuments({ orderStatus: OrderStatus.SHIPPED });
-    const deliveredOrders = await Order.countDocuments({ orderStatus: OrderStatus.DELIVERED });
-    const cancelledOrders = await Order.countDocuments({ orderStatus: OrderStatus.CANCELLED });
+    const totalOrders = await this.orderRepository.count({});
+    const pendingOrders = await this.orderRepository.count({ orderStatus: OrderStatus.PENDING });
+    const processingOrders = await this.orderRepository.count({ orderStatus: OrderStatus.PROCESSING });
+    const shippedOrders = await this.orderRepository.count({ orderStatus: OrderStatus.SHIPPED });
+    const deliveredOrders = await this.orderRepository.count({ orderStatus: OrderStatus.DELIVERED });
+    const cancelledOrders = await this.orderRepository.count({ orderStatus: OrderStatus.CANCELLED });
 
-    const revenueResult = await Order.aggregate([
+    const revenueResult = await this.orderRepository.model.aggregate([
       { $match: { paymentStatus: PaymentStatus.PAID } },
       { $group: { _id: null, totalRevenue: { $sum: '$totalPrice' } } }
     ]);
