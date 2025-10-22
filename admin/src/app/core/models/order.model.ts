@@ -54,6 +54,8 @@ export interface Order {
   totalPrice: number;
   orderStatus: OrderStatus;
   deliveredAt?: string;
+  isMasterOrder: boolean;
+  subOrders: string[];
   createdAt: string;
   updatedAt: string;
 }

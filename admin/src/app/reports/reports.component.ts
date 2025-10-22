@@ -98,12 +98,21 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     const ctx = document.getElementById('revenueChart') as HTMLCanvasElement;
     if (!ctx) return;
 
-    // Mock monthly revenue data
-    const monthlyRevenue = [
-      15000, 18000, 22000, 19000, 25000, 28000, 
-      32000, 30000, 35000, 38000, 42000, 45000
-    ];
+    // Fetch real monthly revenue data
+    this.orderService.getMonthlyRevenue().subscribe({
+      next: (data) => {
+        const monthlyRevenue = data.map(d => d.revenue);
+        this.renderRevenueChart(ctx, monthlyRevenue);
+      },
+      error: (error) => {
+        console.error('Error loading monthly revenue:', error);
+        // Fallback to empty data
+        this.renderRevenueChart(ctx, Array(12).fill(0));
+      }
+    });
+  }
 
+  renderRevenueChart(ctx: HTMLCanvasElement, monthlyRevenue: number[]): void {
     this.revenueChart = new Chart(ctx, {
       type: 'line',
       data: {
@@ -190,22 +199,30 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     const ctx = document.getElementById('topProductsChart') as HTMLCanvasElement;
     if (!ctx) return;
 
-    // Mock top products data
-    const topProducts = [
-      { name: 'Product A', sales: 150 },
-      { name: 'Product B', sales: 120 },
-      { name: 'Product C', sales: 100 },
-      { name: 'Product D', sales: 85 },
-      { name: 'Product E', sales: 70 }
-    ];
+    // Fetch real top products data
+    this.orderService.getTopProducts(5).subscribe({
+      next: (data) => {
+        const topProducts = data.length > 0 ? data : [
+          { name: 'No Data', totalSales: 0 }
+        ];
+        this.renderTopProductsChart(ctx, topProducts);
+      },
+      error: (error) => {
+        console.error('Error loading top products:', error);
+        // Fallback to empty data
+        this.renderTopProductsChart(ctx, [{ name: 'No Data', totalSales: 0 }]);
+      }
+    });
+  }
 
+  renderTopProductsChart(ctx: HTMLCanvasElement, topProducts: any[]): void {
     this.topProductsChart = new Chart(ctx, {
       type: 'bar',
       data: {
         labels: topProducts.map(p => p.name),
         datasets: [{
           label: 'Sales',
-          data: topProducts.map(p => p.sales),
+          data: topProducts.map(p => p.totalSales),
           backgroundColor: 'rgba(34, 197, 94, 0.8)',
           borderColor: 'rgb(34, 197, 94)',
           borderWidth: 1
@@ -232,9 +249,21 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     const ctx = document.getElementById('userGrowthChart') as HTMLCanvasElement;
     if (!ctx) return;
 
-    // Mock user growth data
-    const userGrowth = [50, 75, 100, 140, 180, 220, 270, 320, 380, 450, 520, 600];
+    // Fetch real user growth data
+    this.userService.getMonthlyUserGrowth().subscribe({
+      next: (data) => {
+        const userGrowth = data.map(d => d.newUsers);
+        this.renderUserGrowthChart(ctx, userGrowth);
+      },
+      error: (error) => {
+        console.error('Error loading user growth:', error);
+        // Fallback to empty data
+        this.renderUserGrowthChart(ctx, Array(12).fill(0));
+      }
+    });
+  }
 
+  renderUserGrowthChart(ctx: HTMLCanvasElement, userGrowth: number[]): void {
     this.userGrowthChart = new Chart(ctx, {
       type: 'bar',
       data: {

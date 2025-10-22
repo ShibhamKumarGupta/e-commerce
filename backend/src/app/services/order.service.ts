@@ -198,9 +198,36 @@ export class OrderService extends AbstractService<IOrder> {
 
     if (status === OrderStatus.DELIVERED) {
       order.deliveredAt = new Date();
+      
+      // Auto-update payment status to 'paid' for COD orders when delivered
+      if (order.paymentMethod === PaymentMethod.COD && order.paymentStatus !== PaymentStatus.PAID) {
+        order.paymentStatus = PaymentStatus.PAID;
+      }
     }
 
     await order.save();
+
+    // If this is a master order, update all sub-orders with the same status
+    if (order.isMasterOrder && order.subOrders && order.subOrders.length > 0) {
+      const subOrders = await this.subOrderService.getSubOrdersByMasterOrder(orderId);
+      await Promise.all(
+        subOrders.map(async (subOrder) => {
+          await this.subOrderService.updateSubOrderStatus(subOrder._id.toString(), status);
+        })
+      );
+      
+      // Also update payment status for all sub-orders if COD and delivered
+      if (status === OrderStatus.DELIVERED && order.paymentMethod === PaymentMethod.COD) {
+        await Promise.all(
+          subOrders.map(async (subOrder) => {
+            if (subOrder.paymentStatus !== PaymentStatus.PAID) {
+              await this.subOrderService.updateSubOrderPaymentStatus(subOrder._id.toString(), PaymentStatus.PAID);
+            }
+          })
+        );
+      }
+    }
+
     return order;
   }
 
@@ -222,6 +249,17 @@ export class OrderService extends AbstractService<IOrder> {
     }
 
     await order.save();
+
+    // If this is a master order, update all sub-orders with the same payment status
+    if (order.isMasterOrder && order.subOrders && order.subOrders.length > 0) {
+      const subOrders = await this.subOrderService.getSubOrdersByMasterOrder(orderId);
+      await Promise.all(
+        subOrders.map(async (subOrder) => {
+          await this.subOrderService.updateSubOrderPaymentStatus(subOrder._id.toString(), paymentStatus);
+        })
+      );
+    }
+
     return order;
   }
 
@@ -278,5 +316,61 @@ export class OrderService extends AbstractService<IOrder> {
       cancelledOrders,
       totalRevenue
     };
+  }
+
+  async getMonthlyRevenue(year?: number): Promise<any[]> {
+    const targetYear = year || new Date().getFullYear();
+    const startDate = new Date(targetYear, 0, 1);
+    const endDate = new Date(targetYear, 11, 31, 23, 59, 59);
+
+    const monthlyData = await this.orderRepository.model.aggregate([
+      {
+        $match: {
+          paymentStatus: PaymentStatus.PAID,
+          createdAt: { $gte: startDate, $lte: endDate }
+        }
+      },
+      {
+        $group: {
+          _id: { $month: '$createdAt' },
+          revenue: { $sum: '$totalPrice' },
+          orderCount: { $sum: 1 }
+        }
+      },
+      {
+        $sort: { _id: 1 }
+      }
+    ]);
+
+    // Fill in missing months with 0
+    const result = Array.from({ length: 12 }, (_, i) => {
+      const monthData = monthlyData.find(d => d._id === i + 1);
+      return {
+        month: i + 1,
+        revenue: monthData ? monthData.revenue : 0,
+        orderCount: monthData ? monthData.orderCount : 0
+      };
+    });
+
+    return result;
+  }
+
+  async getTopProducts(limit: number = 5): Promise<any[]> {
+    const topProducts = await this.orderRepository.model.aggregate([
+      { $match: { paymentStatus: PaymentStatus.PAID } },
+      { $unwind: '$orderItems' },
+      {
+        $group: {
+          _id: '$orderItems.product',
+          name: { $first: '$orderItems.name' },
+          totalSales: { $sum: '$orderItems.quantity' },
+          revenue: { $sum: { $multiply: ['$orderItems.price', '$orderItems.quantity'] } }
+        }
+      },
+      { $sort: { totalSales: -1 } },
+      { $limit: limit }
+    ]);
+
+    return topProducts;
   }
 }

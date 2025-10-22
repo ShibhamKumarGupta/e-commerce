@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import { AbstractRepository } from './abstracts/repository.abstract';
-import { ISubOrder, ISubOrderItem } from '../interfaces/subOrder.interface';
+import { ISubOrder, ISubOrderItem, SellerApprovalStatus } from '../interfaces/subOrder.interface';
 import { OrderStatus, PaymentStatus } from '../interfaces/order.interface';
 
 const subOrderItemSchema = new Schema<ISubOrderItem>({
@@ -86,6 +86,11 @@ const subOrderSchema = new Schema<ISubOrder>(
       type: String,
       enum: Object.values(PaymentStatus),
       default: PaymentStatus.PENDING
+    },
+    sellerApprovalStatus: {
+      type: String,
+      enum: Object.values(SellerApprovalStatus),
+      default: SellerApprovalStatus.PENDING
     },
     deliveredAt: {
       type: Date

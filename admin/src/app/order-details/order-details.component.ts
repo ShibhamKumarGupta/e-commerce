@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { OrderService } from '../core/services/order.service';
 import { PaymentService } from '../core/services/payment.service';
+import { SubOrderService } from '../core/services/sub-order.service';
 
 @Component({
   selector: 'app-order-details',
@@ -10,9 +11,11 @@ import { PaymentService } from '../core/services/payment.service';
 })
 export class OrderDetailsComponent implements OnInit {
   order: any = null;
+  subOrders: any[] = [];
   loading = false;
   orderId: string = '';
   refundLoading = false;
+  subOrdersLoading = false;
 
   orderStatuses = [
     { value: 'pending', label: 'Pending' },
@@ -26,7 +29,8 @@ export class OrderDetailsComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private orderService: OrderService,
-    private paymentService: PaymentService
+    private paymentService: PaymentService,
+    private subOrderService: SubOrderService
   ) {}
 
   ngOnInit(): void {
@@ -42,6 +46,10 @@ export class OrderDetailsComponent implements OnInit {
       next: (order) => {
         this.order = order;
         this.loading = false;
+        // Load sub-orders if this is a master order
+        if (order.isMasterOrder) {
+          this.loadSubOrders();
+        }
       },
       error: (error) => {
         console.error('Error loading order details:', error);
@@ -52,7 +60,27 @@ export class OrderDetailsComponent implements OnInit {
     });
   }
 
+  loadSubOrders(): void {
+    this.subOrdersLoading = true;
+    this.subOrderService.getAllSubOrders({ masterOrder: this.orderId }).subscribe({
+      next: (result) => {
+        this.subOrders = result.subOrders || [];
+        this.subOrdersLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading sub-orders:', error);
+        this.subOrdersLoading = false;
+      }
+    });
+  }
+
   updateOrderStatus(newStatus: string): void {
+    // Check if all sellers have responded (for multi-vendor orders)
+    if (this.order.isMasterOrder && !this.allSellersResponded()) {
+      alert('Cannot update order status. Please wait for all sellers to approve or reject their portion of the order.');
+      return;
+    }
+
     if (confirm(`Update order status to ${newStatus}?`)) {
       this.orderService.updateOrderStatus(this.orderId, newStatus).subscribe({
         next: () => {
@@ -84,6 +112,15 @@ export class OrderDetailsComponent implements OnInit {
       paid: 'bg-green-100 text-green-800',
       failed: 'bg-red-100 text-red-800',
       refunded: 'bg-purple-100 text-purple-800'
+    };
+    return statusClasses[status] || 'bg-gray-100 text-gray-800';
+  }
+
+  getApprovalStatusClass(status: string): string {
+    const statusClasses: any = {
+      pending: 'bg-yellow-100 text-yellow-800',
+      approved: 'bg-green-100 text-green-800',
+      not_approved: 'bg-red-100 text-red-800'
     };
     return statusClasses[status] || 'bg-gray-100 text-gray-800';
   }
@@ -161,5 +198,28 @@ export class OrderDetailsComponent implements OnInit {
            this.order.paymentStatus === 'paid' && 
            this.order.paymentResult && 
            this.order.paymentResult.id;
+  }
+
+  allSellersResponded(): boolean {
+    if (!this.subOrders || this.subOrders.length === 0) {
+      return true; // No sub-orders means single vendor, can proceed
+    }
+    
+    // Check if all sub-orders have approval status other than 'pending'
+    return this.subOrders.every(subOrder => 
+      subOrder.sellerApprovalStatus === 'approved' || 
+      subOrder.sellerApprovalStatus === 'not_approved'
+    );
+  }
+
+  canUpdateOrderStatus(): boolean {
+    if (!this.order) return false;
+    
+    // For multi-vendor orders, all sellers must respond first
+    if (this.order.isMasterOrder) {
+      return this.allSellersResponded();
+    }
+    
+    return true;
   }
 }

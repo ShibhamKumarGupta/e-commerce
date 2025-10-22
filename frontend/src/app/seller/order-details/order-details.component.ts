@@ -12,12 +12,10 @@ export class SellerOrderDetailsComponent implements OnInit {
   loading = false;
   subOrderId: string = '';
 
-  orderStatuses = [
-    { value: 'pending', label: 'Pending' },
-    { value: 'processing', label: 'Processing' },
-    { value: 'shipped', label: 'Shipped' },
-    { value: 'delivered', label: 'Delivered' },
-    { value: 'cancelled', label: 'Cancelled' }
+  approvalStatuses = [
+    { value: 'pending', label: 'Pending Approval' },
+    { value: 'approved', label: 'Approved' },
+    { value: 'not_approved', label: 'Not Approved' }
   ];
 
   constructor(
@@ -50,16 +48,16 @@ export class SellerOrderDetailsComponent implements OnInit {
   }
 
 
-  updateOrderStatus(newStatus: string): void {
-    if (confirm(`Update order status to ${newStatus}?`)) {
-      this.subOrderService.updateSubOrderStatus(this.subOrderId, newStatus).subscribe({
+  updateApprovalStatus(newStatus: string): void {
+    if (confirm(`Update approval status to ${newStatus}?`)) {
+      this.subOrderService.updateSellerApproval(this.subOrderId, newStatus).subscribe({
         next: () => {
-          alert('Order status updated successfully');
+          alert('Approval status updated successfully');
           this.loadOrderDetails();
         },
         error: (error: any) => {
-          console.error('Error updating order status:', error);
-          const errorMessage = error?.error?.message || error?.message || 'Failed to update order status';
+          console.error('Error updating approval status:', error);
+          const errorMessage = error?.error?.message || error?.message || 'Failed to update approval status';
           alert(errorMessage);
         }
       });
@@ -73,6 +71,15 @@ export class SellerOrderDetailsComponent implements OnInit {
       shipped: 'bg-purple-100 text-purple-800',
       delivered: 'bg-green-100 text-green-800',
       cancelled: 'bg-red-100 text-red-800'
+    };
+    return statusClasses[status] || 'bg-gray-100 text-gray-800';
+  }
+
+  getApprovalStatusClass(status: string): string {
+    const statusClasses: any = {
+      pending: 'bg-yellow-100 text-yellow-800',
+      approved: 'bg-green-100 text-green-800',
+      not_approved: 'bg-red-100 text-red-800'
     };
     return statusClasses[status] || 'bg-gray-100 text-gray-800';
   }

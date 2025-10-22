@@ -40,6 +40,16 @@ export class SubOrderController {
     ResponseUtils.success(res, { subOrder }, 'Sub-order status updated successfully');
   });
 
+  updateSellerApproval = asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { approvalStatus } = req.body;
+    const subOrder = await this.subOrderService.updateSellerApproval(
+      req.params.id,
+      approvalStatus,
+      req.user!._id.toString()
+    );
+    ResponseUtils.success(res, { subOrder }, 'Seller approval status updated successfully');
+  });
+
   getSellerEarnings = asyncHandler(async (req: AuthRequest, res: Response) => {
     const { startDate, endDate } = req.query;
     const earnings = await this.subOrderService.getSellerEarnings(
@@ -76,5 +86,28 @@ export class SubOrderController {
       endDate ? new Date(endDate as string) : undefined
     );
     ResponseUtils.success(res, breakdown, 'Commission breakdown retrieved successfully');
+  });
+
+  getSellerMonthlyRevenue = asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { year } = req.query;
+    const data = await this.subOrderService.getSellerMonthlyRevenue(
+      req.user!._id.toString(),
+      year ? parseInt(year as string) : undefined
+    );
+    ResponseUtils.success(res, { monthlyRevenue: data }, 'Seller monthly revenue retrieved successfully');
+  });
+
+  getSellerTopProducts = asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { limit } = req.query;
+    const data = await this.subOrderService.getSellerTopProducts(
+      req.user!._id.toString(),
+      limit ? parseInt(limit as string) : 5
+    );
+    ResponseUtils.success(res, { topProducts: data }, 'Seller top products retrieved successfully');
+  });
+
+  getSellerOrdersByStatus = asyncHandler(async (req: AuthRequest, res: Response) => {
+    const data = await this.subOrderService.getSellerOrdersByStatus(req.user!._id.toString());
+    ResponseUtils.success(res, { ordersByStatus: data }, 'Seller orders by status retrieved successfully');
   });
 }

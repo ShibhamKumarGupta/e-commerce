@@ -38,6 +38,18 @@ export class OrderRoutes {
       this.orderController.getOrderStats
     );
 
+    this.router.get(
+      '/admin/analytics/monthly-revenue',
+      AuthMiddleware.isAdmin,
+      this.orderController.getMonthlyRevenue
+    );
+
+    this.router.get(
+      '/admin/analytics/top-products',
+      AuthMiddleware.isAdmin,
+      this.orderController.getTopProducts
+    );
+
     this.router.patch(
       '/:id/status',
       AuthMiddleware.authorize(UserRole.SELLER, UserRole.ADMIN),

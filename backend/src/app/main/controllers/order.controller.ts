@@ -75,4 +75,20 @@ export class OrderController {
     const stats = await this.orderService.getOrderStats();
     ResponseUtils.success(res, stats, 'Order statistics retrieved successfully');
   });
+
+  getMonthlyRevenue = asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { year } = req.query;
+    const data = await this.orderService.getMonthlyRevenue(
+      year ? parseInt(year as string) : undefined
+    );
+    ResponseUtils.success(res, { monthlyRevenue: data }, 'Monthly revenue retrieved successfully');
+  });
+
+  getTopProducts = asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { limit } = req.query;
+    const data = await this.orderService.getTopProducts(
+      limit ? parseInt(limit as string) : 5
+    );
+    ResponseUtils.success(res, { topProducts: data }, 'Top products retrieved successfully');
+  });
 }

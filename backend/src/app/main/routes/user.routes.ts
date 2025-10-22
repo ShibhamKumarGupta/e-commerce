@@ -18,6 +18,7 @@ export class UserRoutes {
 
     this.router.get('/', this.userController.getAllUsers);
     this.router.get('/stats', this.userController.getUserStats);
+    this.router.get('/analytics/monthly-growth', this.userController.getMonthlyUserGrowth);
     this.router.get('/:id', this.userController.getUserById);
     this.router.put('/:id', this.userController.updateUser);
     this.router.delete('/:id', this.userController.deleteUser);

@@ -115,4 +115,38 @@ export class UserService extends AbstractService<IUser> {
       admins
     };
   }
+
+  async getMonthlyUserGrowth(year?: number): Promise<any[]> {
+    const targetYear = year || new Date().getFullYear();
+    const startDate = new Date(targetYear, 0, 1);
+    const endDate = new Date(targetYear, 11, 31, 23, 59, 59);
+
+    const monthlyData = await this.userRepository.model.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: startDate, $lte: endDate }
+        }
+      },
+      {
+        $group: {
+          _id: { $month: '$createdAt' },
+          newUsers: { $sum: 1 }
+        }
+      },
+      {
+        $sort: { _id: 1 }
+      }
+    ]);
+
+    // Fill in missing months with 0
+    const result = Array.from({ length: 12 }, (_, i) => {
+      const monthData = monthlyData.find(d => d._id === i + 1);
+      return {
+        month: i + 1,
+        newUsers: monthData ? monthData.newUsers : 0
+      };
+    });
+
+    return result;
+  }
 }

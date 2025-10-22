@@ -40,4 +40,12 @@ export class UserController {
     const stats = await this.userService.getUserStats();
     ResponseUtils.success(res, stats, 'User statistics retrieved successfully');
   });
+
+  getMonthlyUserGrowth = asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { year } = req.query;
+    const data = await this.userService.getMonthlyUserGrowth(
+      year ? parseInt(year as string) : undefined
+    );
+    ResponseUtils.success(res, { monthlyGrowth: data }, 'Monthly user growth retrieved successfully');
+  });
 }

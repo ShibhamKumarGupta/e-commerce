@@ -50,4 +50,11 @@ export class UserService {
       map(response => response.data)
     );
   }
+
+  getMonthlyUserGrowth(year?: number): Observable<any[]> {
+    const params = year ? { year } : {};
+    return this.apiService.get<any>('/users/analytics/monthly-growth', params).pipe(
+      map(response => response.data.monthlyGrowth)
+    );
+  }
 }

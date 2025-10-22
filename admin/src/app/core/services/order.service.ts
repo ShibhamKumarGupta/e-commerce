@@ -60,4 +60,17 @@ export class OrderService {
       map(response => response.data.order)
     );
   }
+
+  getMonthlyRevenue(year?: number): Observable<any[]> {
+    const params = year ? { year } : {};
+    return this.apiService.get<any>('/orders/admin/analytics/monthly-revenue', params).pipe(
+      map(response => response.data.monthlyRevenue)
+    );
+  }
+
+  getTopProducts(limit: number = 5): Observable<any[]> {
+    return this.apiService.get<any>('/orders/admin/analytics/top-products', { limit }).pipe(
+      map(response => response.data.topProducts)
+    );
+  }
 }

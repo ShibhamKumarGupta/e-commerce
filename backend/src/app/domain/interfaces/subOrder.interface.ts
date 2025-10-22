@@ -1,6 +1,12 @@
 import { ObjectId, MongoDocument } from '../../types/mongo.type';
 import { OrderStatus, PaymentStatus } from './order.interface';
 
+export enum SellerApprovalStatus {
+  PENDING = 'pending',
+  APPROVED = 'approved',
+  NOT_APPROVED = 'not_approved'
+}
+
 export interface ISubOrderItem {
   product: ObjectId;
   name: string;
@@ -20,5 +26,6 @@ export interface ISubOrder extends MongoDocument {
   sellerEarnings: number;
   orderStatus: OrderStatus;
   paymentStatus: PaymentStatus;
+  sellerApprovalStatus: SellerApprovalStatus;
   deliveredAt?: Date;
 }

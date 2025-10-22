@@ -1,6 +1,6 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { ProductService } from '../../core/services/product.service';
-import { OrderService } from '../../core/services/order.service';
+import { SubOrderService } from '../../core/services/sub-order.service';
 
 declare var Chart: any;
 
@@ -38,7 +38,7 @@ export class SellerReportsComponent implements OnInit, AfterViewInit {
 
   constructor(
     private productService: ProductService,
-    private orderService: OrderService
+    private subOrderService: SubOrderService
   ) {}
 
   ngOnInit(): void {
@@ -52,52 +52,30 @@ export class SellerReportsComponent implements OnInit, AfterViewInit {
   loadReportData(): void {
     this.loading = true;
 
-    // Load seller products
-    this.productService.getAllProducts({ limit: 100 }).subscribe({
-      next: (response) => {
-        this.stats.totalProducts = response.total;
-        this.stats.activeProducts = response.products.filter(p => p.isActive).length;
+    // Load seller products stats
+    this.productService.getSellerProductStats().subscribe({
+      next: (stats) => {
+        this.stats.totalProducts = stats.totalProducts;
+        this.stats.activeProducts = stats.activeProducts;
       }
     });
 
-    // Load seller orders
-    this.orderService.getMyOrders(1, 100).subscribe({
-      next: (response) => {
-        const currentUserId = this.getCurrentUserId();
-        
-        // Filter orders that contain seller's products
-        const sellerOrders = response.orders.filter((order: any) => {
-          return order.orderItems.some((item: any) => 
-            item.seller && item.seller._id === currentUserId
-          );
-        });
-
-        this.stats.totalOrders = sellerOrders.length;
-        
-        // Calculate revenue from seller's items only
-        this.stats.totalRevenue = sellerOrders.reduce((sum: number, order: any) => {
-          const sellerItems = order.orderItems.filter((item: any) => 
-            item.seller && item.seller._id === currentUserId
-          );
-          const orderTotal = sellerItems.reduce((itemSum: number, item: any) => 
-            itemSum + (item.price * item.quantity), 0
-          );
-          return sum + (order.paymentStatus === 'paid' ? orderTotal : 0);
-        }, 0);
-
+    // Load seller sub-order stats
+    this.subOrderService.getSellerStats().subscribe({
+      next: (stats) => {
+        this.stats.totalOrders = stats.totalSubOrders;
+        this.stats.totalRevenue = stats.totalEarnings || 0;
         this.stats.averageOrderValue = this.stats.totalOrders > 0 
           ? this.stats.totalRevenue / this.stats.totalOrders 
           : 0;
+        this.stats.pendingOrders = stats.pendingOrders;
+      }
+    });
 
-        // Count orders by status
-        sellerOrders.forEach((order: any) => {
-          if (this.ordersByStatus.hasOwnProperty(order.orderStatus)) {
-            this.ordersByStatus[order.orderStatus]++;
-          }
-        });
-
-        this.stats.pendingOrders = this.ordersByStatus.pending;
-        
+    // Load orders by status
+    this.subOrderService.getSellerOrdersByStatus().subscribe({
+      next: (data) => {
+        this.ordersByStatus = data;
         this.loading = false;
         this.initializeCharts();
       },
@@ -132,12 +110,21 @@ export class SellerReportsComponent implements OnInit, AfterViewInit {
     const ctx = document.getElementById('revenueChart') as HTMLCanvasElement;
     if (!ctx) return;
 
-    // Mock monthly revenue data
-    const monthlyRevenue = [
-      2500, 3200, 4100, 3800, 4500, 5200, 
-      5800, 5400, 6200, 6800, 7500, 8200
-    ];
+    // Fetch real monthly revenue data
+    this.subOrderService.getSellerMonthlyRevenue().subscribe({
+      next: (data) => {
+        const monthlyRevenue = data.map(d => d.revenue);
+        this.renderRevenueChart(ctx, monthlyRevenue);
+      },
+      error: (error) => {
+        console.error('Error loading monthly revenue:', error);
+        // Fallback to empty data
+        this.renderRevenueChart(ctx, Array(12).fill(0));
+      }
+    });
+  }
 
+  renderRevenueChart(ctx: HTMLCanvasElement, monthlyRevenue: number[]): void {
     this.revenueChart = new Chart(ctx, {
       type: 'line',
       data: {
@@ -224,22 +211,30 @@ export class SellerReportsComponent implements OnInit, AfterViewInit {
     const ctx = document.getElementById('topProductsChart') as HTMLCanvasElement;
     if (!ctx) return;
 
-    // Mock top products data
-    const topProducts = [
-      { name: 'Product A', sales: 85 },
-      { name: 'Product B', sales: 72 },
-      { name: 'Product C', sales: 65 },
-      { name: 'Product D', sales: 58 },
-      { name: 'Product E', sales: 45 }
-    ];
+    // Fetch real top products data
+    this.subOrderService.getSellerTopProducts(5).subscribe({
+      next: (data) => {
+        const topProducts = data.length > 0 ? data : [
+          { name: 'No Data', totalSales: 0 }
+        ];
+        this.renderTopProductsChart(ctx, topProducts);
+      },
+      error: (error) => {
+        console.error('Error loading top products:', error);
+        // Fallback to empty data
+        this.renderTopProductsChart(ctx, [{ name: 'No Data', totalSales: 0 }]);
+      }
+    });
+  }
 
+  renderTopProductsChart(ctx: HTMLCanvasElement, topProducts: any[]): void {
     this.topProductsChart = new Chart(ctx, {
       type: 'bar',
       data: {
         labels: topProducts.map(p => p.name),
         datasets: [{
           label: 'Sales',
-          data: topProducts.map(p => p.sales),
+          data: topProducts.map(p => p.totalSales),
           backgroundColor: 'rgba(34, 197, 94, 0.8)',
           borderColor: 'rgb(34, 197, 94)',
           borderWidth: 1
@@ -266,9 +261,21 @@ export class SellerReportsComponent implements OnInit, AfterViewInit {
     const ctx = document.getElementById('salesTrendChart') as HTMLCanvasElement;
     if (!ctx) return;
 
-    // Mock sales trend data
-    const salesTrend = [12, 19, 15, 22, 18, 25, 28, 24, 30, 35, 32, 38];
+    // Fetch real sales trend data (order count per month)
+    this.subOrderService.getSellerMonthlyRevenue().subscribe({
+      next: (data) => {
+        const salesTrend = data.map(d => d.orderCount);
+        this.renderSalesTrendChart(ctx, salesTrend);
+      },
+      error: (error) => {
+        console.error('Error loading sales trend:', error);
+        // Fallback to empty data
+        this.renderSalesTrendChart(ctx, Array(12).fill(0));
+      }
+    });
+  }
 
+  renderSalesTrendChart(ctx: HTMLCanvasElement, salesTrend: number[]): void {
     this.salesTrendChart = new Chart(ctx, {
       type: 'bar',
       data: {

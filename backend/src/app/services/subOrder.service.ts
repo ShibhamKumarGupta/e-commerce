@@ -1,6 +1,6 @@
 import { AbstractService } from './abstracts/service.abstract';
 import { SubOrderRepository } from '../domain/repositories/subOrder.repository';
-import { ISubOrder } from '../domain/interfaces/subOrder.interface';
+import { ISubOrder, SellerApprovalStatus } from '../domain/interfaces/subOrder.interface';
 import { OrderStatus, PaymentStatus } from '../domain/interfaces/order.interface';
 import { ErrorHelper } from '../helpers/error.helper';
 
@@ -103,7 +103,9 @@ export class SubOrderService extends AbstractService<ISubOrder> {
   }
 
   async updateSubOrderStatus(subOrderId: string, status: OrderStatus, sellerId?: string): Promise<ISubOrder> {
-    const subOrder = await this.subOrderRepository.findById(subOrderId);
+    const subOrder = await this.subOrderRepository.findById(subOrderId, {
+      populate: ['masterOrder']
+    });
 
     if (!subOrder) {
       throw ErrorHelper.notFound('Sub-order not found');
@@ -117,7 +119,30 @@ export class SubOrderService extends AbstractService<ISubOrder> {
 
     if (status === OrderStatus.DELIVERED) {
       subOrder.deliveredAt = new Date();
+      
+      // Auto-update payment status to 'paid' for COD orders when delivered
+      const masterOrder = subOrder.masterOrder as any;
+      if (masterOrder && masterOrder.paymentMethod === 'cod' && subOrder.paymentStatus !== PaymentStatus.PAID) {
+        subOrder.paymentStatus = PaymentStatus.PAID;
+      }
     }
+
+    await subOrder.save();
+    return subOrder;
+  }
+
+  async updateSellerApproval(subOrderId: string, approvalStatus: SellerApprovalStatus, sellerId: string): Promise<ISubOrder> {
+    const subOrder = await this.subOrderRepository.findById(subOrderId);
+
+    if (!subOrder) {
+      throw ErrorHelper.notFound('Sub-order not found');
+    }
+
+    if (subOrder.seller.toString() !== sellerId) {
+      throw ErrorHelper.forbidden('You can only update approval status for your own orders');
+    }
+
+    subOrder.sellerApprovalStatus = approvalStatus;
 
     await subOrder.save();
     return subOrder;
@@ -312,5 +337,87 @@ export class SubOrderService extends AbstractService<ISubOrder> {
         orderCount: 0
       }
     };
+  }
+
+  async getSellerMonthlyRevenue(sellerId: string, year?: number): Promise<any[]> {
+    const targetYear = year || new Date().getFullYear();
+    const startDate = new Date(targetYear, 0, 1);
+    const endDate = new Date(targetYear, 11, 31, 23, 59, 59);
+
+    const monthlyData = await this.subOrderRepository.model.aggregate([
+      {
+        $match: {
+          seller: new (require('mongoose').Types.ObjectId)(sellerId),
+          paymentStatus: PaymentStatus.PAID,
+          createdAt: { $gte: startDate, $lte: endDate }
+        }
+      },
+      {
+        $group: {
+          _id: { $month: '$createdAt' },
+          revenue: { $sum: '$sellerEarnings' },
+          orderCount: { $sum: 1 }
+        }
+      },
+      {
+        $sort: { _id: 1 }
+      }
+    ]);
+
+    // Fill in missing months with 0
+    const result = Array.from({ length: 12 }, (_, i) => {
+      const monthData = monthlyData.find(d => d._id === i + 1);
+      return {
+        month: i + 1,
+        revenue: monthData ? monthData.revenue : 0,
+        orderCount: monthData ? monthData.orderCount : 0
+      };
+    });
+
+    return result;
+  }
+
+  async getSellerTopProducts(sellerId: string, limit: number = 5): Promise<any[]> {
+    const topProducts = await this.subOrderRepository.model.aggregate([
+      { 
+        $match: { 
+          seller: new (require('mongoose').Types.ObjectId)(sellerId),
+          paymentStatus: PaymentStatus.PAID 
+        } 
+      },
+      { $unwind: '$orderItems' },
+      {
+        $group: {
+          _id: '$orderItems.product',
+          name: { $first: '$orderItems.name' },
+          totalSales: { $sum: '$orderItems.quantity' },
+          revenue: { $sum: { $multiply: ['$orderItems.price', '$orderItems.quantity'] } }
+        }
+      },
+      { $sort: { totalSales: -1 } },
+      { $limit: limit }
+    ]);
+
+    return topProducts;
+  }
+
+  async getSellerOrdersByStatus(sellerId: string): Promise<any> {
+    const statuses = [
+      OrderStatus.PENDING,
+      OrderStatus.PROCESSING,
+      OrderStatus.SHIPPED,
+      OrderStatus.DELIVERED,
+      OrderStatus.CANCELLED
+    ];
+
+    const result: any = {};
+    for (const status of statuses) {
+      result[status] = await this.subOrderRepository.count({ 
+        seller: sellerId, 
+        orderStatus: status 
+      });
+    }
+
+    return result;
   }
 }

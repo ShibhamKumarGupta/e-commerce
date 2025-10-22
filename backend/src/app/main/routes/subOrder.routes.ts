@@ -34,10 +34,34 @@ export class SubOrderRoutes {
       this.subOrderController.getSellerStats
     );
 
+    this.router.get(
+      '/seller/analytics/monthly-revenue',
+      AuthMiddleware.authorize(UserRole.SELLER, UserRole.ADMIN),
+      this.subOrderController.getSellerMonthlyRevenue
+    );
+
+    this.router.get(
+      '/seller/analytics/top-products',
+      AuthMiddleware.authorize(UserRole.SELLER, UserRole.ADMIN),
+      this.subOrderController.getSellerTopProducts
+    );
+
+    this.router.get(
+      '/seller/analytics/orders-by-status',
+      AuthMiddleware.authorize(UserRole.SELLER, UserRole.ADMIN),
+      this.subOrderController.getSellerOrdersByStatus
+    );
+
     this.router.patch(
       '/:id/status',
       AuthMiddleware.authorize(UserRole.SELLER, UserRole.ADMIN),
       this.subOrderController.updateSubOrderStatus
+    );
+
+    this.router.patch(
+      '/:id/approval',
+      AuthMiddleware.authorize(UserRole.SELLER, UserRole.ADMIN),
+      this.subOrderController.updateSellerApproval
     );
 
     this.router.get(

@@ -45,10 +45,14 @@
               <select
                 [value]="order.orderStatus"
                 (change)="updateOrderStatus($any($event.target).value)"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                [disabled]="!canUpdateOrderStatus()"
+                [class]="'w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ' + (canUpdateOrderStatus() ? 'border-gray-300 bg-white' : 'border-gray-200 bg-gray-100 cursor-not-allowed opacity-60')"
               >
                 <option *ngFor="let status of orderStatuses" [value]="status.value">{{status.label}}</option>
               </select>
+              <p *ngIf="!canUpdateOrderStatus()" class="text-xs text-red-600 mt-1">
+                ⚠️ Waiting for all sellers to respond
+              </p>
             </div>
           </div>
         </div>
@@ -165,6 +169,60 @@
               </tr>
             </tbody>
           </table>
+        </div>
+      </div>
+
+      <!-- Seller Approvals (for multi-vendor orders) -->
+      <div *ngIf="order.isMasterOrder && subOrders.length > 0" class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Seller Approvals</h3>
+        <div *ngIf="subOrdersLoading" class="flex justify-center py-4">
+          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+        <div *ngIf="!subOrdersLoading" class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Seller</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sub-Order ID</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Items</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subtotal</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Approval Status</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order Status</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <tr *ngFor="let subOrder of subOrders">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900">{{subOrder.seller?.name || 'N/A'}}</div>
+                  <div class="text-xs text-gray-500">{{subOrder.seller?.email || ''}}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  #{{subOrder._id.slice(-8).toUpperCase()}}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  {{subOrder.orderItems.length}} item(s)
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                  ${{subOrder.subtotal.toFixed(2)}}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span [class]="'px-3 py-1 inline-flex text-xs font-semibold rounded-full ' + getApprovalStatusClass(subOrder.sellerApprovalStatus)">
+                    {{subOrder.sellerApprovalStatus}}
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span [class]="'px-3 py-1 inline-flex text-xs font-semibold rounded-full ' + getStatusClass(subOrder.orderStatus)">
+                    {{subOrder.orderStatus}}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="mt-4 p-4 bg-blue-50 rounded-lg">
+          <p class="text-sm text-blue-800">
+            <strong>Note:</strong> Sellers can approve or reject their portion of the order. Once all sellers have responded, you can set the final order status above.
+          </p>
         </div>
       </div>
 
