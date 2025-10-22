@@ -8,11 +8,9 @@ import { AppComponent } from './app.component';
 import { SharedModule } from './shared/shared.module';
 import { ErrorInterceptor } from './core/interceptors/error.interceptor';
 
-// Auth Components
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
 
-// Buyer Components
 import { ProductsComponent } from './buyer/products/products.component';
 import { ProductDetailComponent } from './buyer/product-detail/product-detail.component';
 import { CartComponent } from './buyer/cart/cart.component';
@@ -23,7 +21,6 @@ import { ProfileComponent } from './buyer/profile/profile.component';
 import { PaymentSuccessComponent } from './buyer/payment-success/payment-success.component';
 import { PaymentCancelComponent } from './buyer/payment-cancel/payment-cancel.component';
 
-// Seller Components
 import { SellerDashboardComponent } from './seller/dashboard/dashboard.component';
 import { SellerProductsComponent } from './seller/products/products.component';
 import { ProductFormComponent } from './seller/product-form/product-form.component';
