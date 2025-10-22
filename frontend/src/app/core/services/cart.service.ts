@@ -3,6 +3,8 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { Cart, CartItem } from '../models/cart.model';
 import { Product } from '../models/product.model';
 import { ToastService } from './toast.service';
+import { AuthService } from './auth.service';
+import { User } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -11,10 +13,33 @@ export class CartService {
   private cartSubject = new BehaviorSubject<Cart>(this.getInitialCart());
   public cart$ = this.cartSubject.asObservable();
 
-  constructor(private toastService: ToastService) {}
+  constructor(
+    private toastService: ToastService,
+    private authService: AuthService
+  ) {
+    // Clear cart on logout
+    this.authService.currentUser$.subscribe(user => {
+      if (!user) {
+        this.clearCart();
+      } else {
+        // Reload cart for the new user
+        this.cartSubject.next(this.getInitialCart());
+      }
+    });
+  }
+
+  private getCurrentUserId(): string | null {
+    const user = this.authService.currentUser;
+    return user ? user._id : null;
+  }
+
+  private getCartKey(): string {
+    const userId = this.getCurrentUserId();
+    return userId ? `cart_${userId}` : 'cart_guest';
+  }
 
   private getInitialCart(): Cart {
-    const cartStr = localStorage.getItem('cart');
+    const cartStr = localStorage.getItem(this.getCartKey());
     if (cartStr) {
       try {
         return JSON.parse(cartStr);
@@ -26,7 +51,7 @@ export class CartService {
   }
 
   private saveCart(cart: Cart): void {
-    localStorage.setItem('cart', JSON.stringify(cart));
+    localStorage.setItem(this.getCartKey(), JSON.stringify(cart));
     this.cartSubject.next(cart);
   }
 
@@ -85,7 +110,8 @@ export class CartService {
 
   clearCart(): void {
     const emptyCart: Cart = { items: [], totalItems: 0, totalPrice: 0 };
-    this.saveCart(emptyCart);
+    localStorage.removeItem(this.getCartKey());
+    this.cartSubject.next(emptyCart);
   }
 
   get cart(): Cart {

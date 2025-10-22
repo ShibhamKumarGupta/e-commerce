@@ -51,8 +51,28 @@ export class ProductFormComponent implements OnInit {
     this.productService.getCategories().subscribe({
       next: (categories) => {
         this.categories = categories;
+      },
+      error: (error) => {
+        console.error('Error loading categories:', error);
       }
     });
+  }
+
+  onCategoryChange(): void {
+    const categoryControl = this.productForm.get('category');
+    if (categoryControl && categoryControl.value === 'new') {
+      const newCategory = prompt('Enter new category name:');
+      if (newCategory) {
+        // Convert to proper format (lowercase, no spaces)
+        const formattedCategory = newCategory.trim().toLowerCase().replace(/\s+/g, '-');
+        if (!this.categories.includes(formattedCategory)) {
+          this.categories.push(formattedCategory);
+        }
+        categoryControl.setValue(formattedCategory);
+      } else {
+        categoryControl.setValue('');
+      }
+    }
   }
 
   loadProduct(id: string): void {

@@ -15,16 +15,25 @@ export class HomeComponent implements OnInit {
   trendingProducts: Product[] = [];
   currentSlide = 0;
 
-  categories = [
-    { name: 'Electronics', icon: '📱', category: 'electronics' },
-    { name: 'Fashion', icon: '👕', category: 'fashion' },
-    { name: 'Home & Kitchen', icon: '🏠', category: 'home-kitchen' },
-    { name: 'Books', icon: '📚', category: 'books' },
-    { name: 'Sports', icon: '⚽', category: 'sports' },
-    { name: 'Beauty', icon: '💄', category: 'beauty' },
-    { name: 'Toys', icon: '🧸', category: 'toys' },
-    { name: 'Groceries', icon: '🛒', category: 'groceries' }
-  ];
+  categories: Array<{name: string, icon: string, category: string}> = [];
+
+  icons: { [key: string]: string } = {
+    'electronics': '💻',
+    'fashion': '👕',
+    'home': '🏠',
+    'books': '📚',
+    'sports': '⚽',
+    'beauty': '💄',
+    'toys': '🧸',
+    'groceries': '🛒',
+    'furniture': '🪑',
+    'health': '💊',
+    'automotive': '🚗',
+    'garden': '🌺',
+    'jewelry': '💍',
+    'art': '🎨'
+  }
+  
 
   heroSlides = [
     {
@@ -32,21 +41,21 @@ export class HomeComponent implements OnInit {
       subtitle: 'Discover our latest collection of gadgets and save big. Limited time only!',
       buttonText: 'Shop Now',
       buttonLink: '/products?category=electronics',
-      background: 'linear-gradient(135deg, #f5d6b3 0%, #e8c39e 100%)'
+      background: 'url("https://images.unsplash.com/photo-1550009158-9ebf69173e03?auto=format&fit=crop&q=80&w=1920") center/cover no-repeat'
     },
     {
       title: 'Fashion Forward',
       subtitle: 'Elevate your style with our trending fashion collection',
       buttonText: 'Explore',
       buttonLink: '/products?category=fashion',
-      background: 'linear-gradient(135deg, #ffd6e7 0%, #ffb3d9 100%)'
+      background: 'url("https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&q=80&w=1920") center/cover no-repeat'
     },
     {
       title: 'Home Essentials',
       subtitle: 'Transform your living space with our curated home collection',
       buttonText: 'Discover',
       buttonLink: '/products?category=home-kitchen',
-      background: 'linear-gradient(135deg, #c3e6cb 0%, #a8d5ba 100%)'
+      background: 'url("https://images.unsplash.com/photo-1484101403633-562f891dc89a?auto=format&fit=crop&q=80&w=1920") center/cover no-repeat'
     }
   ];
 
@@ -60,6 +69,22 @@ export class HomeComponent implements OnInit {
     this.loadFeaturedProducts();
     this.loadTrendingProducts();
     this.startAutoSlide();
+    this.loadCategories();
+  }
+
+  loadCategories(): void {
+    this.productService.getCategories().subscribe({
+      next: (categories) => {
+        this.categories = categories.map(category => ({
+          name: category.charAt(0).toUpperCase() + category.slice(1),
+          icon: this.icons[category.toLowerCase()] || '🏷️',
+          category: category
+        }));
+      },
+      error: (error) => {
+        console.error('Error loading categories:', error);
+      }
+    });
   }
 
   loadFeaturedProducts(): void {
