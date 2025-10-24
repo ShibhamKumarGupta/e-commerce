@@ -125,12 +125,17 @@
               <td class="px-6 py-4 whitespace-nowrap">
                 <span class="text-sm text-gray-900">{{formatDate(order.createdAt)}}</span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <!-- <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 <button
                   (click)="openStatusModal(order)"
                   class="px-3 py-1 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
                 >
                   Update Status
+                </button>
+              </td> -->
+              <td class="px-6 py-4 whitespace-nowrap text-sm">
+                <button [routerLink]="['/orders', order._id]" class="text-blue-600 hover:text-blue-900 font-medium">
+                  View Details
                 </button>
               </td>
             </tr>

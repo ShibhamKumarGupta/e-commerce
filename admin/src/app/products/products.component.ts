@@ -106,7 +106,7 @@ export class ProductsComponent implements OnInit {
 
   confirmDelete(): void {
     if (this.selectedProduct) {
-      this.productService.deleteProduct(this.selectedProduct._id).subscribe({
+      this.productService.adminDeleteProduct(this.selectedProduct._id).subscribe({
         next: () => {
           alert('Product deleted successfully');
           this.closeDeleteModal();
@@ -133,11 +133,19 @@ export class ProductsComponent implements OnInit {
   confirmToggleStatus(): void {
     if (this.selectedProduct) {
       const newStatus = !this.selectedProduct.isActive;
-      this.productService.updateProduct(this.selectedProduct._id, { isActive: newStatus }).subscribe({
-        next: () => {
-          alert(`Product ${newStatus ? 'activated' : 'deactivated'} successfully`);
+      this.productService.adminUpdateProduct(this.selectedProduct._id, { 
+        isActive: newStatus 
+      }).subscribe({
+        next: (updatedProduct) => {
+          this.selectedProduct.isActive = newStatus; // Update the local state immediately
+          const message = newStatus ? 'Product activated successfully' : 'Product deactivated successfully';
+          alert(message);
           this.closeToggleModal();
-          this.loadProducts();
+          // Find and update the product in the list
+          const index = this.products.findIndex(p => p._id === this.selectedProduct._id);
+          if (index !== -1) {
+            this.products[index].isActive = newStatus;
+          }
         },
         error: (error) => {
           console.error('Error updating product status:', error);
