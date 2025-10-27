@@ -19,6 +19,8 @@ export class AppComponent implements OnInit {
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
       this.showNavbar = !event.url.includes('/login');
+      // Scroll to top on navigation
+      window.scrollTo(0, 0);
     });
   }
 }

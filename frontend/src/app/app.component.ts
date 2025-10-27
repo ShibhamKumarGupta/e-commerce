@@ -17,6 +17,8 @@ export class AppComponent {
     ).subscribe((event: any) => {
       // Hide header/footer for seller routes (they have their own navbar)
       this.showHeaderFooter = !event.url.startsWith('/seller');
+      // Scroll to top on navigation
+      window.scrollTo(0, 0);
     });
   }
 }
