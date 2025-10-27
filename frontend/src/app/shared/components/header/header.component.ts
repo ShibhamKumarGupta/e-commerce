@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { CartService } from '../../../core/services/cart.service';
@@ -19,8 +19,16 @@ export class HeaderComponent implements OnInit {
   constructor(
     public authService: AuthService,
     public cartService: CartService,
-    private router: Router
+    private router: Router,
+    private eRef: ElementRef
   ) {}
+
+  @HostListener('document:click', ['$event'])
+  clickout(event: MouseEvent) {
+    if (!this.eRef.nativeElement.contains(event.target)) {
+      this.isMenuOpen = false;
+    }
+  }
 
   ngOnInit(): void {
     this.authService.currentUser$.subscribe(user => {

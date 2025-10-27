@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -14,8 +14,17 @@ export class SellerNavbarComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private eRef: ElementRef
   ) {}
+
+  @HostListener('document:click', ['$event'])
+  clickout(event: MouseEvent) {
+    if (!this.eRef.nativeElement.contains(event.target)) {
+      this.isUserMenuOpen = false;
+      this.isMobileMenuOpen = false;
+    }
+  }
 
   ngOnInit(): void {
     this.authService.currentUser$.subscribe(user => {
