@@ -17,13 +17,39 @@ export class CartService {
     private toastService: ToastService,
     private authService: AuthService
   ) {
-    // Clear cart on logout
+    // Handle cart on user state changes
     this.authService.currentUser$.subscribe(user => {
       if (!user) {
+        // On logout, just clear the cart
         this.clearCart();
       } else {
-        // Reload cart for the new user
-        this.cartSubject.next(this.getInitialCart());
+        // On login/register
+        const guestCartKey = 'cart_guest';
+        const guestCartStr = sessionStorage.getItem(guestCartKey);
+        
+        if (guestCartStr) {
+          try {
+            // Get guest cart
+            const guestCart = JSON.parse(guestCartStr);
+            // Get user cart
+            const userCart = this.getInitialCart();
+            // Merge carts
+            const mergedCart = this.mergeGuestCartWithUserCart(guestCart, userCart);
+            // Save merged cart
+            this.saveCart(mergedCart);
+            // Remove guest cart
+            sessionStorage.removeItem(guestCartKey);
+            
+            if (guestCart.items.length > 0) {
+              this.toastService.success('Your cart items have been saved to your account');
+            }
+          } catch (error) {
+            console.error('Error merging carts', error);
+          }
+        } else {
+          // No guest cart, just load user cart
+          this.cartSubject.next(this.getInitialCart());
+        }
       }
     });
   }
@@ -38,8 +64,29 @@ export class CartService {
     return userId ? `cart_${userId}` : 'cart_guest';
   }
 
+  private mergeGuestCartWithUserCart(guestCart: Cart, userCart: Cart): Cart {
+    const mergedCart = { ...userCart };
+    
+    // Merge items from guest cart into user cart
+    guestCart.items.forEach(guestItem => {
+      const existingItem = mergedCart.items.find(item => item.product._id === guestItem.product._id);
+      if (existingItem) {
+        existingItem.quantity += guestItem.quantity;
+      } else {
+        mergedCart.items.push({ ...guestItem });
+      }
+    });
+
+    // Recalculate totals
+    const totals = this.calculateTotals(mergedCart.items);
+    mergedCart.totalItems = totals.totalItems;
+    mergedCart.totalPrice = totals.totalPrice;
+
+    return mergedCart;
+  }
+
   private getInitialCart(): Cart {
-    const cartStr = localStorage.getItem(this.getCartKey());
+    const cartStr = sessionStorage.getItem(this.getCartKey());
     if (cartStr) {
       try {
         return JSON.parse(cartStr);
@@ -51,7 +98,7 @@ export class CartService {
   }
 
   private saveCart(cart: Cart): void {
-    localStorage.setItem(this.getCartKey(), JSON.stringify(cart));
+    sessionStorage.setItem(this.getCartKey(), JSON.stringify(cart));
     this.cartSubject.next(cart);
   }
 
@@ -110,7 +157,7 @@ export class CartService {
 
   clearCart(): void {
     const emptyCart: Cart = { items: [], totalItems: 0, totalPrice: 0 };
-    localStorage.removeItem(this.getCartKey());
+    sessionStorage.removeItem(this.getCartKey());
     this.cartSubject.next(emptyCart);
   }
 
