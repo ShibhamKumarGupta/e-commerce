@@ -102,26 +102,26 @@
         <div class="space-y-3 mb-4 max-h-60 overflow-y-auto">
           <div *ngFor="let item of cart.items" class="flex justify-between text-sm">
             <span>{{item.product.name}} x {{item.quantity}}</span>
-            <span>${{(item.product.price * item.quantity).toFixed(2)}}</span>
+            <span>₹{{(item.product.price * item.quantity).toFixed(2)}}</span>
           </div>
         </div>
 
         <div class="border-t pt-4 space-y-2">
           <div class="flex justify-between">
             <span class="text-gray-600">Subtotal</span>
-            <span class="font-semibold">${{cart.totalPrice.toFixed(2)}}</span>
+            <span class="font-semibold">₹{{cart.totalPrice.toFixed(2)}}</span>
           </div>
           <div class="flex justify-between">
             <span class="text-gray-600">Shipping</span>
-            <span class="font-semibold">${{cart.totalPrice > 100 ? '0.00' : '10.00'}}</span>
+            <span class="font-semibold">₹{{cart.totalPrice > 100 ? '0.00' : '10.00'}}</span>
           </div>
           <div class="flex justify-between">
             <span class="text-gray-600">Tax (10%)</span>
-            <span class="font-semibold">${{(cart.totalPrice * 0.1).toFixed(2)}}</span>
+            <span class="font-semibold">₹{{(cart.totalPrice * 0.1).toFixed(2)}}</span>
           </div>
           <div class="border-t pt-2 flex justify-between text-lg">
             <span class="font-bold">Total</span>
-            <span class="font-bold text-primary-600">${{totalAmount.toFixed(2)}}</span>
+            <span class="font-bold text-primary-600">₹{{totalAmount.toFixed(2)}}</span>
           </div>
         </div>
 

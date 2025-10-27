@@ -21,7 +21,7 @@ export class PaymentService {
     }
   }
 
-  async createPaymentIntent(amount: number, currency: string = 'usd', metadata?: any): Promise<any> {
+  async createPaymentIntent(amount: number, currency: string = 'inr', metadata?: any): Promise<any> {
     this.ensureStripeInitialized();
     try {
       const paymentIntent = await this.stripe!.paymentIntents.create({
@@ -85,7 +85,7 @@ export class PaymentService {
     try {
       const lineItems = orderItems.map(item => ({
         price_data: {
-          currency: 'usd',
+          currency: 'inr',
           product_data: {
             name: item.name,
             images: item.image ? [item.image] : [],

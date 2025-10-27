@@ -118,7 +118,7 @@ export class ReportsComponent implements OnInit, AfterViewInit {
       data: {
         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
         datasets: [{
-          label: 'Revenue ($)',
+          label: 'Revenue (₹)',
           data: monthlyRevenue,
           borderColor: 'rgb(59, 130, 246)',
           backgroundColor: 'rgba(59, 130, 246, 0.1)',
@@ -139,7 +139,7 @@ export class ReportsComponent implements OnInit, AfterViewInit {
           tooltip: {
             callbacks: {
               label: (context: any) => {
-                return 'Revenue: $' + context.parsed.y.toLocaleString();
+                return 'Revenue: ₹' + context.parsed.y.toLocaleString('en-IN');
               }
             }
           }
@@ -148,7 +148,7 @@ export class ReportsComponent implements OnInit, AfterViewInit {
           y: {
             beginAtZero: true,
             ticks: {
-              callback: (value: any) => '$' + value.toLocaleString()
+              callback: (value: any) => '₹' + value.toLocaleString('en-IN')
             }
           }
         }
@@ -299,9 +299,9 @@ export class ReportsComponent implements OnInit, AfterViewInit {
   }
 
   formatCurrency(amount: number): string {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'INR'
     }).format(amount);
   }
 

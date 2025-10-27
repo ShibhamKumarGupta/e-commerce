@@ -140,13 +140,13 @@
                   </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  ${{item.price.toFixed(2)}}
+                  ₹{{item.price.toFixed(2)}}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {{item.quantity}}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                  ${{(item.price * item.quantity).toFixed(2)}}
+                  ₹{{(item.price * item.quantity).toFixed(2)}}
                 </td>
               </tr>
             </tbody>
@@ -160,15 +160,15 @@
         <div class="space-y-3">
           <div class="flex justify-between text-gray-700">
             <span>Subtotal:</span>
-            <span class="font-semibold">${{subOrder.subtotal.toFixed(2)}}</span>
+            <span class="font-semibold">₹{{subOrder.subtotal.toFixed(2)}}</span>
           </div>
           <div class="flex justify-between text-red-600">
             <span>Platform Commission ({{subOrder.commissionRate}}%):</span>
-            <span class="font-semibold">-${{subOrder.commission.toFixed(2)}}</span>
+            <span class="font-semibold">-₹{{subOrder.commission.toFixed(2)}}</span>
           </div>
           <div class="border-t pt-3 flex justify-between text-xl font-bold text-green-600">
             <span>Your Earnings:</span>
-            <span>${{subOrder.sellerEarnings.toFixed(2)}}</span>
+            <span>₹{{subOrder.sellerEarnings.toFixed(2)}}</span>
           </div>
           <p class="text-sm text-gray-500 mt-2">
             * This amount will be transferred to your account after order delivery

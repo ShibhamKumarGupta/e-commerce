@@ -27,7 +27,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium mb-1">Price ($) *</label>
+            <label class="block text-sm font-medium mb-1">Price (₹) *</label>
             <input formControlName="price" type="number" step="0.01" class="input-field" placeholder="0.00">
             <div *ngIf="productForm.get('price')?.invalid && productForm.get('price')?.touched" 
                  class="text-red-500 text-sm mt-1">Valid price is required</div>
