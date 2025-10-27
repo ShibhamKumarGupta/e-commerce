@@ -4,6 +4,7 @@ import { ProductService } from '../../core/services/product.service';
 import { CartService } from '../../core/services/cart.service';
 import { AuthService } from '../../core/services/auth.service';
 import { Product } from '../../core/models/product.model';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-product-detail',
@@ -15,6 +16,7 @@ export class ProductDetailComponent implements OnInit {
   loading = false;
   selectedImage = 0;
   quantity = 1;
+  similarProducts: Product[] = [];
   
   // Review form
   showReviewForm = false;
@@ -41,18 +43,30 @@ export class ProductDetailComponent implements OnInit {
 
   loadProduct(id: string): void {
     this.loading = true;
-    this.productService.getProductById(id).subscribe({
-      next: (product) => {
-        this.product = product;
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Error loading product:', error);
-        this.loading = false;
-        alert('Failed to load product');
-        this.router.navigate(['/products']);
-      }
-    });
+    this.productService.getProductById(id)
+      .pipe(
+        switchMap(product => {
+          this.product = product;
+          // Fetch similar products by category, excluding current product
+          return this.productService.getAllProducts({ 
+            category: product.category,
+            limit: 4,
+            page: 1
+          });
+        })
+      )
+      .subscribe({
+        next: (response) => {
+          this.similarProducts = response.products.filter(p => p._id !== this.product?._id);
+          this.loading = false;
+        },
+        error: (error) => {
+          console.error('Error loading product:', error);
+          this.loading = false;
+          alert('Failed to load product');
+          this.router.navigate(['/products']);
+        }
+      });
   }
 
   selectImage(index: number): void {

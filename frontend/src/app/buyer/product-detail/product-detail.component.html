@@ -125,119 +125,134 @@
         </div>
       </div>
 
-      <!-- Reviews Section -->
-      <div class="bg-white rounded-2xl p-6 shadow-sm mb-8">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">Reviews & Ratings</h2>
-        
-        <!-- Rating Summary -->
-        <div class="flex items-center gap-8 mb-8 pb-8 border-b">
-          <div class="text-center">
-            <div class="text-5xl font-bold text-gray-900 mb-2">{{product.rating}}</div>
-            <div class="flex items-center justify-center mb-1">
-              <span *ngFor="let star of getStars(product.rating)" class="text-yellow-400 text-xl">★</span>
-            </div>
-            <div class="text-sm text-gray-600">{{product.numReviews}} ratings</div>
-          </div>
+      <!-- Reviews & Similar Products Section -->
+      <div class="flex gap-8">
+        <!-- Reviews Section -->
+        <div class="w-2/5 bg-white rounded-2xl p-6 shadow-sm">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6">Reviews & Ratings</h2>
           
-          <div class="flex-1">
-            <div *ngFor="let i of [5,4,3,2,1]" class="flex items-center gap-3 mb-2">
-              <span class="text-sm text-gray-600 w-4">{{i}}</span>
-              <span class="text-yellow-400">★</span>
-              <div class="flex-1 bg-gray-200 rounded-full h-2">
-                <div class="bg-yellow-400 h-2 rounded-full" [style.width.%]="getStarPercentage(i)"></div>
+          <!-- Rating Summary -->
+          <div class="flex items-center gap-8 mb-8 pb-8 border-b">
+            <div class="text-center">
+              <div class="text-5xl font-bold text-gray-900 mb-2">{{product.rating}}</div>
+              <div class="flex items-center justify-center mb-1">
+                <span *ngFor="let star of getStars(product.rating)" class="text-yellow-400 text-xl">★</span>
               </div>
-              <span class="text-sm text-gray-600 w-8">{{getStarPercentage(i)}}%</span>
+              <div class="text-sm text-gray-600">{{product.numReviews}} ratings</div>
+            </div>
+            
+            <div class="flex-1">
+              <div *ngFor="let i of [5,4,3,2,1]" class="flex items-center gap-3 mb-2">
+                <span class="text-sm text-gray-600 w-4">{{i}}</span>
+                <span class="text-yellow-400">★</span>
+                <div class="flex-1 bg-gray-200 rounded-full h-2">
+                  <div class="bg-yellow-400 h-2 rounded-full" [style.width.%]="getStarPercentage(i)"></div>
+                </div>
+                <span class="text-sm text-gray-600 w-8">{{getStarPercentage(i)}}%</span>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Write Review Button -->
-        <div class="mb-6">
-          <button 
-            *ngIf="authService.isAuthenticated && !showReviewForm" 
-            (click)="showReviewForm = true" 
-            class="bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors">
-            Write a Review
-          </button>
-        </div>
-
-        <!-- Review Form -->
-        <div *ngIf="showReviewForm" class="bg-gray-50 rounded-lg p-6 mb-6">
-          <h3 class="text-xl font-semibold mb-4">Write Your Review</h3>
-          <div class="mb-4">
-            <label class="block text-sm font-medium mb-2">Rating:</label>
-            <div class="flex space-x-2">
-              <button *ngFor="let i of [1,2,3,4,5]" 
-                      (click)="rating = i"
-                      [class.text-yellow-400]="i <= rating"
-                      [class.text-gray-300]="i > rating"
-                      class="text-3xl hover:scale-110 transition-transform">★</button>
-            </div>
-          </div>
-          <div class="mb-4">
-            <label class="block text-sm font-medium mb-2">Comment:</label>
-            <textarea [(ngModel)]="comment" rows="4" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Share your experience..."></textarea>
-          </div>
-          <div class="flex space-x-4">
-            <button (click)="submitReview()" [disabled]="submittingReview || !comment.trim()" class="bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50">
-              {{submittingReview ? 'Submitting...' : 'Submit Review'}}
+          <!-- Write Review Button -->
+          <div class="mb-6">
+            <button 
+              *ngIf="authService.isAuthenticated && !showReviewForm" 
+              (click)="showReviewForm = true" 
+              class="bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors">
+              Write a Review
             </button>
-            <button (click)="showReviewForm = false" class="bg-gray-200 text-gray-700 font-semibold py-2 px-6 rounded-lg hover:bg-gray-300 transition-colors">Cancel</button>
+          </div>
+
+          <!-- Review Form -->
+          <div *ngIf="showReviewForm" class="bg-gray-50 rounded-lg p-6 mb-6">
+            <h3 class="text-xl font-semibold mb-4">Write Your Review</h3>
+            <div class="mb-4">
+              <label class="block text-sm font-medium mb-2">Rating:</label>
+              <div class="flex space-x-2">
+                <button *ngFor="let i of [1,2,3,4,5]" 
+                        (click)="rating = i"
+                        [class.text-yellow-400]="i <= rating"
+                        [class.text-gray-300]="i > rating"
+                        class="text-3xl hover:scale-110 transition-transform">★</button>
+              </div>
+            </div>
+            <div class="mb-4">
+              <label class="block text-sm font-medium mb-2">Comment:</label>
+              <textarea [(ngModel)]="comment" rows="4" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Share your experience..."></textarea>
+            </div>
+            <div class="flex space-x-4">
+              <button (click)="submitReview()" [disabled]="submittingReview || !comment.trim()" class="bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50">
+                {{submittingReview ? 'Submitting...' : 'Submit Review'}}
+              </button>
+              <button (click)="showReviewForm = false" class="bg-gray-200 text-gray-700 font-semibold py-2 px-6 rounded-lg hover:bg-gray-300 transition-colors">Cancel</button>
+            </div>
+          </div>
+
+          <!-- Reviews List -->
+          <div class="max-h-[600px] overflow-y-auto">
+            <div *ngIf="product.reviews.length > 0" class="space-y-4">
+              <div *ngFor="let review of product.reviews" class="border-b pb-4 last:border-b-0">
+                <div class="flex items-start gap-3 mb-2">
+                  <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-semibold">
+                    {{review.name.charAt(0).toUpperCase()}}
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex items-center justify-between mb-1">
+                      <h4 class="font-semibold text-gray-900">{{review.name}}</h4>
+                      <span class="text-sm text-gray-500">{{review.createdAt | date:'MMM d, yyyy'}}</span>
+                    </div>
+                    <div class="flex items-center mb-2">
+                      <span *ngFor="let star of getStars(review.rating)" class="text-yellow-400 text-sm">★</span>
+                    </div>
+                    <p class="text-gray-700">{{review.comment}}</p>
+                    <div class="flex items-center gap-4 mt-3 text-sm">
+                      <button class="flex items-center gap-1 text-gray-600 hover:text-blue-600">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
+                        </svg>
+                        <span>0</span>
+                      </button>
+                      <button class="flex items-center gap-1 text-gray-600 hover:text-blue-600">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                        </svg>
+                        <span>0</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="product.reviews.length === 0" class="text-center py-8 text-gray-500">
+              No reviews yet. Be the first to review this product!
+            </div>
           </div>
         </div>
 
-        <!-- Reviews List -->
-        <div *ngIf="product.reviews.length > 0" class="space-y-4">
-          <div *ngFor="let review of product.reviews" class="border-b pb-4 last:border-b-0">
-            <div class="flex items-start gap-3 mb-2">
-              <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-semibold">
-                {{review.name.charAt(0).toUpperCase()}}
+        <!-- Similar Products -->
+        <div class="w-3/5 bg-white rounded-2xl p-6 shadow-sm">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6">Similar Products</h2>
+          <div class="grid grid-cols-2 gap-6">
+            <a *ngFor="let product of similarProducts" 
+              [routerLink]="['/products', product._id]" 
+              class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
+              <div class="bg-gradient-to-br from-orange-100 to-pink-100 h-48 flex items-center justify-center p-4">
+                <img [src]="product.images[0]" [alt]="product.name" class="h-32 object-contain group-hover:scale-110 transition-transform duration-300">
               </div>
-              <div class="flex-1">
-                <div class="flex items-center justify-between mb-1">
-                  <h4 class="font-semibold text-gray-900">{{review.name}}</h4>
-                  <span class="text-sm text-gray-500">{{review.createdAt | date:'MMM d, yyyy'}}</span>
-                </div>
+              <div class="p-4">
+                <h3 class="font-semibold text-gray-900 mb-1 truncate">{{product.name}}</h3>
                 <div class="flex items-center mb-2">
-                  <span *ngFor="let star of getStars(review.rating)" class="text-yellow-400 text-sm">★</span>
+                  <div class="flex items-center">
+                    <span class="text-yellow-400 text-sm mr-1">★</span>
+                    <span class="text-sm text-gray-600">{{product.rating.toFixed(1)}}</span>
+                  </div>
+                  <span class="mx-2 text-gray-300">•</span>
+                  <span class="text-sm text-gray-600">{{product.numReviews}} reviews</span>
                 </div>
-                <p class="text-gray-700">{{review.comment}}</p>
-                <div class="flex items-center gap-4 mt-3 text-sm">
-                  <button class="flex items-center gap-1 text-gray-600 hover:text-blue-600">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
-                    </svg>
-                    <span>0</span>
-                  </button>
-                  <button class="flex items-center gap-1 text-gray-600 hover:text-blue-600">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                    </svg>
-                    <span>0</span>
-                  </button>
-                </div>
+                <div class="text-lg font-bold text-gray-900">₹{{product.price.toFixed(2)}}</div>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <div *ngIf="product.reviews.length === 0" class="text-center py-8 text-gray-500">
-          No reviews yet. Be the first to review this product!
-        </div>
-      </div>
-
-      <!-- Similar Products -->
-      <div class="mb-8">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">Similar Products</h2>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-          <div *ngFor="let i of [1,2,3,4]" class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer">
-            <div class="bg-gradient-to-br from-orange-100 to-pink-100 h-48 flex items-center justify-center">
-              <img [src]="product.images[0]" [alt]="product.name" class="h-32 object-contain">
-            </div>
-            <div class="p-4">
-              <h3 class="font-semibold text-gray-900 mb-1 truncate">{{product.name}}</h3>
-              <div class="text-lg font-bold text-gray-900">₹{{product.price}}</div>
-            </div>
+            </a>
           </div>
         </div>
       </div>
