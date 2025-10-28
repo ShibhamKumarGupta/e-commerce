@@ -21,7 +21,7 @@
         </a>
         <a routerLink="/products" routerLinkActive="text-blue-600" 
            class="text-gray-700 hover:text-blue-600 transition-colors font-medium">
-          Shop
+          Products
         </a>
       </nav>
 
@@ -55,15 +55,19 @@
         </ng-container>
 
         <ng-template #userMenu>
-          <!-- User Avatar -->
+          <!-- User Avatar with Name -->
           <div class="relative">
             <button (click)="toggleMenu()" class="flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors">
               <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                 <span class="text-blue-600 font-semibold text-sm">{{(currentUser?.name || 'U').charAt(0).toUpperCase()}}</span>
               </div>
+              <span class="hidden md:inline font-medium">{{currentUser?.name || 'User'}}</span>
+              <svg class="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+              </svg>
             </button>
 
-            <div *ngIf="isMenuOpen" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 border border-gray-200">
+            <div *ngIf="isMenuOpen" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 border border-gray-200 z-50">
               <a routerLink="/buyer/orders" (click)="toggleMenu()" 
                  class="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors">
                 My Orders

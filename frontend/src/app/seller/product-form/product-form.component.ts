@@ -22,13 +22,13 @@ export class ProductFormComponent implements OnInit {
     public router: Router
   ) {
     this.productForm = this.fb.group({
-      name: ['', [Validators.required, Validators.maxLength(200)]],
-      description: ['', [Validators.required, Validators.maxLength(2000)]],
-      price: [0, [Validators.required, Validators.min(0)]],
-      category: ['', Validators.required],
-      brand: [''],
+      name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(200)]],
+      description: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(2000)]],
+      price: [0, [Validators.required, Validators.min(0.01), Validators.max(1000000)]],
+      category: ['', [Validators.required]],
+      brand: ['', [Validators.maxLength(100)]],
       images: [''],
-      stock: [0, [Validators.required, Validators.min(0)]],
+      stock: [0, [Validators.required, Validators.min(0), Validators.max(100000)]],
       isActive: [true]
     });
   }

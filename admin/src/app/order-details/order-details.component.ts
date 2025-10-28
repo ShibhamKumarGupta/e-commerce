@@ -75,16 +75,26 @@ export class OrderDetailsComponent implements OnInit {
   }
 
   updateOrderStatus(newStatus: string): void {
+    // Check if order is locked (cancelled)
+    if (this.isOrderLocked()) {
+      alert('Cannot update order status. Order has been cancelled and is locked.');
+      return;
+    }
+
     // Check if all sellers have responded (for multi-vendor orders)
     if (this.order.isMasterOrder && !this.allSellersResponded()) {
       alert('Cannot update order status. Please wait for all sellers to approve or reject their portion of the order.');
       return;
     }
 
-    if (confirm(`Update order status to ${newStatus}?`)) {
+    const warningMessage = newStatus === 'cancelled' 
+      ? `Are you sure you want to cancel this order? This action will lock the order status and cannot be changed later.` 
+      : `Update order status to ${newStatus}?`;
+
+    if (confirm(warningMessage)) {
       this.orderService.updateOrderStatus(this.orderId, newStatus).subscribe({
         next: () => {
-          alert('Order status updated successfully');
+          alert('Order status updated successfully' + (newStatus === 'cancelled' ? '. Order is now locked.' : ''));
           this.loadOrderDetails();
         },
         error: (error) => {
@@ -193,11 +203,18 @@ export class OrderDetailsComponent implements OnInit {
   }
 
   canRefund(): boolean {
+    // Refund only available when order status is 'cancelled'
     return this.order && 
+           this.order.orderStatus === 'cancelled' &&
            this.order.paymentMethod === 'stripe' && 
            this.order.paymentStatus === 'paid' && 
            this.order.paymentResult && 
            this.order.paymentResult.id;
+  }
+
+  isOrderLocked(): boolean {
+    // Once order is cancelled, admin cannot change the status
+    return this.order && this.order.orderStatus === 'cancelled';
   }
 
   allSellersResponded(): boolean {

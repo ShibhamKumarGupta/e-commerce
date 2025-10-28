@@ -45,13 +45,16 @@
               <select
                 [value]="order.orderStatus"
                 (change)="updateOrderStatus($any($event.target).value)"
-                [disabled]="!canUpdateOrderStatus()"
-                [class]="'w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ' + (canUpdateOrderStatus() ? 'border-gray-300 bg-white' : 'border-gray-200 bg-gray-100 cursor-not-allowed opacity-60')"
+                [disabled]="!canUpdateOrderStatus() || isOrderLocked()"
+                [class]="'w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ' + (canUpdateOrderStatus() && !isOrderLocked() ? 'border-gray-300 bg-white' : 'border-gray-200 bg-gray-100 cursor-not-allowed opacity-60')"
               >
                 <option *ngFor="let status of orderStatuses" [value]="status.value">{{status.label}}</option>
               </select>
               <p *ngIf="!canUpdateOrderStatus()" class="text-xs text-red-600 mt-1">
                 ⚠️ Waiting for all sellers to respond
+              </p>
+              <p *ngIf="isOrderLocked()" class="text-xs text-red-600 mt-1">
+                🔒 Order is locked (Cancelled status is final)
               </p>
             </div>
           </div>
@@ -82,6 +85,9 @@
               >
                 {{refundLoading ? 'Processing Refund...' : 'Refund Payment'}}
               </button>
+              <p class="text-xs text-gray-500 mt-1">
+                ℹ️ Available only for cancelled orders
+              </p>
             </div>
           </div>
         </div>

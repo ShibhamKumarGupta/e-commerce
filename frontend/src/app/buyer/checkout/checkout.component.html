@@ -11,45 +11,63 @@
           
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="md:col-span-2">
-              <label class="block text-sm font-medium mb-1">Street Address</label>
+              <label class="block text-sm font-medium mb-1">Street Address *</label>
               <input formControlName="street" type="text" class="input-field" placeholder="123 Main St">
               <div *ngIf="checkoutForm.get('street')?.invalid && checkoutForm.get('street')?.touched" 
-                   class="text-red-500 text-sm mt-1">Street address is required</div>
+                   class="text-red-500 text-sm mt-1">
+                <span *ngIf="checkoutForm.get('street')?.errors?.['required']">Street address is required</span>
+                <span *ngIf="checkoutForm.get('street')?.errors?.['minlength']">Street address must be at least 5 characters</span>
+              </div>
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-1">City</label>
+              <label class="block text-sm font-medium mb-1">City *</label>
               <input formControlName="city" type="text" class="input-field" placeholder="New York">
               <div *ngIf="checkoutForm.get('city')?.invalid && checkoutForm.get('city')?.touched" 
-                   class="text-red-500 text-sm mt-1">City is required</div>
+                   class="text-red-500 text-sm mt-1">
+                <span *ngIf="checkoutForm.get('city')?.errors?.['required']">City is required</span>
+                <span *ngIf="checkoutForm.get('city')?.errors?.['minlength']">City must be at least 2 characters</span>
+              </div>
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-1">State</label>
+              <label class="block text-sm font-medium mb-1">State *</label>
               <input formControlName="state" type="text" class="input-field" placeholder="NY">
               <div *ngIf="checkoutForm.get('state')?.invalid && checkoutForm.get('state')?.touched" 
-                   class="text-red-500 text-sm mt-1">State is required</div>
+                   class="text-red-500 text-sm mt-1">
+                <span *ngIf="checkoutForm.get('state')?.errors?.['required']">State is required</span>
+                <span *ngIf="checkoutForm.get('state')?.errors?.['minlength']">State must be at least 2 characters</span>
+              </div>
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-1">ZIP Code</label>
+              <label class="block text-sm font-medium mb-1">ZIP Code *</label>
               <input formControlName="zipCode" type="text" class="input-field" placeholder="10001">
               <div *ngIf="checkoutForm.get('zipCode')?.invalid && checkoutForm.get('zipCode')?.touched" 
-                   class="text-red-500 text-sm mt-1">ZIP code is required</div>
+                   class="text-red-500 text-sm mt-1">
+                <span *ngIf="checkoutForm.get('zipCode')?.errors?.['required']">ZIP code is required</span>
+                <span *ngIf="checkoutForm.get('zipCode')?.errors?.['pattern']">Please enter a valid ZIP code (5-10 digits)</span>
+              </div>
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-1">Country</label>
+              <label class="block text-sm font-medium mb-1">Country *</label>
               <input formControlName="country" type="text" class="input-field" placeholder="USA">
               <div *ngIf="checkoutForm.get('country')?.invalid && checkoutForm.get('country')?.touched" 
-                   class="text-red-500 text-sm mt-1">Country is required</div>
+                   class="text-red-500 text-sm mt-1">
+                <span *ngIf="checkoutForm.get('country')?.errors?.['required']">Country is required</span>
+                <span *ngIf="checkoutForm.get('country')?.errors?.['minlength']">Country must be at least 2 characters</span>
+              </div>
             </div>
 
             <div class="md:col-span-2">
-              <label class="block text-sm font-medium mb-1">Phone Number</label>
+              <label class="block text-sm font-medium mb-1">Phone Number *</label>
               <input formControlName="phone" type="tel" class="input-field" placeholder="+1 234 567 8900">
               <div *ngIf="checkoutForm.get('phone')?.invalid && checkoutForm.get('phone')?.touched" 
-                   class="text-red-500 text-sm mt-1">Phone number is required</div>
+                   class="text-red-500 text-sm mt-1">
+                <span *ngIf="checkoutForm.get('phone')?.errors?.['required']">Phone number is required</span>
+                <span *ngIf="checkoutForm.get('phone')?.errors?.['pattern']">Please enter a valid phone number (10-15 digits)</span>
+              </div>
             </div>
           </div>
         </div>

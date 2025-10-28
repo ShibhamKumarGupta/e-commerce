@@ -12,47 +12,78 @@
         <form [formGroup]="profileForm" (ngSubmit)="updateProfile()">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium mb-1">Full Name</label>
+              <label class="block text-sm font-medium mb-1">Full Name *</label>
               <input formControlName="name" type="text" class="input-field">
               <div *ngIf="profileForm.get('name')?.invalid && profileForm.get('name')?.touched" 
-                   class="text-red-500 text-sm mt-1">Name is required</div>
+                   class="text-red-500 text-sm mt-1">
+                <span *ngIf="profileForm.get('name')?.errors?.['required']">Name is required</span>
+                <span *ngIf="profileForm.get('name')?.errors?.['minlength']">Name must be at least 2 characters</span>
+                <span *ngIf="profileForm.get('name')?.errors?.['maxlength']">Name cannot exceed 50 characters</span>
+              </div>
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-1">Email</label>
+              <label class="block text-sm font-medium mb-1">Email *</label>
               <input formControlName="email" type="email" class="input-field">
               <div *ngIf="profileForm.get('email')?.invalid && profileForm.get('email')?.touched" 
-                   class="text-red-500 text-sm mt-1">Valid email is required</div>
+                   class="text-red-500 text-sm mt-1">
+                <span *ngIf="profileForm.get('email')?.errors?.['required']">Email is required</span>
+                <span *ngIf="profileForm.get('email')?.errors?.['email']">Please enter a valid email address</span>
+              </div>
             </div>
 
             <div class="md:col-span-2">
-              <label class="block text-sm font-medium mb-1">Phone</label>
-              <input formControlName="phone" type="tel" class="input-field">
+              <label class="block text-sm font-medium mb-1">Phone (Optional)</label>
+              <input formControlName="phone" type="tel" class="input-field" placeholder="+1 234 567 8900">
+              <div *ngIf="profileForm.get('phone')?.invalid && profileForm.get('phone')?.touched" 
+                   class="text-red-500 text-sm mt-1">
+                <span *ngIf="profileForm.get('phone')?.errors?.['pattern']">Please enter a valid phone number (10-15 digits)</span>
+              </div>
             </div>
 
             <div class="md:col-span-2">
-              <label class="block text-sm font-medium mb-1">Street Address</label>
-              <input formControlName="street" type="text" class="input-field">
+              <label class="block text-sm font-medium mb-1">Street Address (Optional)</label>
+              <input formControlName="street" type="text" class="input-field" placeholder="123 Main Street">
+              <div *ngIf="profileForm.get('street')?.invalid && profileForm.get('street')?.touched" 
+                   class="text-red-500 text-sm mt-1">
+                <span *ngIf="profileForm.get('street')?.errors?.['minlength']">Street address must be at least 5 characters</span>
+              </div>
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-1">City</label>
-              <input formControlName="city" type="text" class="input-field">
+              <label class="block text-sm font-medium mb-1">City (Optional)</label>
+              <input formControlName="city" type="text" class="input-field" placeholder="New York">
+              <div *ngIf="profileForm.get('city')?.invalid && profileForm.get('city')?.touched" 
+                   class="text-red-500 text-sm mt-1">
+                <span *ngIf="profileForm.get('city')?.errors?.['minlength']">City must be at least 2 characters</span>
+              </div>
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-1">State</label>
-              <input formControlName="state" type="text" class="input-field">
+              <label class="block text-sm font-medium mb-1">State (Optional)</label>
+              <input formControlName="state" type="text" class="input-field" placeholder="NY">
+              <div *ngIf="profileForm.get('state')?.invalid && profileForm.get('state')?.touched" 
+                   class="text-red-500 text-sm mt-1">
+                <span *ngIf="profileForm.get('state')?.errors?.['minlength']">State must be at least 2 characters</span>
+              </div>
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-1">ZIP Code</label>
-              <input formControlName="zipCode" type="text" class="input-field">
+              <label class="block text-sm font-medium mb-1">ZIP Code (Optional)</label>
+              <input formControlName="zipCode" type="text" class="input-field" placeholder="10001">
+              <div *ngIf="profileForm.get('zipCode')?.invalid && profileForm.get('zipCode')?.touched" 
+                   class="text-red-500 text-sm mt-1">
+                <span *ngIf="profileForm.get('zipCode')?.errors?.['pattern']">Please enter a valid ZIP code (5-10 digits)</span>
+              </div>
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-1">Country</label>
-              <input formControlName="country" type="text" class="input-field">
+              <label class="block text-sm font-medium mb-1">Country (Optional)</label>
+              <input formControlName="country" type="text" class="input-field" placeholder="USA">
+              <div *ngIf="profileForm.get('country')?.invalid && profileForm.get('country')?.touched" 
+                   class="text-red-500 text-sm mt-1">
+                <span *ngIf="profileForm.get('country')?.errors?.['minlength']">Country must be at least 2 characters</span>
+              </div>
             </div>
           </div>
 
@@ -69,24 +100,36 @@
         <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
           <div class="space-y-4">
             <div>
-              <label class="block text-sm font-medium mb-1">Current Password</label>
+              <label class="block text-sm font-medium mb-1">Current Password *</label>
               <input formControlName="currentPassword" type="password" class="input-field">
               <div *ngIf="passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched" 
-                   class="text-red-500 text-sm mt-1">Current password is required</div>
+                   class="text-red-500 text-sm mt-1">
+                <span *ngIf="passwordForm.get('currentPassword')?.errors?.['required']">Current password is required</span>
+              </div>
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-1">New Password</label>
+              <label class="block text-sm font-medium mb-1">New Password *</label>
               <input formControlName="newPassword" type="password" class="input-field">
               <div *ngIf="passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched" 
-                   class="text-red-500 text-sm mt-1">Password must be at least 6 characters</div>
+                   class="text-red-500 text-sm mt-1">
+                <span *ngIf="passwordForm.get('newPassword')?.errors?.['required']">New password is required</span>
+                <span *ngIf="passwordForm.get('newPassword')?.errors?.['minlength']">Password must be at least 6 characters</span>
+                <span *ngIf="passwordForm.get('newPassword')?.errors?.['maxlength']">Password cannot exceed 50 characters</span>
+              </div>
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-1">Confirm New Password</label>
+              <label class="block text-sm font-medium mb-1">Confirm New Password *</label>
               <input formControlName="confirmPassword" type="password" class="input-field">
-              <div *ngIf="passwordForm.get('confirmPassword')?.errors?.['passwordMismatch'] && passwordForm.get('confirmPassword')?.touched" 
-                   class="text-red-500 text-sm mt-1">Passwords do not match</div>
+              <div *ngIf="passwordForm.get('confirmPassword')?.invalid && passwordForm.get('confirmPassword')?.touched" 
+                   class="text-red-500 text-sm mt-1">
+                <span *ngIf="passwordForm.get('confirmPassword')?.errors?.['required']">Please confirm your password</span>
+              </div>
+              <div *ngIf="passwordForm.errors?.['passwordMismatch'] && passwordForm.get('confirmPassword')?.touched" 
+                   class="text-red-500 text-sm mt-1">
+                <span>Passwords do not match</span>
+              </div>
             </div>
           </div>
 

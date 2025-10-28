@@ -49,10 +49,20 @@ export class SellerOrderDetailsComponent implements OnInit {
 
 
   updateApprovalStatus(newStatus: string): void {
-    if (confirm(`Update approval status to ${newStatus}?`)) {
+    // Check if approval is already locked
+    if (this.isApprovalLocked()) {
+      alert('Cannot update approval status. Your approval decision has been locked and cannot be changed.');
+      return;
+    }
+
+    const warningMessage = (newStatus === 'approved' || newStatus === 'not_approved')
+      ? `Are you sure you want to ${newStatus === 'approved' ? 'approve' : 'reject'} this order? This action cannot be undone.`
+      : `Update approval status to ${newStatus}?`;
+
+    if (confirm(warningMessage)) {
       this.subOrderService.updateSellerApproval(this.subOrderId, newStatus).subscribe({
         next: () => {
-          alert('Approval status updated successfully');
+          alert('Approval status updated successfully. Your decision has been locked.');
           this.loadOrderDetails();
         },
         error: (error: any) => {
@@ -62,6 +72,13 @@ export class SellerOrderDetailsComponent implements OnInit {
         }
       });
     }
+  }
+
+  isApprovalLocked(): boolean {
+    // Once seller approves or rejects, they cannot change it
+    return this.subOrder && 
+           (this.subOrder.sellerApprovalStatus === 'approved' || 
+            this.subOrder.sellerApprovalStatus === 'not_approved');
   }
 
   getStatusClass(status: string): string {
