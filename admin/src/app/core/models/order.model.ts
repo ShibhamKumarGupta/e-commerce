@@ -49,6 +49,14 @@ export interface Order {
     update_time: string;
     email_address?: string;
   };
+  refundResult?: {
+    id: string;
+    paymentIntentId: string;
+    status: string;
+    amount: number;
+    currency: string;
+    refundedAt: string;
+  };
   taxPrice: number;
   shippingPrice: number;
   totalPrice: number;

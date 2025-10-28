@@ -86,6 +86,14 @@ const orderSchema = new Schema<IOrder>(
       update_time: String,
       email_address: String
     },
+    refundResult: {
+      id: String,
+      paymentIntentId: String,
+      status: String,
+      amount: Number,
+      currency: String,
+      refundedAt: Date
+    },
     taxPrice: {
       type: Number,
       required: true,

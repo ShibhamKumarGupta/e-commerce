@@ -263,6 +263,37 @@ export class OrderService extends AbstractService<IOrder> {
     return order;
   }
 
+  async updateRefundResult(orderId: string, refundResult: any): Promise<IOrder> {
+    const order = await this.orderRepository.findById(orderId);
+
+    if (!order) {
+      throw ErrorHelper.notFound('Order not found');
+    }
+
+    order.refundResult = {
+      id: refundResult.id,
+      paymentIntentId: refundResult.paymentIntentId,
+      status: refundResult.status,
+      amount: refundResult.amount,
+      currency: refundResult.currency,
+      refundedAt: new Date()
+    };
+
+    await order.save();
+
+    // If this is a master order, update all sub-orders with the same refund info
+    if (order.isMasterOrder && order.subOrders && order.subOrders.length > 0) {
+      const subOrders = await this.subOrderService.getSubOrdersByMasterOrder(orderId);
+      await Promise.all(
+        subOrders.map(async (subOrder) => {
+          await this.subOrderService.updateSubOrderRefundResult(subOrder._id.toString(), refundResult);
+        })
+      );
+    }
+
+    return order;
+  }
+
   async cancelOrder(orderId: string, userId: string): Promise<IOrder> {
     const order = await this.orderRepository.findById(orderId);
 

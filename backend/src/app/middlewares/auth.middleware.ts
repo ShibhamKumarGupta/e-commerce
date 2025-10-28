@@ -38,17 +38,17 @@ export class AuthMiddleware {
   });
 
   static authorize(...roles: UserRole[]) {
-    return (req: AuthRequest, res: Response, next: NextFunction) => {
+    return asyncHandler(async (req: AuthRequest, res: Response, next: NextFunction) => {
       if (!req.user) {
         throw ErrorHelper.unauthorized('User not authenticated');
       }
 
       if (!roles.includes(req.user.role)) {
-        throw ErrorHelper.forbidden('You do not have permission to perform this action');
+        throw ErrorHelper.forbidden('Access denied. Admin privileges required.');
       }
 
       next();
-    };
+    });
   }
 
   static isAdmin = AuthMiddleware.authorize(UserRole.ADMIN);

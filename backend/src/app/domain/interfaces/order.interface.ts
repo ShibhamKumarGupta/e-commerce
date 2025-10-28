@@ -45,6 +45,15 @@ export interface IPaymentResult {
   email_address?: string;
 }
 
+export interface IRefundResult {
+  id: string;
+  paymentIntentId: string;
+  status: string;
+  amount: number;
+  currency: string;
+  refundedAt: Date;
+}
+
 export interface IOrder extends MongoDocument {
   user: ObjectId;
   orderItems: IOrderItem[];
@@ -52,6 +61,7 @@ export interface IOrder extends MongoDocument {
   paymentMethod: PaymentMethod;
   paymentStatus: PaymentStatus;
   paymentResult?: IPaymentResult;
+  refundResult?: IRefundResult;
   taxPrice: number;
   shippingPrice: number;
   totalPrice: number;

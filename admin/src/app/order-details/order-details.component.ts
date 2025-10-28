@@ -87,14 +87,20 @@ export class OrderDetailsComponent implements OnInit {
       return;
     }
 
-    const warningMessage = newStatus === 'cancelled' 
-      ? `Are you sure you want to cancel this order? This action will lock the order status and cannot be changed later.` 
-      : `Update order status to ${newStatus}?`;
+    let warningMessage = '';
+    if (newStatus === 'cancelled') {
+      warningMessage = 'Are you sure you want to cancel this order? This action will lock the order status and cannot be changed later.';
+    } else if (newStatus === 'delivered') {
+      warningMessage = 'Are you sure you want to mark this order as delivered? This action will lock the order status and cannot be changed later.';
+    } else {
+      warningMessage = `Update order status to ${newStatus}?`;
+    }
 
     if (confirm(warningMessage)) {
       this.orderService.updateOrderStatus(this.orderId, newStatus).subscribe({
         next: () => {
-          alert('Order status updated successfully' + (newStatus === 'cancelled' ? '. Order is now locked.' : ''));
+          const lockMessage = (newStatus === 'cancelled' || newStatus === 'delivered') ? '. Order is now locked.' : '';
+          alert('Order status updated successfully' + lockMessage);
           this.loadOrderDetails();
         },
         error: (error) => {
@@ -179,7 +185,7 @@ export class OrderDetailsComponent implements OnInit {
     }
 
     this.refundLoading = true;
-    this.paymentService.refundPayment(this.order.paymentResult.id).subscribe({
+    this.paymentService.refundPayment(this.order.paymentResult.id, this.orderId).subscribe({
       next: (result) => {
         alert(`Refund successful! Refund ID: ${result.id}`);
         // Update payment status to refunded
@@ -213,8 +219,10 @@ export class OrderDetailsComponent implements OnInit {
   }
 
   isOrderLocked(): boolean {
-    // Once order is cancelled, admin cannot change the status
-    return this.order && this.order.orderStatus === 'cancelled';
+    // Once order is cancelled or delivered, admin cannot change the status
+    return this.order && 
+           (this.order.orderStatus === 'cancelled' || 
+            this.order.orderStatus === 'delivered');
   }
 
   allSellersResponded(): boolean {

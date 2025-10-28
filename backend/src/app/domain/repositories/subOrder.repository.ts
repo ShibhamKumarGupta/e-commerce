@@ -94,6 +94,14 @@ const subOrderSchema = new Schema<ISubOrder>(
     },
     deliveredAt: {
       type: Date
+    },
+    refundResult: {
+      id: String,
+      paymentIntentId: String,
+      status: String,
+      amount: Number,
+      currency: String,
+      refundedAt: Date
     }
   },
   {

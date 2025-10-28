@@ -61,6 +61,18 @@ export class PaymentService {
   async refundPayment(paymentIntentId: string, amount?: number): Promise<any> {
     this.ensureStripeInitialized();
     try {
+      // Check if this is a checkout session ID instead of payment intent
+      if (paymentIntentId.startsWith('cs_')) {
+        // Retrieve the checkout session to get the payment intent
+        const session = await this.stripe!.checkout.sessions.retrieve(paymentIntentId);
+        
+        if (!session.payment_intent) {
+          throw new Error('No payment intent found for this checkout session');
+        }
+
+        paymentIntentId = session.payment_intent as string;
+      }
+
       const refund = await this.stripe!.refunds.create({
         payment_intent: paymentIntentId,
         amount: amount ? Math.round(amount * 100) : undefined
@@ -68,8 +80,10 @@ export class PaymentService {
 
       return {
         id: refund.id,
+        paymentIntentId: paymentIntentId,
         status: refund.status,
-        amount: refund.amount / 100
+        amount: refund.amount / 100,
+        currency: refund.currency
       };
     } catch (error: any) {
       throw ErrorHelper.internal(`Refund failed: ${error.message}`);

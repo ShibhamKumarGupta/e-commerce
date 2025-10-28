@@ -1,14 +1,17 @@
 import { Response } from 'express';
 import { PaymentService } from '../../services/payment.service';
+import { OrderService } from '../../services/order.service';
 import { ResponseUtils } from '../../utils/response.utils';
 import { asyncHandler } from '../../utils/async.utils';
 import { AuthRequest } from '../../types/core.types';
 
 export class PaymentController {
   private paymentService: PaymentService;
+  private orderService: OrderService;
 
   constructor() {
     this.paymentService = new PaymentService();
+    this.orderService = new OrderService();
   }
 
   createPaymentIntent = asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -24,8 +27,14 @@ export class PaymentController {
   });
 
   refundPayment = asyncHandler(async (req: AuthRequest, res: Response) => {
-    const { paymentIntentId, amount } = req.body;
+    const { paymentIntentId, amount, orderId } = req.body;
     const result = await this.paymentService.refundPayment(paymentIntentId, amount);
+    
+    // Save refund result to order if orderId is provided
+    if (orderId) {
+      await this.orderService.updateRefundResult(orderId, result);
+    }
+    
     ResponseUtils.success(res, result, 'Refund processed successfully');
   });
 

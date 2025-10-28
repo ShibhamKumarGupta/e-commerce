@@ -28,4 +28,12 @@ export interface ISubOrder extends MongoDocument {
   paymentStatus: PaymentStatus;
   sellerApprovalStatus: SellerApprovalStatus;
   deliveredAt?: Date;
+  refundResult?: {
+    id: string;
+    paymentIntentId: string;
+    status: string;
+    amount: number;
+    currency: string;
+    refundedAt: Date;
+  };
 }

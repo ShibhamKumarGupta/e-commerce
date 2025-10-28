@@ -5,6 +5,7 @@ import { ProductRoutes } from './product.routes';
 import { OrderRoutes } from './order.routes';
 import { SubOrderRoutes } from './subOrder.routes';
 import { PaymentRoutes } from './payment.routes';
+import categoryRoutes from './category.routes';
 
 export class AppRoutes {
   public router: Router;
@@ -21,6 +22,7 @@ export class AppRoutes {
     this.router.use('/orders', new OrderRoutes().router);
     this.router.use('/sub-orders', new SubOrderRoutes().router);
     this.router.use('/payment', new PaymentRoutes().router);
+    this.router.use('/categories', categoryRoutes);
 
     this.router.get('/health', (req, res) => {
       res.status(200).json({

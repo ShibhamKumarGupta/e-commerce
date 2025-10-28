@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService } from '../../core/services/product.service';
+import { CategoryService, Category } from '../../core/services/category.service';
 
 @Component({
   selector: 'app-product-form',
@@ -13,11 +14,12 @@ export class ProductFormComponent implements OnInit {
   loading = false;
   isEditMode = false;
   productId: string | null = null;
-  categories: string[] = [];
+  categories: Category[] = [];
 
   constructor(
     private fb: FormBuilder,
     private productService: ProductService,
+    private categoryService: CategoryService,
     private route: ActivatedRoute,
     public router: Router
   ) {
@@ -48,31 +50,19 @@ export class ProductFormComponent implements OnInit {
   }
 
   loadCategories(): void {
-    this.productService.getCategories().subscribe({
+    this.categoryService.getActiveCategories().subscribe({
       next: (categories) => {
         this.categories = categories;
       },
       error: (error) => {
         console.error('Error loading categories:', error);
+        alert('Failed to load categories');
       }
     });
   }
 
   onCategoryChange(): void {
-    const categoryControl = this.productForm.get('category');
-    if (categoryControl && categoryControl.value === 'new') {
-      const newCategory = prompt('Enter new category name:');
-      if (newCategory) {
-        // Convert to proper format (lowercase, no spaces)
-        const formattedCategory = newCategory.trim().toLowerCase().replace(/\s+/g, '-');
-        if (!this.categories.includes(formattedCategory)) {
-          this.categories.push(formattedCategory);
-        }
-        categoryControl.setValue(formattedCategory);
-      } else {
-        categoryControl.setValue('');
-      }
-    }
+    // No longer need manual category creation since it's managed by admin
   }
 
   loadProduct(id: string): void {

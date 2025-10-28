@@ -168,6 +168,26 @@ export class SubOrderService extends AbstractService<ISubOrder> {
     return subOrder;
   }
 
+  async updateSubOrderRefundResult(subOrderId: string, refundResult: any): Promise<ISubOrder> {
+    const subOrder = await this.subOrderRepository.findById(subOrderId);
+
+    if (!subOrder) {
+      throw ErrorHelper.notFound('Sub-order not found');
+    }
+
+    (subOrder as any).refundResult = {
+      id: refundResult.id,
+      paymentIntentId: refundResult.paymentIntentId,
+      status: refundResult.status,
+      amount: refundResult.amount,
+      currency: refundResult.currency,
+      refundedAt: new Date()
+    };
+
+    await subOrder.save();
+    return subOrder;
+  }
+
   async getSellerEarnings(sellerId: string, startDate?: Date, endDate?: Date): Promise<any> {
     const filter: any = {
       seller: sellerId,

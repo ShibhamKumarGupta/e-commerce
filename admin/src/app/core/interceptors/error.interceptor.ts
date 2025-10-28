@@ -18,10 +18,13 @@ export class ErrorInterceptor implements HttpInterceptor {
         if (error.status === 401) {
           // Unauthorized - logout and redirect to login
           this.authService.logout();
-          this.router.navigate(['/auth/login']);
+          this.router.navigate(['/login']);
         }
 
-        const errorMessage = error.error?.message || error.message || 'An error occurred';
+        // Extract error message from response
+        const errorMessage = error.error?.message || error.statusText || 'An error occurred';
+        console.error('HTTP Error:', error);
+        
         return throwError(() => new Error(errorMessage));
       })
     );

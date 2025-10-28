@@ -60,13 +60,13 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-medium mb-1">Category *</label>
-            <select formControlName="category" (change)="onCategoryChange()" class="input-field">
+            <select formControlName="category" class="input-field">
               <option value="">Select category</option>
-              <option *ngFor="let cat of categories" [value]="cat">{{cat | titlecase}}</option>
-              <option value="new">+ Add New Category</option>
+              <option *ngFor="let cat of categories" [value]="cat.slug">{{cat.name}}</option>
             </select>
             <div *ngIf="productForm.get('category')?.invalid && productForm.get('category')?.touched" 
                  class="text-red-500 text-sm mt-1">Category is required</div>
+            <p class="text-xs text-gray-500 mt-1">Categories are managed by the admin</p>
           </div>
 
           <div>

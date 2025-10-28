@@ -14,6 +14,7 @@ import { OrdersComponent } from './orders/orders.component';
 import { ProfileComponent } from './profile/profile.component';
 import { ReportsComponent } from './reports/reports.component';
 import { OrderDetailsComponent } from './order-details/order-details.component';
+import { CategoriesComponent } from './categories/categories.component';
 import { NavbarComponent } from './shared/navbar/navbar.component';
 import { ErrorInterceptor } from './core/interceptors/error.interceptor';
 
@@ -28,6 +29,7 @@ import { ErrorInterceptor } from './core/interceptors/error.interceptor';
     ProfileComponent,
     ReportsComponent,
     OrderDetailsComponent,
+    CategoriesComponent,
     NavbarComponent
   ],
   imports: [
