@@ -3,6 +3,7 @@ import { SubOrderRepository } from '../domain/repositories/subOrder.repository';
 import { ISubOrder, SellerApprovalStatus } from '../domain/interfaces/subOrder.interface';
 import { OrderStatus, PaymentStatus } from '../domain/interfaces/order.interface';
 import { ErrorHelper } from '../helpers/error.helper';
+import { Types } from 'mongoose';
 
 export interface SubOrderQuery {
   seller?: string;
@@ -213,7 +214,7 @@ export class SubOrderService extends AbstractService<ISubOrder> {
 
   async getSellerEarnings(sellerId: string, startDate?: Date, endDate?: Date): Promise<any> {
     const filter: any = {
-      seller: sellerId,
+      seller: new Types.ObjectId(sellerId),
       paymentStatus: PaymentStatus.PAID
     };
 
