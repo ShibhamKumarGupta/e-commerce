@@ -103,6 +103,7 @@ export class SubOrderService extends AbstractService<ISubOrder> {
   }
 
   async updateSubOrderStatus(subOrderId: string, status: OrderStatus, sellerId?: string): Promise<ISubOrder> {
+    console.log(`[SubOrder Service] Updating sub-order ${subOrderId} to status: ${status}`);
     const subOrder = await this.subOrderRepository.findById(subOrderId, {
       populate: ['masterOrder']
     });
@@ -115,19 +116,32 @@ export class SubOrderService extends AbstractService<ISubOrder> {
       throw ErrorHelper.forbidden('You can only update your own orders');
     }
 
+    const oldStatus = subOrder.orderStatus;
     subOrder.orderStatus = status;
+    console.log(`[SubOrder Service] Changed status from ${oldStatus} to ${status}`);
 
     if (status === OrderStatus.DELIVERED) {
       subOrder.deliveredAt = new Date();
+      console.log(`[SubOrder Service] Set deliveredAt timestamp`);
       
-      // Auto-update payment status to 'paid' for COD orders when delivered
+      // Auto-update payment status to 'paid' when delivered (for both COD and Stripe)
+      // COD: Payment received on delivery
+      // Stripe: Ensures payment status is synced to PAID if not already
       const masterOrder = subOrder.masterOrder as any;
-      if (masterOrder && masterOrder.paymentMethod === 'cod' && subOrder.paymentStatus !== PaymentStatus.PAID) {
-        subOrder.paymentStatus = PaymentStatus.PAID;
+      if (masterOrder && subOrder.paymentStatus !== PaymentStatus.PAID) {
+        console.log(`[SubOrder Service] Checking payment status. Master payment method: ${masterOrder.paymentMethod}, Current payment status: ${subOrder.paymentStatus}`);
+        if (masterOrder.paymentMethod === 'cod') {
+          console.log(`[SubOrder Service] COD order - setting payment to PAID`);
+          subOrder.paymentStatus = PaymentStatus.PAID;
+        } else if (masterOrder.paymentMethod === 'stripe' && masterOrder.paymentStatus === PaymentStatus.PAID) {
+          console.log(`[SubOrder Service] Stripe order with PAID master - setting payment to PAID`);
+          subOrder.paymentStatus = PaymentStatus.PAID;
+        }
       }
     }
 
     await subOrder.save();
+    console.log(`[SubOrder Service] Sub-order ${subOrderId} saved successfully`);
     return subOrder;
   }
 
@@ -152,19 +166,28 @@ export class SubOrderService extends AbstractService<ISubOrder> {
     subOrderId: string,
     paymentStatus: PaymentStatus
   ): Promise<ISubOrder> {
+    console.log(`[SubOrder Service] Updating payment status for sub-order ${subOrderId} to ${paymentStatus}`);
     const subOrder = await this.subOrderRepository.findById(subOrderId);
 
     if (!subOrder) {
       throw ErrorHelper.notFound('Sub-order not found');
     }
 
+    const oldPaymentStatus = subOrder.paymentStatus;
+    const currentOrderStatus = subOrder.orderStatus;
     subOrder.paymentStatus = paymentStatus;
 
-    if (paymentStatus === PaymentStatus.PAID) {
+    // Only set status to PROCESSING if payment becomes PAID and current status is PENDING
+    // Don't override if order is already in a later stage (SHIPPED, DELIVERED, etc.)
+    if (paymentStatus === PaymentStatus.PAID && subOrder.orderStatus === OrderStatus.PENDING) {
+      console.log(`[SubOrder Service] Setting order status to PROCESSING (was PENDING)`);
       subOrder.orderStatus = OrderStatus.PROCESSING;
+    } else {
+      console.log(`[SubOrder Service] Keeping order status as ${currentOrderStatus} (not changing)`);
     }
 
     await subOrder.save();
+    console.log(`[SubOrder Service] Updated payment status from ${oldPaymentStatus} to ${paymentStatus}`);
     return subOrder;
   }
 

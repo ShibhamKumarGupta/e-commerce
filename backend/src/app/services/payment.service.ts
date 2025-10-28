@@ -97,17 +97,19 @@ export class PaymentService {
   async createCheckoutSession(amount: number, orderItems: any[], orderId: string): Promise<any> {
     this.ensureStripeInitialized();
     try {
-      const lineItems = orderItems.map(item => ({
+      // Create a single line item for the total amount including tax and shipping
+      // This ensures the buyer pays the correct total amount
+      const lineItems = [{
         price_data: {
           currency: 'inr',
           product_data: {
-            name: item.name,
-            images: item.image ? [item.image] : [],
+            name: `Order #${orderId.slice(-8).toUpperCase()}`,
+            description: `${orderItems.length} item(s) - Including tax and shipping`,
           },
-          unit_amount: Math.round(item.price * 100),
+          unit_amount: Math.round(amount * 100), // Total amount including tax and shipping
         },
-        quantity: item.quantity,
-      }));
+        quantity: 1,
+      }];
 
       const session = await this.stripe!.checkout.sessions.create({
         payment_method_types: ['card'],

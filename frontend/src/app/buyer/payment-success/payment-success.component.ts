@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { OrderService } from '../../core/services/order.service';
+import { CartService } from '../../core/services/cart.service';
 
 @Component({
   selector: 'app-payment-success',
@@ -15,7 +16,8 @@ export class PaymentSuccessComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private orderService: OrderService
+    private orderService: OrderService,
+    private cartService: CartService
   ) {}
 
   ngOnInit(): void {
@@ -31,6 +33,8 @@ export class PaymentSuccessComponent implements OnInit {
           { id: this.sessionId, status: 'succeeded', update_time: new Date().toISOString() }
         ).subscribe({
           next: () => {
+            // Clear cart after successful payment
+            this.cartService.clearCart();
             this.loading = false;
           },
           error: (error) => {

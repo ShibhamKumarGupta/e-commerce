@@ -209,22 +209,36 @@ export class OrderService extends AbstractService<IOrder> {
 
     // If this is a master order, update all sub-orders with the same status
     if (order.isMasterOrder && order.subOrders && order.subOrders.length > 0) {
+      console.log(`[Order Service] Updating sub-orders for master order ${orderId} to status: ${status}`);
       const subOrders = await this.subOrderService.getSubOrdersByMasterOrder(orderId);
+      console.log(`[Order Service] Found ${subOrders.length} sub-orders to update`);
+      
       await Promise.all(
         subOrders.map(async (subOrder) => {
+          console.log(`[Order Service] Updating sub-order ${subOrder._id} to status: ${status}`);
           await this.subOrderService.updateSubOrderStatus(subOrder._id.toString(), status);
         })
       );
       
-      // Also update payment status for all sub-orders if COD and delivered
-      if (status === OrderStatus.DELIVERED && order.paymentMethod === PaymentMethod.COD) {
+      // Also update payment status for all sub-orders if delivered (both COD and Stripe)
+      if (status === OrderStatus.DELIVERED) {
+        console.log(`[Order Service] Updating payment status for delivered order. Payment method: ${order.paymentMethod}`);
         await Promise.all(
           subOrders.map(async (subOrder) => {
-            if (subOrder.paymentStatus !== PaymentStatus.PAID) {
+            console.log(`[Order Service] Sub-order ${subOrder._id} current payment status: ${subOrder.paymentStatus}`);
+            // For COD, mark as paid when delivered
+            if (order.paymentMethod === PaymentMethod.COD && subOrder.paymentStatus !== PaymentStatus.PAID) {
+              console.log(`[Order Service] Setting COD sub-order ${subOrder._id} to PAID`);
+              await this.subOrderService.updateSubOrderPaymentStatus(subOrder._id.toString(), PaymentStatus.PAID);
+            }
+            // For Stripe, ensure payment status is synced (should already be PAID from earlier)
+            if (order.paymentMethod === PaymentMethod.STRIPE && order.paymentStatus === PaymentStatus.PAID && subOrder.paymentStatus !== PaymentStatus.PAID) {
+              console.log(`[Order Service] Setting Stripe sub-order ${subOrder._id} to PAID`);
               await this.subOrderService.updateSubOrderPaymentStatus(subOrder._id.toString(), PaymentStatus.PAID);
             }
           })
         );
+        console.log(`[Order Service] Finished updating payment statuses for all sub-orders`);
       }
     }
 
@@ -244,7 +258,9 @@ export class OrderService extends AbstractService<IOrder> {
       order.paymentResult = paymentResult;
     }
 
-    if (paymentStatus === PaymentStatus.PAID) {
+    // Only set status to PROCESSING if payment becomes PAID and current status is PENDING
+    // Don't override if order is already in a later stage (SHIPPED, DELIVERED, etc.)
+    if (paymentStatus === PaymentStatus.PAID && order.orderStatus === OrderStatus.PENDING) {
       order.orderStatus = OrderStatus.PROCESSING;
     }
 

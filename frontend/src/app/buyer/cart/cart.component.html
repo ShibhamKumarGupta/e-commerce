@@ -78,17 +78,17 @@
               <span class="font-semibold">₹{{cart.totalPrice.toFixed(2)}}</span>
             </div>
             <div class="flex justify-between text-gray-700">
-              <span>Discount (10%)</span>
-              <span class="font-semibold text-green-600">-₹{{(cart.totalPrice * 0.1).toFixed(2)}}</span>
+              <span>Shipping</span>
+              <span class="font-semibold">₹{{cart.totalPrice > 100 ? '0.00' : '10.00'}}</span>
             </div>
             <div class="flex justify-between text-gray-700">
-              <span>Delivery Fee</span>
-              <span class="font-semibold">₹{{cart.totalPrice > 100 ? '0.00' : '5.00'}}</span>
+              <span>Tax (10%)</span>
+              <span class="font-semibold">₹{{(cart.totalPrice * 0.1).toFixed(2)}}</span>
             </div>
             <div class="border-t border-gray-200 pt-3 flex justify-between">
               <span class="text-lg font-bold text-gray-900">Total</span>
               <span class="text-lg font-bold text-gray-900">
-                ₹{{(cart.totalPrice - (cart.totalPrice * 0.1) + (cart.totalPrice > 100 ? 0 : 5)).toFixed(2)}}
+                ₹{{(cart.totalPrice + (cart.totalPrice > 100 ? 0 : 10) + (cart.totalPrice * 0.1)).toFixed(2)}}
               </span>
             </div>
           </div>
