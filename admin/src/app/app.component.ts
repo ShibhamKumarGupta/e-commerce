@@ -14,16 +14,22 @@ export class AppComponent implements OnInit {
   constructor(private router: Router) {}
 
   ngOnInit(): void {
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+
     // Hide navbar on login page
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
       this.showNavbar = !event.url.includes('/login');
-      // Scroll to top on navigation, accounting for fixed navbar
-      window.scrollTo(0, 64);
+      this.scrollToTop();
     });
 
-    // Scroll to top on page refresh, accounting for fixed navbar
-    window.scrollTo(0, 64);
+    this.scrollToTop();
+  }
+
+  private scrollToTop(): void {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
   }
 }

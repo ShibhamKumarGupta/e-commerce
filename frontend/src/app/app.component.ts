@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 
@@ -7,7 +7,7 @@ import { filter } from 'rxjs/operators';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'ecommerce-frontend';
   showHeaderFooter = true;
 
@@ -18,7 +18,19 @@ export class AppComponent {
       // Hide header/footer for seller routes (they have their own navbar)
       this.showHeaderFooter = !event.url.startsWith('/seller');
       // Scroll to top on navigation
-      window.scrollTo(0, 0);
+      this.scrollToTop();
     });
+  }
+
+  ngOnInit(): void {
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+
+    this.scrollToTop();
+  }
+
+  private scrollToTop(): void {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
   }
 }
