@@ -33,10 +33,11 @@
       <div>
         <h3 class="text-sm font-semibold uppercase tracking-[0.3em] text-slate-400">Shop</h3>
         <ul class="mt-5 space-y-3 text-sm">
-          <li><a routerLink="/products" class="flex items-center gap-2 text-slate-300 transition hover:text-white">All Products <span class="text-xs text-primary-300">↗</span></a></li>
-          <li><a routerLink="/products" [queryParams]="{ category: 'electronics' }" class="flex items-center gap-2 text-slate-300 transition hover:text-white">Electronics<span class="text-xs text-primary-300">↗</span></a></li>
-          <li><a routerLink="/products" [queryParams]="{ category: 'fashion' }" class="flex items-center gap-2 text-slate-300 transition hover:text-white">Fashion<span class="text-xs text-primary-300">↗</span></a></li>
-          <li><a routerLink="/products" class="flex items-center gap-2 text-slate-300 transition hover:text-white">New Arrivals<span class="text-xs text-primary-300">↗</span></a></li>
+          <li *ngFor="let category of topCategories">
+            <a [routerLink]="'/products'" [queryParams]="{ category: category.slug }" class="flex items-center gap-2 text-slate-300 transition hover:text-white">
+              {{category.name}}<span class="text-xs text-primary-300">↗</span>
+            </a>
+          </li>
         </ul>
       </div>
 
