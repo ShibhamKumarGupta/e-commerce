@@ -25,9 +25,6 @@
           <a routerLink="/products" routerLinkActive="text-primary-600" class="relative transition hover:text-primary-600">
             Products
           </a>
-          <a *ngIf="authService.isAuthenticated" routerLink="/buyer/profile" routerLinkActive="text-primary-600" class="relative transition hover:text-primary-600">
-            Profile
-          </a>
         </nav>
 
         <div class="hidden md:flex flex-1 items-center">
@@ -58,12 +55,6 @@
 
           <ng-template #userMenu>
             <div class="relative">
-              <a routerLink="/buyer/profile" class="hidden shrink-0 items-center gap-2 rounded-full border border-primary-200/70 bg-white/70 px-4 py-2 text-sm font-semibold text-primary-600 shadow-sm transition hover:border-primary-300 hover:bg-primary-50 md:inline-flex">
-                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14c-3.31 0-6 1.79-6 4v1h12v-1c0-2.21-2.69-4-6-4zm0-2a4 4 0 100-8 4 4 0 000 8z"></path>
-                </svg>
-                Account
-              </a>
               <button type="button" (click)="toggleMenu()" class="flex items-center gap-3 rounded-full border border-slate-200/70 bg-white/70 px-3 py-1.5 text-sm font-semibold text-slate-600 shadow-sm transition hover:border-primary-200 hover:text-primary-600">
                 <span class="flex h-8 w-8 items-center justify-center rounded-full bg-primary-100 text-primary-600">
                   {{ (currentUser?.name || currentUser?.email || 'U').charAt(0).toUpperCase() }}
