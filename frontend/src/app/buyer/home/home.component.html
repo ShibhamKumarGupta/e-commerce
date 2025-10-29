@@ -85,19 +85,35 @@
           View all products
         </a> -->
       </div>
-  <div class="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+  <div class="mt-10 grid grid-cols-2 gap-4 sm:gap-6 sm:grid-cols-3 lg:grid-cols-6">
         <button
           *ngFor="let category of categories"
-          (click)="navigateToCategory(category.category)"
-          class="group relative overflow-hidden rounded-2xl border border-primary-100/70 bg-white/95 p-6 text-left shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary-200 hover:shadow-lg">
-          <div class="absolute inset-0 bg-gradient-to-tr from-primary-500/15 via-white to-sky-400/15 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
-          <div class="relative z-10 flex flex-col gap-4">
-            <span class="text-3xl sm:text-4xl text-primary-500">{{category.icon}}</span>
-            <div>
-              <p class="text-sm uppercase tracking-[0.2em] text-slate-400">Category</p>
-              <p class="text-lg font-semibold text-slate-900">{{category.name}}</p>
+          (click)="navigateToCategory(category.slug)"
+          class="group relative overflow-hidden rounded-3xl border-2 p-6 text-left shadow-lg transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl"
+          [ngStyle]="{ background: category.palette.background, borderColor: category.palette.badgeBg }">
+          <span class="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+            [ngStyle]="{ background: 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.35) 100%)' }"></span>
+          <span class="pointer-events-none absolute -right-16 -top-16 h-36 w-36 rounded-full blur-3xl"
+            [ngStyle]="{ background: category.palette.glow }"></span>
+          <div class="relative z-10 flex h-full flex-col gap-5">
+            <div class="flex h-16 w-16 items-center justify-center rounded-2xl border backdrop-blur"
+              [ngStyle]="{
+                background: category.palette.iconBg,
+                borderColor: category.palette.iconBorder,
+                boxShadow: category.palette.iconShadow,
+                color: category.palette.accent
+              }">
+              <span *ngIf="category.iconSafeHtml" class="flex h-10 w-10 items-center justify-center" [innerHTML]="category.iconSafeHtml"></span>
+              <span *ngIf="!category.iconSafeHtml" class="text-2xl font-semibold">{{category.name.charAt(0).toUpperCase()}}</span>
             </div>
-            <span class="inline-flex items-center gap-2 text-xs font-medium text-primary-600">
+            <div class="space-y-1">
+              <span class="inline-flex items-center rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.28em]"
+                [ngStyle]="{ background: category.palette.badgeBg, color: category.palette.mutedText }">
+                Category
+              </span>
+              <p class="text-lg font-semibold" [ngStyle]="{ color: category.palette.text }">{{category.name}}</p>
+            </div>
+            <span class="inline-flex items-center gap-2 text-xs font-semibold" [ngStyle]="{ color: category.palette.accent }">
               Discover <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
             </span>
           </div>
