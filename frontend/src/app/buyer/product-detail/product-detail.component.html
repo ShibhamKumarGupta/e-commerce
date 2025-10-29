@@ -1,261 +1,243 @@
-<div class="bg-gray-50 min-h-screen">
+<div class="page-shell-light pb-24">
   <app-loading *ngIf="loading"></app-loading>
 
-  <div *ngIf="!loading && product" class="animate-fade-in">
-    <!-- Breadcrumb -->
-    <div class="bg-white border-b">
-      <div class="container mx-auto px-4 py-3">
-        <div class="text-sm text-gray-600">
-          <a routerLink="/" class="hover:text-blue-600">Home</a>
-          <span class="mx-2">/</span>
-          <a routerLink="/products" class="hover:text-blue-600">{{product.category}}</a>
-          <span class="mx-2">/</span>
-          <span class="text-gray-900">{{product.name}}</span>
-        </div>
-      </div>
-    </div>
+  <ng-container *ngIf="!loading && product">
+    <section class="relative overflow-hidden py-10 sm:py-16">
+      <div class="absolute inset-0 -z-10 bg-gradient-to-br from-white via-primary-100/40 to-sky-100/50"></div>
+      <div class="absolute -left-24 top-10 h-56 w-56 rounded-full bg-primary-400/30 blur-3xl"></div>
+      <div class="absolute -right-28 bottom-0 h-64 w-64 rounded-full bg-sky-400/25 blur-3xl"></div>
 
-    <div class="container mx-auto px-4 py-8">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-        <!-- Images -->
-        <div>
-          <div class="bg-gradient-to-br from-orange-100 to-pink-100 rounded-2xl overflow-hidden mb-4 p-8">
-            <img 
-              [src]="product.images[selectedImage] || 'assets/placeholder.jpg'" 
-              [alt]="product.name"
-              class="w-full h-96 object-contain"
-            />
-          </div>
-          <div class="grid grid-cols-4 gap-3">
-            <div *ngFor="let image of product.images; let i = index" 
-                 (click)="selectImage(i)"
-                 [class.ring-2]="selectedImage === i"
-                 [class.ring-blue-600]="selectedImage === i"
-                 class="bg-gradient-to-br from-orange-50 to-pink-50 rounded-lg overflow-hidden cursor-pointer border-2 border-gray-200 hover:border-blue-400 transition-all">
-              <img [src]="image" [alt]="product.name" class="w-full h-20 object-contain p-2">
-            </div>
-          </div>
-        </div>
+      <div class="page-container relative max-w-6xl">
+        <nav class="flex flex-wrap items-center gap-2 text-sm text-slate-500">
+          <a routerLink="/" class="transition hover:text-primary-500">Home</a>
+          <span>/</span>
+          <a routerLink="/products" [queryParams]="{ category: product.category }" class="transition hover:text-primary-500">{{product.category}}</a>
+          <span>/</span>
+          <span class="text-slate-900">{{product.name}}</span>
+        </nav>
 
-        <!-- Product Info -->
-        <div class="bg-white rounded-2xl p-6 shadow-sm">
-          <h1 class="text-3xl font-bold text-gray-900 mb-3">{{product.name}}</h1>
-          
-          <div class="flex items-center mb-4">
-            <div class="flex items-center bg-yellow-50 px-3 py-1 rounded-full">
-              <span class="text-yellow-500 text-lg mr-1">★</span>
-              <span class="font-semibold text-gray-900">{{product.rating}}</span>
-              <span class="text-gray-600 text-sm ml-2">({{product.numReviews}} reviews)</span>
-            </div>
-          </div>
-
-          <div class="flex items-baseline gap-3 mb-6">
-            <div class="text-4xl font-bold text-gray-900">
-              ₹{{product.price.toFixed(2)}}
-            </div>
-            <div class="text-xl text-gray-400 line-through">
-              ₹{{(product.price * 1.25).toFixed(2)}}
-            </div>
-            <div class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm font-semibold">
-              20% OFF
-            </div>
-          </div>
-
-          <div class="mb-6">
-            <p class="text-gray-700 leading-relaxed">{{product.description}}</p>
-          </div>
-
-          <!-- Key Highlights -->
-          <div class="mb-6">
-            <h3 class="font-semibold text-gray-900 mb-3">Key Highlights</h3>
-            <ul class="space-y-2">
-              <li class="flex items-start">
-                <span class="text-blue-600 mr-2">•</span>
-                <span class="text-gray-700">Category: {{product.category}}</span>
-              </li>
-              <li class="flex items-start">
-                <span class="text-blue-600 mr-2">•</span>
-                <span class="text-gray-700">Brand: {{product.brand || 'Premium Quality'}}</span>
-              </li>
-              <li class="flex items-start">
-                <span class="text-blue-600 mr-2">•</span>
-                <span class="text-gray-700">In Stock: {{product.stock}} units available</span>
-              </li>
-              <li class="flex items-start">
-                <span class="text-blue-600 mr-2">•</span>
-                <span class="text-gray-700">Sold by: {{product.seller.name}}</span>
-              </li>
-            </ul>
-          </div>
-
-          <!-- Action Buttons -->
-          <div class="flex gap-3 mb-6">
-            <button 
-              (click)="addToCart()" 
-              [disabled]="product.stock === 0" 
-              class="flex-1 bg-blue-100 text-blue-600 font-semibold py-3 px-6 rounded-lg hover:bg-blue-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-              Add to Cart
-            </button>
-            <button 
-              (click)="buyNow()" 
-              [disabled]="product.stock === 0" 
-              class="flex-1 bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-              Buy Now
-            </button>
-          </div>
-
-          <!-- Delivery Options -->
-          <div class="border-t pt-6">
-            <h3 class="font-semibold text-gray-900 mb-4">Delivery Options</h3>
-            <div class="bg-gray-50 rounded-lg p-4">
-              <div class="flex items-center gap-3 mb-3">
-                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                </svg>
-                <input type="text" placeholder="Enter Pincode" class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <button class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">Check</button>
+        <div class="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1.2fr),minmax(0,1fr)]">
+          <div class="space-y-6">
+            <div class="overflow-hidden rounded-3xl border border-white/40 bg-white/80 p-8 shadow-2xl shadow-primary-500/20 backdrop-blur">
+              <div class="relative flex items-center justify-center rounded-3xl bg-gradient-to-br from-primary-500/10 via-white to-sky-400/10 p-6">
+                <img [src]="product.images[selectedImage] || 'assets/placeholder.jpg'" [alt]="product.name" class="h-96 w-full max-w-xl object-contain" />
+                <span class="absolute left-6 top-6 rounded-full bg-white/70 px-4 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Featured</span>
               </div>
             </div>
-          </div>
 
-          <div *ngIf="product.stock === 0" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mt-4">
-            This product is currently out of stock
-          </div>
-        </div>
-      </div>
-
-      <!-- Reviews & Similar Products Section -->
-      <div class="flex gap-8">
-        <!-- Reviews Section -->
-        <div class="w-2/5 bg-white rounded-2xl p-6 shadow-sm">
-          <h2 class="text-2xl font-bold text-gray-900 mb-6">Reviews & Ratings</h2>
-          
-          <!-- Rating Summary -->
-          <div class="flex items-center gap-8 mb-8 pb-8 border-b">
-            <div class="text-center">
-              <div class="text-5xl font-bold text-gray-900 mb-2">{{product.rating}}</div>
-              <div class="flex items-center justify-center mb-1">
-                <span *ngFor="let star of getStars(product.rating)" class="text-yellow-400 text-xl">★</span>
-              </div>
-              <div class="text-sm text-gray-600">{{product.numReviews}} ratings</div>
-            </div>
-            
-            <div class="flex-1">
-              <div *ngFor="let i of [5,4,3,2,1]" class="flex items-center gap-3 mb-2">
-                <span class="text-sm text-gray-600 w-4">{{i}}</span>
-                <span class="text-yellow-400">★</span>
-                <div class="flex-1 bg-gray-200 rounded-full h-2">
-                  <div class="bg-yellow-400 h-2 rounded-full" [style.width.%]="getStarPercentage(i)"></div>
-                </div>
-                <span class="text-sm text-gray-600 w-8">{{getStarPercentage(i)}}%</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Write Review Button -->
-          <div class="mb-6">
-            <button 
-              *ngIf="authService.isAuthenticated && !showReviewForm" 
-              (click)="showReviewForm = true" 
-              class="bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors">
-              Write a Review
-            </button>
-          </div>
-
-          <!-- Review Form -->
-          <div *ngIf="showReviewForm" class="bg-gray-50 rounded-lg p-6 mb-6">
-            <h3 class="text-xl font-semibold mb-4">Write Your Review</h3>
-            <div class="mb-4">
-              <label class="block text-sm font-medium mb-2">Rating:</label>
-              <div class="flex space-x-2">
-                <button *ngFor="let i of [1,2,3,4,5]" 
-                        (click)="rating = i"
-                        [class.text-yellow-400]="i <= rating"
-                        [class.text-gray-300]="i > rating"
-                        class="text-3xl hover:scale-110 transition-transform">★</button>
-              </div>
-            </div>
-            <div class="mb-4">
-              <label class="block text-sm font-medium mb-2">Comment:</label>
-              <textarea [(ngModel)]="comment" rows="4" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Share your experience..."></textarea>
-            </div>
-            <div class="flex space-x-4">
-              <button (click)="submitReview()" [disabled]="submittingReview || !comment.trim()" class="bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50">
-                {{submittingReview ? 'Submitting...' : 'Submit Review'}}
+            <div class="grid grid-cols-4 gap-3">
+              <button
+                type="button"
+                *ngFor="let image of product.images; let i = index"
+                (click)="selectImage(i)"
+                class="rounded-2xl border border-slate-200/80 bg-white/70 p-2 shadow-sm transition hover:border-primary-300"
+                [ngClass]="{ 'ring-2 ring-primary-500 border-transparent bg-primary-50': selectedImage === i }">
+                <img [src]="image" [alt]="product.name" class="h-20 w-full rounded-xl object-contain" />
               </button>
-              <button (click)="showReviewForm = false" class="bg-gray-200 text-gray-700 font-semibold py-2 px-6 rounded-lg hover:bg-gray-300 transition-colors">Cancel</button>
             </div>
           </div>
 
-          <!-- Reviews List -->
-          <div class="max-h-[600px] overflow-y-auto">
-            <div *ngIf="product.reviews.length > 0" class="space-y-4">
-              <div *ngFor="let review of product.reviews" class="border-b pb-4 last:border-b-0">
-                <div class="flex items-start gap-3 mb-2">
-                  <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-semibold">
+          <div class="space-y-6 rounded-3xl border border-slate-200/70 bg-white/90 p-8 shadow-xl shadow-primary-500/10 backdrop-blur">
+            <div class="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <p class="text-xs font-semibold uppercase tracking-[0.4em] text-primary-500">Omni exclusive</p>
+                <h1 class="mt-3 text-4xl font-bold tracking-tight text-slate-900">{{product.name}}</h1>
+              </div>
+              <div class="rounded-2xl bg-primary-50 px-4 py-2 text-sm font-semibold text-primary-600">
+                {{product.stock > 0 ? 'In stock' : 'Out of stock'}}
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-4">
+              <div class="flex items-center gap-3 rounded-full bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-600">
+                <span class="text-lg">★</span>
+                <span>{{product.rating | number:'1.1-1'}} / 5</span>
+                <span class="text-xs text-emerald-500">({{product.numReviews}} reviews)</span>
+              </div>
+              <div class="text-sm text-slate-400">Sold by <span class="font-semibold text-slate-700">{{product.seller.name}}</span></div>
+            </div>
+
+            <div class="flex flex-wrap items-baseline gap-4">
+              <div class="text-4xl font-semibold text-slate-900">₹{{product.price.toFixed(2)}}</div>
+              <div class="text-lg text-slate-400 line-through">₹{{(product.price * 1.25).toFixed(2)}}</div>
+              <div class="rounded-full bg-primary-500/15 px-4 py-1 text-sm font-semibold text-primary-600">20% launch offer</div>
+            </div>
+
+            <p class="text-sm leading-relaxed text-slate-600 sm:text-base">{{product.description}}</p>
+
+            <div class="rounded-3xl border border-slate-200/70 bg-white/70 p-6">
+              <h3 class="text-sm font-semibold uppercase tracking-[0.3em] text-slate-400">Highlights</h3>
+              <ul class="mt-4 space-y-3 text-sm text-slate-600">
+                <li class="flex items-center gap-3">
+                  <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary-500/15 text-primary-600">•</span>
+                  Category: {{product.category}}
+                </li>
+                <li class="flex items-center gap-3">
+                  <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary-500/15 text-primary-600">•</span>
+                  Brand: {{product.brand || 'Premium Quality'}}
+                </li>
+                <li class="flex items-center gap-3">
+                  <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary-500/15 text-primary-600">•</span>
+                  Available stock: {{product.stock}} units
+                </li>
+                <li class="flex items-center gap-3">
+                  <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary-500/15 text-primary-600">•</span>
+                  Seller rating: 4.9 / 5
+                </li>
+              </ul>
+            </div>
+
+            <div class="flex flex-col gap-3 sm:flex-row">
+              <button type="button" (click)="addToCart()" [disabled]="product.stock === 0" class="flex-1 rounded-full border border-primary-200 bg-white px-6 py-3 text-sm font-semibold text-primary-600 shadow-sm transition hover:border-primary-300 hover:bg-primary-50 disabled:cursor-not-allowed disabled:opacity-50">
+                Add to cart
+              </button>
+              <button type="button" (click)="buyNow()" [disabled]="product.stock === 0" class="flex-1 rounded-full bg-gradient-to-r from-primary-500 to-sky-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-primary-500/20 transition hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50">
+                Buy now
+              </button>
+            </div>
+
+            <div class="space-y-4 rounded-3xl border border-slate-200/70 bg-white/70 p-6">
+              <h3 class="text-sm font-semibold uppercase tracking-[0.3em] text-slate-400">Delivery options</h3>
+              <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <div class="flex flex-1 items-center gap-3 rounded-2xl border border-slate-200/70 bg-white px-3 py-2">
+                  <svg class="h-5 w-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  </svg>
+                  <input type="text" placeholder="Enter pincode" class="flex-1 bg-transparent text-sm text-slate-600 focus:outline-none" />
+                </div>
+                <button type="button" class="rounded-full bg-slate-900 px-5 py-2 text-sm font-semibold text-white transition hover:bg-primary-600">Check</button>
+              </div>
+              <p class="text-xs text-slate-400">We offer carbon-neutral delivery in major metros within 48 hours.</p>
+            </div>
+
+            <div *ngIf="product.stock === 0" class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-600">This product is currently out of stock.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pb-20">
+      <div class="page-container max-w-6xl">
+        <div class="grid gap-10 lg:grid-cols-[minmax(0,1.1fr),minmax(0,1fr)]">
+          <div class="space-y-6 rounded-3xl border border-slate-200/70 bg-white/90 p-8 shadow-xl shadow-primary-500/10 backdrop-blur">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h2 class="text-2xl font-semibold text-slate-900">Reviews & ratings</h2>
+                <p class="text-sm text-slate-500">Real experiences from verified OmniCart buyers.</p>
+              </div>
+              <div class="rounded-full bg-primary-50 px-4 py-2 text-sm font-semibold text-primary-600">
+                {{product.numReviews}} reviewers
+              </div>
+            </div>
+
+            <div class="grid gap-6 rounded-3xl border border-slate-200/70 bg-white/70 p-6 sm:grid-cols-[minmax(0,1fr),minmax(0,1.5fr)]">
+              <div class="text-center">
+                <div class="text-5xl font-bold text-slate-900">{{product.rating | number:'1.1-1'}}</div>
+                <div class="mt-2 flex items-center justify-center gap-1 text-lg text-amber-400">
+                  <span *ngFor="let star of getStars(product.rating)">★</span>
+                </div>
+                <p class="mt-2 text-xs uppercase tracking-[0.3em] text-slate-400">Average rating</p>
+              </div>
+              <div class="space-y-2">
+                <div *ngFor="let i of [5,4,3,2,1]" class="flex items-center gap-3 text-sm text-slate-500">
+                  <span class="w-4 text-right font-semibold">{{i}}</span>
+                  <span class="text-amber-400">★</span>
+                  <div class="h-2 flex-1 rounded-full bg-slate-200">
+                    <div class="h-2 rounded-full bg-amber-400" [style.width.%]="getStarPercentage(i)"></div>
+                  </div>
+                  <span class="w-10 text-right">{{getStarPercentage(i)}}%</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-4">
+              <button *ngIf="authService.isAuthenticated && !showReviewForm" type="button" (click)="showReviewForm = true" class="rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-primary-600">
+                Write a review
+              </button>
+              <p class="text-xs text-slate-400">Share your experience to help fellow shoppers.</p>
+            </div>
+
+            <div *ngIf="showReviewForm" class="space-y-4 rounded-3xl border border-slate-200/70 bg-white/80 p-6">
+              <h3 class="text-xl font-semibold text-slate-900">Your feedback</h3>
+              <div>
+                <label class="text-xs font-semibold uppercase tracking-wide text-slate-400">Rating</label>
+                <div class="mt-2 flex items-center gap-2 text-2xl text-slate-300">
+                  <button type="button" *ngFor="let i of [1,2,3,4,5]" (click)="rating = i" class="transition hover:scale-110" [class.text-amber-400]="i <= rating">★</button>
+                </div>
+              </div>
+              <div>
+                <label class="text-xs font-semibold uppercase tracking-wide text-slate-400">Comment</label>
+                <textarea [(ngModel)]="comment" rows="4" class="mt-2 w-full rounded-2xl border border-slate-200/80 bg-white/70 px-4 py-3 text-sm text-slate-700 focus:border-primary-300 focus:outline-none focus:ring-2 focus:ring-primary-200" placeholder="Share what you loved or what could be better..."></textarea>
+              </div>
+              <div class="flex flex-wrap items-center gap-3">
+                <button type="button" (click)="submitReview()" [disabled]="submittingReview || !comment.trim()" class="rounded-full bg-gradient-to-r from-primary-500 to-sky-500 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-primary-500/20 transition hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50">
+                  {{submittingReview ? 'Submitting...' : 'Submit review'}}
+                </button>
+                <button type="button" (click)="showReviewForm = false" class="rounded-full border border-slate-200/80 bg-white px-6 py-3 text-sm font-semibold text-slate-600 transition hover:border-primary-200 hover:text-primary-600">
+                  Cancel
+                </button>
+              </div>
+            </div>
+
+            <div class="max-h-[520px] space-y-4 overflow-y-auto pr-2">
+              <div *ngIf="product.reviews.length === 0" class="rounded-3xl border border-dashed border-slate-200/80 bg-white/60 px-6 py-10 text-center text-sm text-slate-400">
+                No reviews yet. Be the pioneer voice for this product!
+              </div>
+
+              <div *ngFor="let review of product.reviews" class="rounded-3xl border border-white/50 bg-white/80 p-5 shadow-sm">
+                <div class="flex items-start gap-4">
+                  <div class="flex h-12 w-12 items-center justify-center rounded-full bg-primary-100 text-sm font-semibold text-primary-600">
                     {{review.name.charAt(0).toUpperCase()}}
                   </div>
                   <div class="flex-1">
-                    <div class="flex items-center justify-between mb-1">
-                      <h4 class="font-semibold text-gray-900">{{review.name}}</h4>
-                      <span class="text-sm text-gray-500">{{review.createdAt | date:'MMM d, yyyy'}}</span>
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                      <h4 class="text-sm font-semibold text-slate-900">{{review.name}}</h4>
+                      <span class="text-xs text-slate-400">{{review.createdAt | date:'MMM d, yyyy'}}</span>
                     </div>
-                    <div class="flex items-center mb-2">
-                      <span *ngFor="let star of getStars(review.rating)" class="text-yellow-400 text-sm">★</span>
+                    <div class="mt-1 flex items-center gap-1 text-amber-400">
+                      <span *ngFor="let star of getStars(review.rating)">★</span>
                     </div>
-                    <p class="text-gray-700">{{review.comment}}</p>
-                    <div class="flex items-center gap-4 mt-3 text-sm">
-                      <button class="flex items-center gap-1 text-gray-600 hover:text-blue-600">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
-                        </svg>
-                        <span>0</span>
-                      </button>
-                      <button class="flex items-center gap-1 text-gray-600 hover:text-blue-600">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                        </svg>
-                        <span>0</span>
-                      </button>
-                    </div>
+                    <p class="mt-2 text-sm leading-relaxed text-slate-600">{{review.comment}}</p>
                   </div>
                 </div>
               </div>
-            </div>
-
-            <div *ngIf="product.reviews.length === 0" class="text-center py-8 text-gray-500">
-              No reviews yet. Be the first to review this product!
             </div>
           </div>
-        </div>
 
-        <!-- Similar Products -->
-        <div class="w-3/5 bg-white rounded-2xl p-6 shadow-sm">
-          <h2 class="text-2xl font-bold text-gray-900 mb-6">Similar Products</h2>
-          <div class="grid grid-cols-2 gap-6">
-            <a *ngFor="let product of similarProducts" 
-              [routerLink]="['/products', product._id]" 
-              class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
-              <div class="bg-gradient-to-br from-orange-100 to-pink-100 h-48 flex items-center justify-center p-4">
-                <img [src]="product.images[0]" [alt]="product.name" class="h-32 object-contain group-hover:scale-110 transition-transform duration-300">
-              </div>
-              <div class="p-4">
-                <h3 class="font-semibold text-gray-900 mb-1 truncate">{{product.name}}</h3>
-                <div class="flex items-center mb-2">
-                  <div class="flex items-center">
-                    <span class="text-yellow-400 text-sm mr-1">★</span>
-                    <span class="text-sm text-gray-600">{{product.rating.toFixed(1)}}</span>
+          <div class="space-y-6">
+            <div class="rounded-3xl border border-slate-200/70 bg-white/90 p-8 shadow-xl shadow-primary-500/10 backdrop-blur">
+              <h2 class="text-2xl font-semibold text-slate-900">Similar products</h2>
+              <p class="mt-2 text-sm text-slate-500">Explore other drops curated around your current selection.</p>
+              <div class="mt-6 grid gap-6 sm:grid-cols-2">
+                <a *ngFor="let product of similarProducts" [routerLink]="['/products', product._id]" class="group overflow-hidden rounded-3xl border border-white/50 bg-white/80 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+                  <div class="flex h-40 items-center justify-center bg-gradient-to-br from-primary-500/10 via-white to-sky-400/10 p-6">
+                    <img [src]="product.images[0]" [alt]="product.name" class="h-28 object-contain transition duration-500 group-hover:scale-110" />
                   </div>
-                  <span class="mx-2 text-gray-300">•</span>
-                  <span class="text-sm text-gray-600">{{product.numReviews}} reviews</span>
-                </div>
-                <div class="text-lg font-bold text-gray-900">₹{{product.price.toFixed(2)}}</div>
+                  <div class="space-y-2 px-5 py-4 text-sm text-slate-600">
+                    <h3 class="text-base font-semibold text-slate-900 truncate">{{product.name}}</h3>
+                    <div class="flex items-center gap-3 text-xs">
+                      <span class="flex items-center gap-1 text-amber-400">★ {{product.rating.toFixed(1)}}</span>
+                      <span class="text-slate-400">•</span>
+                      <span>{{product.numReviews}} reviews</span>
+                    </div>
+                    <div class="text-lg font-semibold text-slate-900">₹{{product.price.toFixed(2)}}</div>
+                  </div>
+                </a>
               </div>
-            </a>
+            </div>
+
+            <div class="rounded-3xl border border-white/20 bg-gradient-to-br from-primary-500/20 via-slate-900/60 to-slate-900 p-6 text-sm text-white shadow-xl shadow-primary-500/20">
+              <h3 class="text-sm font-semibold uppercase tracking-[0.3em] text-white/70">Need a second opinion?</h3>
+              <p class="mt-3 text-sm text-white/80">Chat with our product stylists for tailored recommendations before you decide.</p>
+              <a href="mailto:curator@omnicart.ai" class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary-200">
+                curator&#64;omnicart.ai
+                <span class="text-xs">↗</span>
+              </a>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
+    </section>
+  </ng-container>
 </div>

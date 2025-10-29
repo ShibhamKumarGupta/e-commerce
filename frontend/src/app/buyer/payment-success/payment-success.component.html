@@ -1,50 +1,37 @@
-<div class="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-12">
-  <div class="max-w-md w-full">
-    <!-- Loading State -->
-    <div *ngIf="loading" class="bg-white rounded-lg shadow-lg p-8 text-center">
-      <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto mb-4"></div>
-      <p class="text-gray-600">Processing your payment...</p>
+<div class="page-shell-light flex min-h-screen items-center justify-center px-4 py-16">
+  <div class="w-full max-w-lg">
+    <div *ngIf="loading" class="glass-card p-10 text-center text-slate-900">
+      <div class="mx-auto h-16 w-16 animate-spin rounded-full border-4 border-slate-200 border-t-primary-500"></div>
+      <p class="mt-6 text-sm font-semibold uppercase tracking-wide text-slate-500">Processing your payment…</p>
     </div>
 
-    <!-- Success State -->
-    <div *ngIf="!loading" class="bg-white rounded-lg shadow-lg p-8 text-center">
-      <!-- Success Icon -->
-      <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
-        <svg class="h-10 w-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-        </svg>
+    <div *ngIf="!loading" class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl">
+      <div class="relative bg-gradient-to-br from-primary-500 via-sky-500 to-primary-400 px-8 py-10 text-center text-white">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.35),transparent)]"></div>
+        <div class="relative mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-white/20">
+          <svg class="h-9 w-9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <h1 class="mt-6 text-3xl font-bold">Payment complete</h1>
+        <p class="mt-2 text-sm text-white/80">Thank you for your trust. Your order is on its way to fulfilment.</p>
       </div>
 
-      <!-- Success Message -->
-      <h2 class="text-2xl font-bold text-gray-900 mb-2">Payment Successful!</h2>
-      <p class="text-gray-600 mb-6">Thank you for your purchase. Your order has been confirmed.</p>
+      <div class="px-8 py-8 text-center">
+        <div class="mx-auto mb-6 w-fit rounded-full bg-slate-100 px-5 py-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+          Order ID: <span class="font-mono text-slate-900">#{{orderId.slice(-8).toUpperCase()}}</span>
+        </div>
+        <p class="text-sm text-slate-500">We emailed the receipt and tracking details to your registered mailbox.</p>
 
-      <!-- Order Details -->
-      <div class="bg-gray-50 rounded-lg p-4 mb-6">
-        <p class="text-sm text-gray-600 mb-1">Order ID</p>
-        <p class="font-mono text-sm font-semibold text-gray-900">#{{orderId.slice(-8).toUpperCase()}}</p>
+        <div class="mt-8 space-y-3">
+          <button (click)="goToOrders()" class="w-full rounded-full bg-primary-600 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-primary-700">
+            View my orders
+          </button>
+          <button (click)="goToHome()" class="w-full rounded-full border border-slate-200 py-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-100">
+            Continue shopping
+          </button>
+        </div>
       </div>
-
-      <!-- Action Buttons -->
-      <div class="space-y-3">
-        <button
-          (click)="goToOrders()"
-          class="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-        >
-          View My Orders
-        </button>
-        <button
-          (click)="goToHome()"
-          class="w-full bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 transition-colors font-medium"
-        >
-          Continue Shopping
-        </button>
-      </div>
-
-      <!-- Additional Info -->
-      <p class="text-xs text-gray-500 mt-6">
-        A confirmation email has been sent to your registered email address.
-      </p>
     </div>
   </div>
 </div>

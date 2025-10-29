@@ -48,6 +48,46 @@
   .badge-info {
     @apply badge bg-blue-100 text-blue-800;
   }
+
+  .page-shell {
+    @apply min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-100;
+  }
+
+  .page-shell-light {
+    @apply min-h-screen bg-gradient-to-br from-slate-100 via-white to-slate-100 text-slate-900;
+  }
+
+  .page-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-xl border border-white/40 shadow-xl rounded-3xl;
+  }
+
+  .subtle-card {
+    @apply bg-white shadow-lg rounded-2xl border border-gray-100;
+  }
+
+  .section-heading {
+    @apply text-3xl sm:text-4xl font-bold bg-gradient-to-r from-primary-400 via-sky-300 to-primary-500 bg-clip-text text-transparent;
+  }
+
+  .section-subtitle {
+    @apply text-base sm:text-lg text-slate-300 max-w-2xl;
+  }
+
+  .badge-soft {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide bg-slate-900/60 text-slate-100 border border-white/20;
+  }
+
+  .outline-button {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full border border-white/40 text-white backdrop-blur transition-colors duration-200 hover:bg-white hover:text-slate-900;
+  }
+
+  .primary-pill {
+    @apply inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary-500 to-sky-500 px-6 py-2 text-sm font-semibold text-white shadow-lg shadow-primary-500/30;
+  }
 }
 
 /* Custom scrollbar */

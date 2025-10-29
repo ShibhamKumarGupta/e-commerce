@@ -28,6 +28,7 @@ export interface OrderItem {
 }
 
 export interface ShippingAddress {
+  fullName?: string;
   street: string;
   city: string;
   state: string;

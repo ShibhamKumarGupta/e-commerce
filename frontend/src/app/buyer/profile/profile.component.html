@@ -1,177 +1,186 @@
 <app-seller-navbar *ngIf="user?.role === 'seller'"></app-seller-navbar>
 
-<div class="container mx-auto px-4 py-8">
-  <h1 class="text-3xl font-bold mb-8">My Profile</h1>
-
-  <app-loading *ngIf="loading"></app-loading>
-
-  <div *ngIf="!loading" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    <!-- Profile Info -->
-    <div class="lg:col-span-2 space-y-6">
-      <!-- Personal Information -->
-      <div class="card">
-        <h2 class="text-xl font-bold mb-4">Personal Information</h2>
-        <form [formGroup]="profileForm" (ngSubmit)="updateProfile()">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="page-shell-light pb-16">
+  <div class="page-container">
+    <div class="mx-auto max-w-6xl space-y-10">
+      <div class="relative overflow-hidden rounded-3xl border border-white/60 bg-gradient-to-br from-primary-500 via-primary-500/80 to-primary-600 text-white shadow-2xl">
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.25),_transparent_60%)]"></div>
+        <div class="relative flex flex-col gap-6 p-8 sm:p-12 lg:flex-row lg:items-end lg:justify-between">
+          <div class="max-w-2xl">
+            <p class="text-xs font-semibold uppercase tracking-[0.45em] text-white/80">Account center</p>
+            <h1 class="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">Personalize your experience</h1>
+            <p class="mt-4 text-base text-white/80 sm:text-lg">Update your details, tighten security, and explore insights tailored to you.</p>
+          </div>
+          <div class="grid grid-cols-2 gap-3 rounded-3xl bg-white/10 p-4 backdrop-blur">
             <div>
-              <label class="block text-sm font-medium mb-1">Full Name *</label>
-              <input formControlName="name" type="text" class="input-field">
-              <div *ngIf="profileForm.get('name')?.invalid && profileForm.get('name')?.touched" 
-                   class="text-red-500 text-sm mt-1">
-                <span *ngIf="profileForm.get('name')?.errors?.['required']">Name is required</span>
-                <span *ngIf="profileForm.get('name')?.errors?.['minlength']">Name must be at least 2 characters</span>
-                <span *ngIf="profileForm.get('name')?.errors?.['maxlength']">Name cannot exceed 50 characters</span>
-              </div>
+              <p class="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Member since</p>
+              <p class="mt-2 text-lg font-semibold">{{user?.createdAt | date:'MMM d, yyyy'}}</p>
             </div>
-
             <div>
-              <label class="block text-sm font-medium mb-1">Email *</label>
-              <input formControlName="email" type="email" class="input-field">
-              <div *ngIf="profileForm.get('email')?.invalid && profileForm.get('email')?.touched" 
-                   class="text-red-500 text-sm mt-1">
-                <span *ngIf="profileForm.get('email')?.errors?.['required']">Email is required</span>
-                <span *ngIf="profileForm.get('email')?.errors?.['email']">Please enter a valid email address</span>
-              </div>
-            </div>
-
-            <div class="md:col-span-2">
-              <label class="block text-sm font-medium mb-1">Phone (Optional)</label>
-              <input formControlName="phone" type="tel" class="input-field" placeholder="+1 234 567 8900">
-              <div *ngIf="profileForm.get('phone')?.invalid && profileForm.get('phone')?.touched" 
-                   class="text-red-500 text-sm mt-1">
-                <span *ngIf="profileForm.get('phone')?.errors?.['pattern']">Please enter a valid phone number (10-15 digits)</span>
-              </div>
-            </div>
-
-            <div class="md:col-span-2">
-              <label class="block text-sm font-medium mb-1">Street Address (Optional)</label>
-              <input formControlName="street" type="text" class="input-field" placeholder="123 Main Street">
-              <div *ngIf="profileForm.get('street')?.invalid && profileForm.get('street')?.touched" 
-                   class="text-red-500 text-sm mt-1">
-                <span *ngIf="profileForm.get('street')?.errors?.['minlength']">Street address must be at least 5 characters</span>
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium mb-1">City (Optional)</label>
-              <input formControlName="city" type="text" class="input-field" placeholder="New York">
-              <div *ngIf="profileForm.get('city')?.invalid && profileForm.get('city')?.touched" 
-                   class="text-red-500 text-sm mt-1">
-                <span *ngIf="profileForm.get('city')?.errors?.['minlength']">City must be at least 2 characters</span>
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium mb-1">State (Optional)</label>
-              <input formControlName="state" type="text" class="input-field" placeholder="NY">
-              <div *ngIf="profileForm.get('state')?.invalid && profileForm.get('state')?.touched" 
-                   class="text-red-500 text-sm mt-1">
-                <span *ngIf="profileForm.get('state')?.errors?.['minlength']">State must be at least 2 characters</span>
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium mb-1">ZIP Code (Optional)</label>
-              <input formControlName="zipCode" type="text" class="input-field" placeholder="10001">
-              <div *ngIf="profileForm.get('zipCode')?.invalid && profileForm.get('zipCode')?.touched" 
-                   class="text-red-500 text-sm mt-1">
-                <span *ngIf="profileForm.get('zipCode')?.errors?.['pattern']">Please enter a valid ZIP code (5-10 digits)</span>
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium mb-1">Country (Optional)</label>
-              <input formControlName="country" type="text" class="input-field" placeholder="USA">
-              <div *ngIf="profileForm.get('country')?.invalid && profileForm.get('country')?.touched" 
-                   class="text-red-500 text-sm mt-1">
-                <span *ngIf="profileForm.get('country')?.errors?.['minlength']">Country must be at least 2 characters</span>
-              </div>
+              <p class="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Status</p>
+              <span [class]="user?.isActive ? 'badge-success' : 'badge-danger'" class="mt-2 inline-flex items-center rounded-full px-4 py-1 text-xs font-semibold">
+                {{user?.isActive ? 'Active' : 'Inactive'}}
+              </span>
             </div>
           </div>
-
-          <button type="submit" [disabled]="updatingProfile || profileForm.invalid" 
-                  class="btn-primary mt-4">
-            {{updatingProfile ? 'Updating...' : 'Update Profile'}}
-          </button>
-        </form>
+        </div>
       </div>
 
-      <!-- Change Password -->
-      <div class="card">
-        <h2 class="text-xl font-bold mb-4">Change Password</h2>
-        <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
-          <div class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium mb-1">Current Password *</label>
-              <input formControlName="currentPassword" type="password" class="input-field">
-              <div *ngIf="passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched" 
-                   class="text-red-500 text-sm mt-1">
-                <span *ngIf="passwordForm.get('currentPassword')?.errors?.['required']">Current password is required</span>
+      <app-loading *ngIf="loading"></app-loading>
+
+      <div *ngIf="!loading" class="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,2fr),minmax(0,320px)]">
+        <div class="space-y-8">
+          <div class="overflow-hidden rounded-3xl border border-slate-200/70 bg-white/90 p-8 shadow-xl shadow-primary-500/10 backdrop-blur">
+            <div class="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <h2 class="text-2xl font-semibold text-slate-900">Profile details</h2>
+                <p class="mt-2 text-sm text-slate-500">Keep your contact information current for seamless deliveries and support.</p>
+              </div>
+              <div class="hidden rounded-full bg-primary-50/80 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-primary-600 lg:block">
+                {{user?.role}}
               </div>
             </div>
-
-            <div>
-              <label class="block text-sm font-medium mb-1">New Password *</label>
-              <input formControlName="newPassword" type="password" class="input-field">
-              <div *ngIf="passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched" 
-                   class="text-red-500 text-sm mt-1">
-                <span *ngIf="passwordForm.get('newPassword')?.errors?.['required']">New password is required</span>
-                <span *ngIf="passwordForm.get('newPassword')?.errors?.['minlength']">Password must be at least 6 characters</span>
-                <span *ngIf="passwordForm.get('newPassword')?.errors?.['maxlength']">Password cannot exceed 50 characters</span>
+            <form [formGroup]="profileForm" (ngSubmit)="updateProfile()" class="mt-8 space-y-6">
+              <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div>
+                  <label class="text-xs font-semibold uppercase tracking-wide text-slate-400">Full name *</label>
+                  <input formControlName="name" type="text" class="mt-2 w-full rounded-2xl border border-slate-200/80 bg-white/70 px-4 py-3 text-sm text-slate-700 shadow-sm transition focus:border-primary-300 focus:outline-none focus:ring-2 focus:ring-primary-200" />
+                  <div *ngIf="profileForm.get('name')?.invalid && profileForm.get('name')?.touched" class="mt-2 text-xs text-red-500">
+                    <span *ngIf="profileForm.get('name')?.errors?.['required']">Name is required</span>
+                    <span *ngIf="profileForm.get('name')?.errors?.['minlength']">Name must be at least 2 characters</span>
+                    <span *ngIf="profileForm.get('name')?.errors?.['maxlength']">Name cannot exceed 50 characters</span>
+                  </div>
+                </div>
+                <div>
+                  <label class="text-xs font-semibold uppercase tracking-wide text-slate-400">Email *</label>
+                  <input formControlName="email" type="email" class="mt-2 w-full rounded-2xl border border-slate-200/80 bg-white/70 px-4 py-3 text-sm text-slate-700 shadow-sm transition focus:border-primary-300 focus:outline-none focus:ring-2 focus:ring-primary-200" />
+                  <div *ngIf="profileForm.get('email')?.invalid && profileForm.get('email')?.touched" class="mt-2 text-xs text-red-500">
+                    <span *ngIf="profileForm.get('email')?.errors?.['required']">Email is required</span>
+                    <span *ngIf="profileForm.get('email')?.errors?.['email']">Please enter a valid email address</span>
+                  </div>
+                </div>
+                <div class="md:col-span-2">
+                  <label class="text-xs font-semibold uppercase tracking-wide text-slate-400">Phone (optional)</label>
+                  <input formControlName="phone" type="tel" placeholder="+1 234 567 8900" class="mt-2 w-full rounded-2xl border border-slate-200/80 bg-white/70 px-4 py-3 text-sm text-slate-700 shadow-sm transition focus:border-primary-300 focus:outline-none focus:ring-2 focus:ring-primary-200" />
+                  <div *ngIf="profileForm.get('phone')?.invalid && profileForm.get('phone')?.touched" class="mt-2 text-xs text-red-500">
+                    <span *ngIf="profileForm.get('phone')?.errors?.['pattern']">Please enter a valid phone number (10-15 digits)</span>
+                  </div>
+                </div>
+                <div class="md:col-span-2">
+                  <label class="text-xs font-semibold uppercase tracking-wide text-slate-400">Street address (optional)</label>
+                  <input formControlName="street" type="text" placeholder="123 Main Street" class="mt-2 w-full rounded-2xl border border-slate-200/80 bg-white/70 px-4 py-3 text-sm text-slate-700 shadow-sm transition focus:border-primary-300 focus:outline-none focus:ring-2 focus:ring-primary-200" />
+                  <div *ngIf="profileForm.get('street')?.invalid && profileForm.get('street')?.touched" class="mt-2 text-xs text-red-500">
+                    <span *ngIf="profileForm.get('street')?.errors?.['minlength']">Street address must be at least 5 characters</span>
+                  </div>
+                </div>
+                <div>
+                  <label class="text-xs font-semibold uppercase tracking-wide text-slate-400">City (optional)</label>
+                  <input formControlName="city" type="text" placeholder="New York" class="mt-2 w-full rounded-2xl border border-slate-200/80 bg-white/70 px-4 py-3 text-sm text-slate-700 shadow-sm transition focus:border-primary-300 focus:outline-none focus:ring-2 focus:ring-primary-200" />
+                  <div *ngIf="profileForm.get('city')?.invalid && profileForm.get('city')?.touched" class="mt-2 text-xs text-red-500">
+                    <span *ngIf="profileForm.get('city')?.errors?.['minlength']">City must be at least 2 characters</span>
+                  </div>
+                </div>
+                <div>
+                  <label class="text-xs font-semibold uppercase tracking-wide text-slate-400">State (optional)</label>
+                  <input formControlName="state" type="text" placeholder="NY" class="mt-2 w-full rounded-2xl border border-slate-200/80 bg-white/70 px-4 py-3 text-sm text-slate-700 shadow-sm transition focus:border-primary-300 focus:outline-none focus:ring-2 focus:ring-primary-200" />
+                  <div *ngIf="profileForm.get('state')?.invalid && profileForm.get('state')?.touched" class="mt-2 text-xs text-red-500">
+                    <span *ngIf="profileForm.get('state')?.errors?.['minlength']">State must be at least 2 characters</span>
+                  </div>
+                </div>
+                <div>
+                  <label class="text-xs font-semibold uppercase tracking-wide text-slate-400">ZIP code (optional)</label>
+                  <input formControlName="zipCode" type="text" placeholder="10001" class="mt-2 w-full rounded-2xl border border-slate-200/80 bg-white/70 px-4 py-3 text-sm text-slate-700 shadow-sm transition focus:border-primary-300 focus:outline-none focus:ring-2 focus:ring-primary-200" />
+                  <div *ngIf="profileForm.get('zipCode')?.invalid && profileForm.get('zipCode')?.touched" class="mt-2 text-xs text-red-500">
+                    <span *ngIf="profileForm.get('zipCode')?.errors?.['pattern']">Please enter a valid ZIP code (5-10 digits)</span>
+                  </div>
+                </div>
+                <div>
+                  <label class="text-xs font-semibold uppercase tracking-wide text-slate-400">Country (optional)</label>
+                  <input formControlName="country" type="text" placeholder="USA" class="mt-2 w-full rounded-2xl border border-slate-200/80 bg-white/70 px-4 py-3 text-sm text-slate-700 shadow-sm transition focus:border-primary-300 focus:outline-none focus:ring-2 focus:ring-primary-200" />
+                  <div *ngIf="profileForm.get('country')?.invalid && profileForm.get('country')?.touched" class="mt-2 text-xs text-red-500">
+                    <span *ngIf="profileForm.get('country')?.errors?.['minlength']">Country must be at least 2 characters</span>
+                  </div>
+                </div>
               </div>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium mb-1">Confirm New Password *</label>
-              <input formControlName="confirmPassword" type="password" class="input-field">
-              <div *ngIf="passwordForm.get('confirmPassword')?.invalid && passwordForm.get('confirmPassword')?.touched" 
-                   class="text-red-500 text-sm mt-1">
-                <span *ngIf="passwordForm.get('confirmPassword')?.errors?.['required']">Please confirm your password</span>
+              <div class="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center">
+                <button type="submit" [disabled]="updatingProfile || profileForm.invalid" class="btn-primary w-full sm:w-auto">
+                  {{updatingProfile ? 'Updating...' : 'Save changes'}}
+                </button>
+                <p *ngIf="profileForm.pristine" class="text-center text-xs font-medium text-slate-400 sm:text-left">Everything is up to date</p>
               </div>
-              <div *ngIf="passwordForm.errors?.['passwordMismatch'] && passwordForm.get('confirmPassword')?.touched" 
-                   class="text-red-500 text-sm mt-1">
-                <span>Passwords do not match</span>
-              </div>
-            </div>
+            </form>
           </div>
 
-          <button type="submit" [disabled]="changingPassword || passwordForm.invalid" 
-                  class="btn-primary mt-4">
-            {{changingPassword ? 'Changing...' : 'Change Password'}}
-          </button>
-        </form>
-      </div>
-    </div>
-
-    <!-- Account Summary -->
-    <div class="lg:col-span-1">
-      <div class="card sticky top-4">
-        <h2 class="text-xl font-bold mb-4">Account Summary</h2>
-        <div class="space-y-4">
-          <div>
-            <p class="text-sm text-gray-600">Account Type</p>
-            <p class="font-semibold capitalize">{{user?.role}}</p>
-          </div>
-          <div>
-            <p class="text-sm text-gray-600">Member Since</p>
-            <p class="font-semibold">{{user?.createdAt | date:'mediumDate'}}</p>
-          </div>
-          <div>
-            <p class="text-sm text-gray-600">Account Status</p>
-            <span [class]="user?.isActive ? 'badge-success' : 'badge-danger'">
-              {{user?.isActive ? 'Active' : 'Inactive'}}
-            </span>
+          <div class="overflow-hidden rounded-3xl border border-slate-200/70 bg-white/90 p-8 shadow-xl shadow-primary-500/10 backdrop-blur">
+            <h2 class="text-2xl font-semibold text-slate-900">Security</h2>
+            <p class="mt-2 text-sm text-slate-500">Update your password regularly to keep your account protected.</p>
+            <form [formGroup]="passwordForm" (ngSubmit)="changePassword()" class="mt-8 space-y-6">
+              <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <div class="sm:col-span-2">
+                  <label class="text-xs font-semibold uppercase tracking-wide text-slate-400">Current password *</label>
+                  <input formControlName="currentPassword" type="password" class="mt-2 w-full rounded-2xl border border-slate-200/80 bg-white/70 px-4 py-3 text-sm text-slate-700 shadow-sm transition focus:border-primary-300 focus:outline-none focus:ring-2 focus:ring-primary-200" />
+                  <div *ngIf="passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched" class="mt-2 text-xs text-red-500">
+                    <span *ngIf="passwordForm.get('currentPassword')?.errors?.['required']">Current password is required</span>
+                  </div>
+                </div>
+                <div>
+                  <label class="text-xs font-semibold uppercase tracking-wide text-slate-400">New password *</label>
+                  <input formControlName="newPassword" type="password" class="mt-2 w-full rounded-2xl border border-slate-200/80 bg-white/70 px-4 py-3 text-sm text-slate-700 shadow-sm transition focus:border-primary-300 focus:outline-none focus:ring-2 focus:ring-primary-200" />
+                  <div *ngIf="passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched" class="mt-2 text-xs text-red-500">
+                    <span *ngIf="passwordForm.get('newPassword')?.errors?.['required']">New password is required</span>
+                    <span *ngIf="passwordForm.get('newPassword')?.errors?.['minlength']">Password must be at least 6 characters</span>
+                    <span *ngIf="passwordForm.get('newPassword')?.errors?.['maxlength']">Password cannot exceed 50 characters</span>
+                  </div>
+                </div>
+                <div>
+                  <label class="text-xs font-semibold uppercase tracking-wide text-slate-400">Confirm new password *</label>
+                  <input formControlName="confirmPassword" type="password" class="mt-2 w-full rounded-2xl border border-slate-200/80 bg-white/70 px-4 py-3 text-sm text-slate-700 shadow-sm transition focus:border-primary-300 focus:outline-none focus:ring-2 focus:ring-primary-200" />
+                  <div *ngIf="passwordForm.get('confirmPassword')?.invalid && passwordForm.get('confirmPassword')?.touched" class="mt-2 text-xs text-red-500">
+                    <span *ngIf="passwordForm.get('confirmPassword')?.errors?.['required']">Please confirm your password</span>
+                  </div>
+                  <div *ngIf="passwordForm.errors?.['passwordMismatch'] && passwordForm.get('confirmPassword')?.touched" class="mt-2 text-xs text-red-500">
+                    <span>Passwords do not match</span>
+                  </div>
+                </div>
+              </div>
+              <div class="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center">
+                <button type="submit" [disabled]="changingPassword || passwordForm.invalid" class="btn-primary w-full sm:w-auto">
+                  {{changingPassword ? 'Changing...' : 'Update password'}}
+                </button>
+                <p class="text-center text-xs font-medium text-slate-400 sm:text-left">Use a strong, unique password for added security.</p>
+              </div>
+            </form>
           </div>
         </div>
 
-        <div class="mt-6 pt-6 border-t">
-          <a routerLink="/buyer/orders" class="block text-primary-600 hover:text-primary-700 mb-2">
-            View My Orders →
-          </a>
-          <a *ngIf="user?.role === 'seller'" routerLink="/seller/dashboard" 
-             class="block text-primary-600 hover:text-primary-700">
-            Go to Seller Dashboard →
-          </a>
+        <div class="space-y-6 rounded-3xl border border-slate-200/70 bg-white/90 p-6 shadow-xl shadow-primary-500/10 backdrop-blur lg:sticky lg:top-6">
+          <div class="flex items-center gap-4">
+            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-50 text-primary-600">
+              <span class="text-xl font-semibold">{{ (user?.name || user?.email || '?') | slice:0:1 }}</span>
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-slate-500">Account type</p>
+              <p class="text-lg font-semibold capitalize text-slate-900">{{user?.role}}</p>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-dashed border-slate-200/80 bg-white/60 p-5">
+            <p class="text-sm font-semibold text-slate-600">Quick insights</p>
+            <ul class="mt-3 space-y-2 text-sm text-slate-500">
+              <li>• Track orders and returns in real time</li>
+              <li>• Personalize delivery preferences</li>
+              <li>• Manage security alerts and notifications</li>
+            </ul>
+          </div>
+
+          <div class="flex flex-col gap-3">
+            <a routerLink="/buyer/orders" class="flex items-center justify-center rounded-2xl border border-primary-200 bg-primary-50 px-5 py-3 text-sm font-semibold text-primary-600 transition hover:border-primary-300 hover:bg-primary-100">
+              View my orders
+            </a>
+            <a *ngIf="user?.role === 'seller'" routerLink="/seller/dashboard" class="flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-600 transition hover:border-primary-200 hover:text-primary-600">
+              Go to seller dashboard
+            </a>
+          </div>
         </div>
       </div>
     </div>
