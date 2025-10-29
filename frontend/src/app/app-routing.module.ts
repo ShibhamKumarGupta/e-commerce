@@ -1,6 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './core/guards/auth.guard';
+import { BuyerGuard } from './core/guards/buyer.guard';
+import { SellerGuard } from './core/guards/seller.guard';
+import { RoleRedirectGuard } from './core/guards/role-redirect.guard';
 
 // Auth
 import { LoginComponent } from './auth/login/login.component';
@@ -29,20 +32,20 @@ import { NotFoundComponent } from './not-found/not-found.component';
 import { SellerNotFoundComponent } from './seller/not-found/seller-not-found.component';
 
 const routes: Routes = [
-  { path: '', component: HomeComponent },
+  { path: '', component: HomeComponent, canActivate: [RoleRedirectGuard] },
   
   // Auth Routes
   { path: 'auth/login', component: LoginComponent },
   { path: 'auth/register', component: RegisterComponent },
   
-  // Public Routes
-  { path: 'products', component: ProductsComponent },
-  { path: 'products/:id', component: ProductDetailComponent },
+  // Public Routes (with role check to prevent sellers from accessing)
+  { path: 'products', component: ProductsComponent, canActivate: [RoleRedirectGuard] },
+  { path: 'products/:id', component: ProductDetailComponent, canActivate: [RoleRedirectGuard] },
   
-  // Buyer Routes (Protected)
+  // Buyer Routes (Protected - Only Buyers)
   {
     path: 'buyer',
-    canActivate: [AuthGuard],
+    canActivate: [BuyerGuard],
     children: [
       { path: 'cart', component: CartComponent },
       { path: 'checkout', component: CheckoutComponent },
@@ -54,11 +57,10 @@ const routes: Routes = [
     ]
   },
   
-  // Seller Routes (Protected)
+  // Seller Routes (Protected - Only Sellers)
   {
     path: 'seller',
-    canActivate: [AuthGuard],
-    data: { role: 'seller' },
+    canActivate: [SellerGuard],
     children: [
       { path: 'dashboard', component: SellerDashboardComponent },
       { path: 'products', component: SellerProductsComponent },
@@ -72,6 +74,9 @@ const routes: Routes = [
       { path: '**', component: SellerNotFoundComponent }
     ]
   },
+  
+  // Explicit 404 route
+  { path: '404', component: NotFoundComponent },
   
   // General 404 Not Found - Must be last
   { path: '**', component: NotFoundComponent }
