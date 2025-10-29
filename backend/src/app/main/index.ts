@@ -5,11 +5,14 @@ import { EnvironmentConfig } from '../config/environment.config';
 import { AppRoutes } from './routes';
 import { ErrorMiddleware } from '../middlewares/error.middleware';
 import { LogUtils } from '../utils/log.utils';
+import { OrderService } from '../services/order.service';
 
 export class Server {
   private app: Application;
   private port: number;
   private database: DatabaseConfig;
+  private scheduledJobsInitialized = false;
+  private autoCancelTimeout: NodeJS.Timeout | null = null;
 
   constructor() {
     this.app = express();
@@ -19,6 +22,53 @@ export class Server {
     this.initializeMiddlewares();
     this.initializeRoutes();
     this.initializeErrorHandling();
+  }
+
+  private initializeScheduledJobs(): void {
+    if (this.scheduledJobsInitialized) {
+      return;
+    }
+
+  const rawThreshold = EnvironmentConfig.orderAutoCancelPendingMinutes;
+  const rawInterval = EnvironmentConfig.orderAutoCancelCheckIntervalMinutes;
+
+  const thresholdMinutes = Math.max(Number.isFinite(rawThreshold) ? rawThreshold : 30, 0);
+  const checkIntervalMinutes = Math.max(Number.isFinite(rawInterval) ? rawInterval : 5, 1);
+
+    if (thresholdMinutes === 0) {
+      LogUtils.warn('[Scheduler] Stripe auto-cancel job disabled because threshold is set to 0 minutes.');
+      this.scheduledJobsInitialized = true;
+      return;
+    }
+
+    const orderService = new OrderService();
+    const intervalMs = checkIntervalMinutes * 60 * 1000;
+
+    const runJob = async () => {
+      try {
+        const result = await orderService.cancelStaleStripeOrders(thresholdMinutes);
+        if (result.cancelled > 0) {
+          LogUtils.info(`[#Scheduler] Auto-cancelled ${result.cancelled} Stripe order(s) pending longer than ${thresholdMinutes} minutes.`);
+        } else if (result.totalCandidates > 0) {
+          LogUtils.debug(`[#Scheduler] Checked ${result.totalCandidates} Stripe order(s); none required cancellation.`);
+        } else {
+          LogUtils.debug('[#Scheduler] No pending Stripe orders exceeded the threshold.');
+        }
+      } catch (error) {
+        LogUtils.error('[#Scheduler] Stripe auto-cancel job failed', error);
+      } finally {
+        this.autoCancelTimeout = setTimeout(() => {
+          void runJob();
+        }, intervalMs);
+      }
+    };
+
+    void runJob();
+    this.scheduledJobsInitialized = true;
+
+    LogUtils.info(
+      `[#Scheduler] Stripe pending order auto-cancel scheduled. Threshold: ${thresholdMinutes} min, Check interval: ${checkIntervalMinutes} min.`
+    );
   }
 
   private initializeMiddlewares(): void {
@@ -77,6 +127,9 @@ export class Server {
     try {
       // Connect to database
       await this.database.connect();
+
+      // Initialize background jobs
+      this.initializeScheduledJobs();
 
       // Start server
       this.app.listen(this.port, () => {

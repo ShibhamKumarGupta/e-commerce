@@ -27,5 +27,9 @@ export const developmentConfig = {
     cloudName: process.env.CLOUDINARY_CLOUD_NAME || '',
     apiKey: process.env.CLOUDINARY_API_KEY || '',
     apiSecret: process.env.CLOUDINARY_API_SECRET || ''
+  },
+  order: {
+    autoCancelPendingMinutes: parseInt(process.env.ORDER_AUTO_CANCEL_PENDING_MINUTES || '30', 10),
+    autoCancelCheckIntervalMinutes: parseInt(process.env.ORDER_AUTO_CANCEL_CHECK_INTERVAL_MINUTES || '5', 10)
   }
 };

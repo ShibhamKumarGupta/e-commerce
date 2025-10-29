@@ -5,6 +5,7 @@ import { UserRepository } from '../domain/repositories/user.repository';
 import { IOrder, OrderStatus, PaymentStatus, PaymentMethod } from '../domain/interfaces/order.interface';
 import { ErrorHelper } from '../helpers/error.helper';
 import { SubOrderService } from './subOrder.service';
+import { LogUtils } from '../utils/log.utils';
 
 export interface CreateOrderDTO {
   user: string;
@@ -337,6 +338,64 @@ export class OrderService extends AbstractService<IOrder> {
 
     await order.save();
     return order;
+  }
+
+  async cancelStaleStripeOrders(maxPendingMinutes: number): Promise<{ totalCandidates: number; cancelled: number }> {
+    const thresholdMinutes = Math.max(1, maxPendingMinutes);
+    const cutoff = new Date(Date.now() - thresholdMinutes * 60 * 1000);
+
+    const staleOrders = await this.orderRepository.model
+      .find({
+        paymentMethod: PaymentMethod.STRIPE,
+        paymentStatus: PaymentStatus.PENDING,
+        orderStatus: OrderStatus.PENDING,
+        createdAt: { $lte: cutoff }
+      })
+      .exec();
+
+    if (staleOrders.length === 0) {
+      return { totalCandidates: 0, cancelled: 0 };
+    }
+
+    let cancelledCount = 0;
+
+    for (const order of staleOrders) {
+      try {
+        await Promise.all(
+          order.orderItems.map(async (item) => {
+            await this.productRepository.updateById(item.product.toString(), {
+              $inc: { stock: item.quantity }
+            } as any);
+          })
+        );
+
+        order.orderStatus = OrderStatus.CANCELLED;
+        order.paymentStatus = PaymentStatus.FAILED;
+        await order.save();
+
+        if (order.isMasterOrder && order.subOrders && order.subOrders.length > 0) {
+          const subOrders = await this.subOrderService.getSubOrdersByMasterOrder(order._id.toString());
+
+          await Promise.all(
+            subOrders.map(async (subOrder) => {
+              await this.subOrderService.updateSubOrderStatus(subOrder._id.toString(), OrderStatus.CANCELLED);
+            })
+          );
+
+          await Promise.all(
+            subOrders.map(async (subOrder) => {
+              await this.subOrderService.updateSubOrderPaymentStatus(subOrder._id.toString(), PaymentStatus.FAILED);
+            })
+          );
+        }
+
+        cancelledCount += 1;
+      } catch (error) {
+        LogUtils.error(`[Order Service] Failed to auto-cancel Stripe order ${order._id}`, error);
+      }
+    }
+
+    return { totalCandidates: staleOrders.length, cancelled: cancelledCount };
   }
 
   async getOrderStats(): Promise<any> {

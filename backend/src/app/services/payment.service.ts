@@ -97,19 +97,60 @@ export class PaymentService {
   async createCheckoutSession(amount: number, orderItems: any[], orderId: string): Promise<any> {
     this.ensureStripeInitialized();
     try {
-      // Create a single line item for the total amount including tax and shipping
-      // This ensures the buyer pays the correct total amount
-      const lineItems = [{
-        price_data: {
-          currency: 'inr',
-          product_data: {
-            name: `Order #${orderId.slice(-8).toUpperCase()}`,
-            description: `${orderItems.length} item(s) - Including tax and shipping`,
+      const lineItems = orderItems.map((item) => {
+        const unitAmount = Math.round(Number(item.price) * 100);
+        const productData: Stripe.Checkout.SessionCreateParams.LineItem.PriceData.ProductData = {
+          name: item.name,
+        };
+
+        if (item.image && typeof item.image === 'string' && item.image.trim().length > 0) {
+          const imageUrl = item.image.startsWith('http')
+            ? item.image
+            : `${EnvironmentConfig.corsOrigins[0]}${item.image.startsWith('/') ? item.image : `/${item.image}`}`;
+          productData.images = [imageUrl];
+        }
+
+        return {
+          price_data: {
+            currency: 'inr',
+            product_data: productData,
+            unit_amount: unitAmount,
           },
-          unit_amount: Math.round(amount * 100), // Total amount including tax and shipping
-        },
-        quantity: 1,
-      }];
+          quantity: Math.max(1, Number(item.quantity) || 1),
+        };
+      });
+
+      const itemsTotal = lineItems.reduce((sum, item) => sum + (item.price_data?.unit_amount || 0) * (item.quantity || 0), 0);
+      const totalAmount = Math.round(amount * 100);
+      const extraAmount = totalAmount - itemsTotal;
+
+      if (extraAmount > 0) {
+        lineItems.push({
+          price_data: {
+            currency: 'inr',
+            product_data: {
+              name: 'Shipping & Tax',
+              description: 'Additional charges applied at checkout',
+            },
+            unit_amount: extraAmount,
+          },
+          quantity: 1,
+        });
+      }
+
+      if (lineItems.length === 0) {
+        lineItems.push({
+          price_data: {
+            currency: 'inr',
+            product_data: {
+              name: `Order #${orderId.slice(-8).toUpperCase()}`,
+              description: 'Order summary unavailable',
+            },
+            unit_amount: totalAmount,
+          },
+          quantity: 1,
+        });
+      }
 
       const session = await this.stripe!.checkout.sessions.create({
         payment_method_types: ['card'],

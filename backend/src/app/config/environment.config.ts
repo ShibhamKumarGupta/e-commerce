@@ -49,4 +49,12 @@ export class EnvironmentConfig {
   static get isProduction(): boolean {
     return config.nodeEnv === 'production';
   }
+
+  static get orderAutoCancelPendingMinutes(): number {
+    return config.order?.autoCancelPendingMinutes ?? 30;
+  }
+
+  static get orderAutoCancelCheckIntervalMinutes(): number {
+    return config.order?.autoCancelCheckIntervalMinutes ?? 5;
+  }
 }
