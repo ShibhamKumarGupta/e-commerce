@@ -1,0 +1,133 @@
+<app-seller-navbar></app-seller-navbar>
+
+<div class="min-h-screen bg-gradient-to-br from-gray-50 via-green-50 to-emerald-50 py-12">
+  <div class="container mx-auto px-4">
+    <!-- Main Card -->
+    <div class="max-w-4xl mx-auto">
+      <div class="bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100">
+        <div class="px-8 py-12 sm:px-12 sm:py-16 text-center">
+          <!-- 404 Number with Animation -->
+          <div class="mb-8">
+            <h1 class="text-[120px] sm:text-[160px] lg:text-[180px] font-black leading-none animate-float">
+              <span class="bg-gradient-to-r from-green-600 via-emerald-600 to-green-600 bg-clip-text text-transparent">404</span>
+            </h1>
+          </div>
+
+          <!-- Error Icon -->
+          <div class="flex justify-center mb-8">
+            <div class="relative">
+              <div class="absolute inset-0 animate-pulse rounded-full bg-gradient-to-r from-green-500 to-emerald-500 opacity-20 blur-2xl"></div>
+              <div class="relative flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-emerald-600 shadow-xl">
+                <svg class="h-12 w-12 animate-bounce text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Heading -->
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+            Page Not Found
+          </h2>
+
+          <!-- Description -->
+          <p class="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto mb-10">
+            The page you're looking for doesn't exist in the seller panel. 
+            Let's get you back to managing your business!
+          </p>
+
+          <!-- Action Buttons -->
+          <div class="flex flex-wrap items-center justify-center gap-4 mb-12">
+            <button
+              (click)="goToDashboard()"
+              class="group inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-green-600 to-emerald-600 px-8 py-4 text-base font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl">
+              <svg class="h-5 w-5 transition-transform group-hover:-translate-x-1" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+              </svg>
+              Back to Dashboard
+            </button>
+            <button
+              (click)="goBack()"
+              type="button"
+              class="group inline-flex items-center justify-center gap-2 rounded-lg border-2 border-gray-300 bg-white px-8 py-4 text-base font-semibold text-gray-700 shadow-md transition-all duration-300 hover:scale-105 hover:border-gray-400 hover:shadow-lg">
+              <svg class="h-5 w-5 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              Go Back
+            </button>
+          </div>
+
+          <!-- Divider -->
+          <div class="relative mb-10">
+            <div class="absolute inset-0 flex items-center">
+              <div class="w-full border-t-2 border-gray-200"></div>
+            </div>
+            <div class="relative flex justify-center">
+              <span class="bg-white px-6 text-sm font-semibold uppercase tracking-wider text-gray-500">
+                Quick Access
+              </span>
+            </div>
+          </div>
+
+          <!-- Quick Links Grid -->
+          <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <!-- Dashboard Link -->
+            <a
+              routerLink="/seller/dashboard"
+              class="group flex flex-col items-center justify-center gap-3 rounded-xl bg-gradient-to-br from-green-50 to-emerald-50 p-6 transition-all duration-300 hover:scale-105 hover:shadow-lg">
+              <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 shadow-md transition-transform group-hover:rotate-6">
+                <svg class="h-7 w-7 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                </svg>
+              </div>
+              <span class="text-sm font-semibold text-gray-700">Dashboard</span>
+            </a>
+
+            <!-- Products Link -->
+            <a
+              routerLink="/seller/products"
+              class="group flex flex-col items-center justify-center gap-3 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 p-6 transition-all duration-300 hover:scale-105 hover:shadow-lg">
+              <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-md transition-transform group-hover:rotate-6">
+                <svg class="h-7 w-7 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+              <span class="text-sm font-semibold text-gray-700">Products</span>
+            </a>
+
+            <!-- Orders Link -->
+            <a
+              routerLink="/seller/orders"
+              class="group flex flex-col items-center justify-center gap-3 rounded-xl bg-gradient-to-br from-purple-50 to-pink-50 p-6 transition-all duration-300 hover:scale-105 hover:shadow-lg">
+              <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 shadow-md transition-transform group-hover:rotate-6">
+                <svg class="h-7 w-7 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/>
+                </svg>
+              </div>
+              <span class="text-sm font-semibold text-gray-700">Orders</span>
+            </a>
+
+            <!-- Reports Link -->
+            <a
+              routerLink="/seller/reports"
+              class="group flex flex-col items-center justify-center gap-3 rounded-xl bg-gradient-to-br from-orange-50 to-yellow-50 p-6 transition-all duration-300 hover:scale-105 hover:shadow-lg">
+              <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-yellow-500 shadow-md transition-transform group-hover:rotate-6">
+                <svg class="h-7 w-7 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
+                </svg>
+              </div>
+              <span class="text-sm font-semibold text-gray-700">Reports</span>
+            </a>
+          </div>
+
+          <!-- Help Text -->
+          <div class="mt-12 text-center">
+            <p class="text-sm text-gray-500">
+              Need help? <a href="mailto:seller-support@ecommerce.com" class="font-semibold text-green-600 hover:text-green-700">Contact Seller Support</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

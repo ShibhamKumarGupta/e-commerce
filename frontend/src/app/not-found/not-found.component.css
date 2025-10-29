@@ -1,0 +1,62 @@
+/* Floating animation for 404 number */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Fade in animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Smooth entrance for main card */
+.bg-white\/90 {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+/* Bounce animation is built-in to Tailwind but here's a backup */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Gradient text animation */
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+h1 span {
+  background-size: 200% auto;
+  animation: gradientShift 3s ease-in-out infinite;
+}
+
+/* Hover effects enhancement */
+a:hover, button:hover {
+  transform: translateY(-2px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
