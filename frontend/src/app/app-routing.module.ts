@@ -70,6 +70,7 @@ const routes: Routes = [
       { path: 'orders/:id', component: SellerOrderDetailsComponent },
       { path: 'reports', component: SellerReportsComponent },
       { path: 'profile', component: ProfileComponent },
+      { path: 'not-found', component: SellerNotFoundComponent },
       // Seller 404 - for any unmatched seller routes
       { path: '**', component: SellerNotFoundComponent }
     ]

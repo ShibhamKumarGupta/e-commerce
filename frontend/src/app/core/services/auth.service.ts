@@ -20,6 +20,10 @@ export class AuthService {
       try {
         const user = JSON.parse(userStr);
         this.currentUserSubject.next(user);
+        // Set session storage for role
+        if (user.role) {
+          sessionStorage.setItem('role', user.role);
+        }
       } catch (error) {
         console.error('Error parsing user from storage', error);
       }
@@ -49,6 +53,7 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    sessionStorage.removeItem('role');
     this.currentUserSubject.next(null);
   }
 
@@ -85,6 +90,10 @@ export class AuthService {
     localStorage.setItem('token', data.token);
     localStorage.setItem('user', JSON.stringify(data.user));
     this.currentUserSubject.next(data.user);
+    // Set session storage for role
+    if (data.user.role) {
+      sessionStorage.setItem('role', data.user.role);
+    }
   }
 
   get currentUser(): User | null {
