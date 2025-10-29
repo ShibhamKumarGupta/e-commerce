@@ -1,11 +1,13 @@
 import express, { Application } from 'express';
 import cors from 'cors';
+import swaggerUi from 'swagger-ui-express';
 import { DatabaseConfig } from '../config/database.config';
 import { EnvironmentConfig } from '../config/environment.config';
 import { AppRoutes } from './routes';
 import { ErrorMiddleware } from '../middlewares/error.middleware';
 import { LogUtils } from '../utils/log.utils';
 import { OrderService } from '../services/order.service';
+import { swaggerSpec } from '../config/swagger.config';
 
 export class Server {
   private app: Application;
@@ -94,6 +96,18 @@ export class Server {
   }
 
   private initializeRoutes(): void {
+    // Swagger documentation
+    this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+      customCss: '.swagger-ui .topbar { display: none }',
+      customSiteTitle: 'E-Commerce API Documentation',
+    }));
+    
+    // Swagger JSON endpoint
+    this.app.get('/api-docs.json', (req, res) => {
+      res.setHeader('Content-Type', 'application/json');
+      res.send(swaggerSpec);
+    });
+
     const appRoutes = new AppRoutes();
     this.app.use('/api', appRoutes.router);
 
@@ -104,6 +118,7 @@ export class Server {
         message: 'E-commerce API Server',
         version: '1.0.0',
         endpoints: {
+          documentation: '/api-docs',
           health: '/api/health',
           auth: '/api/auth',
           users: '/api/users',
@@ -140,7 +155,8 @@ export class Server {
 ║                                                       ║
 ║   📡 Port: ${this.port}                                      ║
 ║   🌍 Environment: ${EnvironmentConfig.nodeEnv}                  ║
-║   📚 API Docs: http://localhost:${this.port}/api/health      ║
+║   📚 Swagger Docs: http://localhost:${this.port}/api-docs    ║
+║   🏥 Health Check: http://localhost:${this.port}/api/health  ║
 ║                                                       ║
 ╚═══════════════════════════════════════════════════════╝
         `);

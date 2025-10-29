@@ -7,6 +7,33 @@ import { SubOrderRoutes } from './subOrder.routes';
 import { PaymentRoutes } from './payment.routes';
 import categoryRoutes from './category.routes';
 
+/**
+ * @swagger
+ * /health:
+ *   get:
+ *     tags: [Health]
+ *     summary: Health check endpoint
+ *     description: Check if the API server is running properly
+ *     responses:
+ *       200:
+ *         description: API is healthy
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: API is running
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *                   example: "2024-01-15T10:30:00.000Z"
+ */
+
 export class AppRoutes {
   public router: Router;
 

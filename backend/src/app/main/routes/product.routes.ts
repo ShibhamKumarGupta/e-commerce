@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { ProductController } from '../controllers/product.controller';
 import { AuthMiddleware } from '../../middlewares/auth.middleware';
 import { UserRole } from '../../domain/interfaces/user.interface';
+import './product.routes.swagger';
 
 export class ProductRoutes {
   public router: Router;
