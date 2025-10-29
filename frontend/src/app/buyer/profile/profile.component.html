@@ -5,22 +5,45 @@
     <div class="mx-auto max-w-6xl space-y-10">
       <div class="relative overflow-hidden rounded-3xl border border-white/60 bg-gradient-to-br from-primary-500 via-primary-500/80 to-primary-600 text-white shadow-2xl">
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.25),_transparent_60%)]"></div>
-        <div class="relative flex flex-col gap-6 p-8 sm:p-12 lg:flex-row lg:items-end lg:justify-between">
-          <div class="max-w-2xl">
+        <div class="relative flex flex-col gap-6 p-8 sm:p-12">
+          <div class="max-w-2xl flex flex-col justify-center">
             <p class="text-xs font-semibold uppercase tracking-[0.45em] text-white/80">Account center</p>
             <h1 class="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">Personalize your experience</h1>
             <p class="mt-4 text-base text-white/80 sm:text-lg">Update your details, tighten security, and explore insights tailored to you.</p>
           </div>
-          <div class="grid grid-cols-2 gap-3 rounded-3xl bg-white/10 p-4 backdrop-blur">
-            <div>
-              <p class="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Member since</p>
-              <p class="mt-2 text-lg font-semibold">{{user?.createdAt | date:'MMM d, yyyy'}}</p>
+          <div class="flex flex-col lg:flex-row gap-6">
+            <div class="grid grid-cols-2 gap-3 rounded-3xl bg-white/30 p-4 backdrop-blur flex-1">
+              <div>
+                <p class="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Member since</p>
+                <p class="mt-2 text-lg font-semibold">{{user?.createdAt | date:'MMM d, yyyy'}}</p>
+              </div>
+              <div>
+                <p class="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Status</p>
+                <span [class]="user?.isActive ? 'badge-success' : 'badge-danger'" class="mt-2 inline-flex items-center rounded-full px-4 py-1 text-xs font-semibold">
+                  {{user?.isActive ? 'Active' : 'Inactive'}}
+                </span>
+              </div>
             </div>
-            <div>
-              <p class="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Status</p>
-              <span [class]="user?.isActive ? 'badge-success' : 'badge-danger'" class="mt-2 inline-flex items-center rounded-full px-4 py-1 text-xs font-semibold">
-                {{user?.isActive ? 'Active' : 'Inactive'}}
-              </span>
+
+            <div class="space-y-6 bg-white/10 rounded-3xl p-6 backdrop-blur flex-1">
+              <div class="flex items-center gap-4">
+                <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 text-white">
+                  <span class="text-xl font-semibold">{{ (user?.name || user?.email || '?') | slice:0:1 }}</span>
+                </div>
+                <div>
+                  <p class="text-sm font-semibold text-white/80">Account type</p>
+                  <p class="text-lg font-semibold capitalize text-white">{{user?.role}}</p>
+                </div>
+              </div>
+
+              <div class="flex flex-col gap-3">
+                <a routerLink="/buyer/orders" class="flex items-center justify-center rounded-2xl border border-white/20 bg-white/20 px-5 py-3 text-sm font-semibold text-white transition hover:border-white/40 hover:bg-white/30">
+                  View my orders
+                </a>
+                <a *ngIf="user?.role === 'seller'" routerLink="/seller/dashboard" class="flex items-center justify-center rounded-2xl border border-white/20 bg-white/20 px-5 py-3 text-sm font-semibold text-white transition hover:border-white/40 hover:bg-white/30">
+                  Go to seller dashboard
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -28,7 +51,7 @@
 
       <app-loading *ngIf="loading"></app-loading>
 
-      <div *ngIf="!loading" class="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,2fr),minmax(0,320px)]">
+      <div *ngIf="!loading" class="grid grid-cols-1 gap-8">
         <div class="space-y-8">
           <div class="overflow-hidden rounded-3xl border border-slate-200/70 bg-white/90 p-8 shadow-xl shadow-primary-500/10 backdrop-blur">
             <div class="flex flex-wrap items-start justify-between gap-4">
@@ -150,36 +173,6 @@
                 <p class="text-center text-xs font-medium text-slate-400 sm:text-left">Use a strong, unique password for added security.</p>
               </div>
             </form>
-          </div>
-        </div>
-
-        <div class="space-y-6 rounded-3xl border border-slate-200/70 bg-white/90 p-6 shadow-xl shadow-primary-500/10 backdrop-blur lg:sticky lg:top-6">
-          <div class="flex items-center gap-4">
-            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-50 text-primary-600">
-              <span class="text-xl font-semibold">{{ (user?.name || user?.email || '?') | slice:0:1 }}</span>
-            </div>
-            <div>
-              <p class="text-sm font-semibold text-slate-500">Account type</p>
-              <p class="text-lg font-semibold capitalize text-slate-900">{{user?.role}}</p>
-            </div>
-          </div>
-
-          <!-- <div class="rounded-2xl border border-dashed border-slate-200/80 bg-white/60 p-5">
-            <p class="text-sm font-semibold text-slate-600">Quick insights</p>
-            <ul class="mt-3 space-y-2 text-sm text-slate-500">
-              <li>• Track orders and returns in real time</li>
-              <li>• Personalize delivery preferences</li>
-              <li>• Manage security alerts and notifications</li>
-            </ul>
-          </div> -->
-
-          <div class="flex flex-col gap-3">
-            <a routerLink="/buyer/orders" class="flex items-center justify-center rounded-2xl border border-primary-200 bg-primary-50 px-5 py-3 text-sm font-semibold text-primary-600 transition hover:border-primary-300 hover:bg-primary-100">
-              View my orders
-            </a>
-            <a *ngIf="user?.role === 'seller'" routerLink="/seller/dashboard" class="flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-600 transition hover:border-primary-200 hover:text-primary-600">
-              Go to seller dashboard
-            </a>
           </div>
         </div>
       </div>
