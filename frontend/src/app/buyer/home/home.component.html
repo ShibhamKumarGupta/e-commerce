@@ -79,15 +79,11 @@
     <div class="page-container relative">
   <div class="flex flex-wrap items-end justify-between gap-5">
         <div>
-          <p class="badge-soft mb-4">Browse by interest</p>
-          <h2 class="section-heading text-slate-900">Curated categories just for you</h2>
-          <p class="section-subtitle text-slate-600">
-            Tap into the collections that match your vibe — everything is organised for effortless discovery.
-          </p>
+          <h2 class="section-heading text-slate-900">Shop By Category</h2>
         </div>
-        <a routerLink="/products" class="outline-button">
+        <!-- <a routerLink="/products" class="outline-button">
           View all products
-        </a>
+        </a> -->
       </div>
   <div class="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
         <button
@@ -177,7 +173,7 @@
   <div class="h-14 w-14 animate-spin rounded-full border-4 border-slate-200 border-t-primary-300"></div>
       </div>
 
-  <div *ngIf="!loading" class="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+  <div *ngIf="!loading" class="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         <div
           *ngFor="let product of trendingProducts"
           class="relative overflow-hidden rounded-3xl border border-primary-100 bg-white/95 p-6 shadow-lg transition duration-300 hover:-translate-y-2 hover:border-primary-200 hover:shadow-xl">
