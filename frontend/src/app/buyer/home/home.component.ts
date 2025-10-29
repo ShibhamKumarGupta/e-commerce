@@ -182,7 +182,7 @@ export class HomeComponent implements OnInit {
   }
 
   loadTrendingProducts(): void {
-    this.productService.getAllProducts({ limit: 4, sortBy: 'createdAt', sortOrder: 'desc' }).subscribe({
+    this.productService.getAllProducts({ limit: 4, sortBy: 'rating', sortOrder: 'desc' }).subscribe({
       next: (response: any) => {
         this.trendingProducts = response.products;
       },
