@@ -25,6 +25,8 @@ import { ProductFormComponent } from './seller/product-form/product-form.compone
 import { SellerOrdersComponent } from './seller/orders/orders.component';
 import { SellerOrderDetailsComponent } from './seller/order-details/order-details.component';
 import { SellerReportsComponent } from './seller/reports/reports.component';
+import { NotFoundComponent } from './not-found/not-found.component';
+import { SellerNotFoundComponent } from './seller/not-found/seller-not-found.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -65,12 +67,14 @@ const routes: Routes = [
       { path: 'orders', component: SellerOrdersComponent },
       { path: 'orders/:id', component: SellerOrderDetailsComponent },
       { path: 'reports', component: SellerReportsComponent },
-      { path: 'profile', component: ProfileComponent }
+      { path: 'profile', component: ProfileComponent },
+      // Seller 404 - for any unmatched seller routes
+      { path: '**', component: SellerNotFoundComponent }
     ]
   },
   
-  // Fallback
-  { path: '**', redirectTo: '/products' }
+  // General 404 Not Found - Must be last
+  { path: '**', component: NotFoundComponent }
 ];
 
 @NgModule({

@@ -10,6 +10,7 @@ import { ReportsComponent } from './reports/reports.component';
 import { OrderDetailsComponent } from './order-details/order-details.component';
 import { CategoriesComponent } from './categories/categories.component';
 import { AuthGuard } from './core/guards/auth.guard';
+import { NotFoundComponent } from './not-found/not-found.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -25,10 +26,11 @@ const routes: Routes = [
       { path: 'orders', component: OrdersComponent },
       { path: 'orders/:id', component: OrderDetailsComponent },
       { path: 'reports', component: ReportsComponent },
-      { path: 'profile', component: ProfileComponent },
-      { path: '**', redirectTo: '/dashboard' }
+      { path: 'profile', component: ProfileComponent }
     ]
-  }
+  },
+  // 404 Not Found - Must be last
+  { path: '**', component: NotFoundComponent }
 ];
 
 @NgModule({

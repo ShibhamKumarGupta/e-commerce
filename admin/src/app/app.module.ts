@@ -17,6 +17,7 @@ import { OrderDetailsComponent } from './order-details/order-details.component';
 import { CategoriesComponent } from './categories/categories.component';
 import { NavbarComponent } from './shared/navbar/navbar.component';
 import { ErrorInterceptor } from './core/interceptors/error.interceptor';
+import { NotFoundComponent } from './not-found/not-found.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { ErrorInterceptor } from './core/interceptors/error.interceptor';
     ReportsComponent,
     OrderDetailsComponent,
     CategoriesComponent,
-    NavbarComponent
+    NavbarComponent,
+    NotFoundComponent
   ],
   imports: [
     BrowserModule,

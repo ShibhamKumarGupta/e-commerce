@@ -29,6 +29,8 @@ import { SellerOrderDetailsComponent } from './seller/order-details/order-detail
 import { SellerReportsComponent } from './seller/reports/reports.component';
 import { SellerNavbarComponent } from './seller/shared/seller-navbar/seller-navbar.component';
 import { HomeComponent } from './buyer/home/home.component';
+import { NotFoundComponent } from './not-found/not-found.component';
+import { SellerNotFoundComponent } from './seller/not-found/seller-not-found.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +53,9 @@ import { HomeComponent } from './buyer/home/home.component';
     SellerOrderDetailsComponent,
     SellerReportsComponent,
     SellerNavbarComponent,
-    HomeComponent
+    HomeComponent,
+    NotFoundComponent,
+    SellerNotFoundComponent
   ],
   imports: [
     BrowserModule,
