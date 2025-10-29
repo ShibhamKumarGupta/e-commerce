@@ -21,6 +21,10 @@ const CategorySchema = new Schema<ICategory>(
       type: String,
       trim: true
     },
+    iconSvg: {
+      type: String,
+      default: ''
+    },
     isActive: {
       type: Boolean,
       default: true

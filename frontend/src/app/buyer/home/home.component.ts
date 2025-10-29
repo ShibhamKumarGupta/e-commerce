@@ -3,6 +3,28 @@ import { Router } from '@angular/router';
 import { ProductService } from '../../core/services/product.service';
 import { CartService } from '../../core/services/cart.service';
 import { Product } from '../../core/models/product.model';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { ProductCategory } from '../../core/services/product.service';
+
+interface CategoryPalette {
+  background: string;
+  glow: string;
+  accent: string;
+  text: string;
+  mutedText: string;
+  iconBg: string;
+  iconBorder: string;
+  iconShadow: string;
+  badgeBg: string;
+}
+
+interface DisplayCategory {
+  name: string;
+  slug: string;
+  iconSvg?: string;
+  iconSafeHtml?: SafeHtml | null;
+  palette: CategoryPalette;
+}
 
 @Component({
   selector: 'app-home',
@@ -15,24 +37,75 @@ export class HomeComponent implements OnInit {
   trendingProducts: Product[] = [];
   currentSlide = 0;
 
-  categories: Array<{name: string, icon: string, category: string}> = [];
-
-  icons: { [key: string]: string } = {
-    'electronics': '💻',
-    'fashion': '👕',
-    'home': '🏠',
-    'books': '📚',
-    'sports': '⚽',
-    'beauty': '💄',
-    'toys': '🧸',
-    'groceries': '🛒',
-    'furniture': '🪑',
-    'health': '💊',
-    'automotive': '🚗',
-    'garden': '🌺',
-    'jewelry': '💍',
-    'art': '🎨'
-  }
+  categories: DisplayCategory[] = [];
+  private readonly categoryPalettes: CategoryPalette[] = [
+    {
+      background: 'linear-gradient(135deg, #fde68a 0%, #fca5a5 100%)',
+      glow: 'rgba(249, 168, 212, 0.45)',
+      accent: '#ea580c',
+      text: '#0f172a',
+      mutedText: 'rgba(15, 23, 42, 0.62)',
+      iconBg: 'rgba(255, 255, 255, 0.82)',
+      iconBorder: 'rgba(234, 88, 12, 0.28)',
+      iconShadow: '0 18px 30px -16px rgba(234, 88, 12, 0.55)',
+      badgeBg: 'rgba(255, 255, 255, 0.34)'
+    },
+    {
+      background: 'linear-gradient(135deg, #bfdbfe 0%, #c4b5fd 100%)',
+      glow: 'rgba(129, 140, 248, 0.45)',
+      accent: '#4338ca',
+      text: '#0f172a',
+      mutedText: 'rgba(30, 41, 59, 0.6)',
+      iconBg: 'rgba(255, 255, 255, 0.84)',
+      iconBorder: 'rgba(67, 56, 202, 0.28)',
+      iconShadow: '0 18px 30px -16px rgba(67, 56, 202, 0.55)',
+      badgeBg: 'rgba(255, 255, 255, 0.32)'
+    },
+    {
+      background: 'linear-gradient(135deg, #bbf7d0 0%, #6ee7b7 100%)',
+      glow: 'rgba(34, 197, 94, 0.45)',
+      accent: '#047857',
+      text: '#0f172a',
+      mutedText: 'rgba(15, 118, 110, 0.55)',
+      iconBg: 'rgba(255, 255, 255, 0.85)',
+      iconBorder: 'rgba(4, 120, 87, 0.28)',
+      iconShadow: '0 18px 30px -16px rgba(4, 120, 87, 0.55)',
+      badgeBg: 'rgba(255, 255, 255, 0.32)'
+    },
+    {
+      background: 'linear-gradient(135deg, #fecdd3 0%, #f9a8d4 45%, #f0abfc 100%)',
+      glow: 'rgba(236, 72, 153, 0.45)',
+      accent: '#db2777',
+      text: '#0f172a',
+      mutedText: 'rgba(190, 24, 93, 0.55)',
+      iconBg: 'rgba(255, 255, 255, 0.8)',
+      iconBorder: 'rgba(219, 39, 119, 0.28)',
+      iconShadow: '0 18px 30px -16px rgba(219, 39, 119, 0.55)',
+      badgeBg: 'rgba(255, 255, 255, 0.3)'
+    },
+    {
+      background: 'linear-gradient(135deg, #bae6fd 0%, #a7f3d0 100%)',
+      glow: 'rgba(59, 130, 246, 0.35)',
+      accent: '#0369a1',
+      text: '#0f172a',
+      mutedText: 'rgba(3, 105, 161, 0.6)',
+      iconBg: 'rgba(255, 255, 255, 0.82)',
+      iconBorder: 'rgba(3, 105, 161, 0.26)',
+      iconShadow: '0 18px 30px -16px rgba(3, 105, 161, 0.5)',
+      badgeBg: 'rgba(255, 255, 255, 0.33)'
+    },
+    {
+      background: 'linear-gradient(135deg, #fbcfe8 0%, #fde68a 50%, #fcd34d 100%)',
+      glow: 'rgba(251, 191, 36, 0.4)',
+      accent: '#b45309',
+      text: '#78350f',
+      mutedText: 'rgba(146, 64, 14, 0.62)',
+      iconBg: 'rgba(255, 255, 255, 0.86)',
+      iconBorder: 'rgba(180, 83, 9, 0.26)',
+      iconShadow: '0 18px 30px -16px rgba(180, 83, 9, 0.5)',
+      badgeBg: 'rgba(255, 255, 255, 0.35)'
+    }
+  ];
   
 
   heroSlides = [
@@ -62,7 +135,8 @@ export class HomeComponent implements OnInit {
   constructor(
     private productService: ProductService,
     private cartService: CartService,
-    private router: Router
+    private router: Router,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
@@ -74,12 +148,18 @@ export class HomeComponent implements OnInit {
 
   loadCategories(): void {
     this.productService.getCategories().subscribe({
-      next: (categories) => {
-        this.categories = categories.map(category => ({
-          name: category.charAt(0).toUpperCase() + category.slice(1),
-          icon: this.icons[category.toLowerCase()] || '🏷️',
-          category: category
-        }));
+      next: (categories: ProductCategory[]) => {
+        this.categories = categories.map((category, index) => {
+          const palette = this.categoryPalettes[index % this.categoryPalettes.length];
+
+          return {
+          name: category.name,
+          slug: category.slug,
+          iconSvg: category.iconSvg,
+          iconSafeHtml: category.iconSvg ? this.sanitizer.bypassSecurityTrustHtml(category.iconSvg) : null,
+          palette
+        };
+        });
       },
       error: (error) => {
         console.error('Error loading categories:', error);
@@ -130,8 +210,8 @@ export class HomeComponent implements OnInit {
     this.currentSlide = index;
   }
 
-  navigateToCategory(category: string): void {
-    this.router.navigate(['/products'], { queryParams: { category } });
+  navigateToCategory(categorySlug: string): void {
+    this.router.navigate(['/products'], { queryParams: { category: categorySlug } });
   }
 
   navigateToProduct(productId: string): void {

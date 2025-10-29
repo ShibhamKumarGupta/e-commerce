@@ -8,6 +8,47 @@ import { ToastService, Toast } from '../../../core/services/toast.service';
 })
 export class ToastComponent implements OnInit {
   toasts: Toast[] = [];
+  private readonly palette: Record<string, {
+    border: string;
+    iconBg: string;
+    iconColor: string;
+    gradient: string;
+    accentBar: string;
+    progress: string;
+  }> = {
+    success: {
+      border: 'border-emerald-200/70 shadow-emerald-500/15',
+      iconBg: 'bg-emerald-50',
+      iconColor: 'text-emerald-600',
+      gradient: 'from-emerald-500/10 via-white/95 to-white',
+      accentBar: 'bg-emerald-500',
+      progress: 'bg-emerald-400'
+    },
+    error: {
+      border: 'border-rose-200/70 shadow-rose-500/15',
+      iconBg: 'bg-rose-50',
+      iconColor: 'text-rose-600',
+      gradient: 'from-rose-500/10 via-white/95 to-white',
+      accentBar: 'bg-rose-500',
+      progress: 'bg-rose-400'
+    },
+    warning: {
+      border: 'border-amber-200/70 shadow-amber-500/15',
+      iconBg: 'bg-amber-50',
+      iconColor: 'text-amber-600',
+      gradient: 'from-amber-500/10 via-white/95 to-white',
+      accentBar: 'bg-amber-500',
+      progress: 'bg-amber-400'
+    },
+    info: {
+      border: 'border-sky-200/70 shadow-sky-500/15',
+      iconBg: 'bg-sky-50',
+      iconColor: 'text-sky-600',
+      gradient: 'from-sky-500/10 via-white/95 to-white',
+      accentBar: 'bg-sky-500',
+      progress: 'bg-sky-400'
+    }
+  };
 
   constructor(private toastService: ToastService) {}
 
@@ -27,34 +68,33 @@ export class ToastComponent implements OnInit {
     this.toasts = this.toasts.filter(t => t.id !== id);
   }
 
+  private getPalette(type: string) {
+    return this.palette[type] || this.palette['info'];
+  }
+
   getToastClass(type: string): string {
-    const classes: any = {
-      'success': 'bg-white border-green-500',
-      'error': 'bg-white border-red-500',
-      'warning': 'bg-white border-yellow-500',
-      'info': 'bg-white border-blue-500'
-    };
-    return classes[type] || 'bg-white border-gray-500';
+    const palette = this.getPalette(type);
+    return `bg-white/95 backdrop-blur border ${palette.border}`;
   }
 
   getIconBgClass(type: string): string {
-    const classes: any = {
-      'success': 'bg-green-100',
-      'error': 'bg-red-100',
-      'warning': 'bg-yellow-100',
-      'info': 'bg-blue-100'
-    };
-    return classes[type] || 'bg-gray-100';
+    return this.getPalette(type).iconBg;
   }
 
   getIconColorClass(type: string): string {
-    const classes: any = {
-      'success': 'text-green-600',
-      'error': 'text-red-600',
-      'warning': 'text-yellow-600',
-      'info': 'text-blue-600'
-    };
-    return classes[type] || 'text-gray-600';
+    return this.getPalette(type).iconColor;
+  }
+
+  getGradientClass(type: string): string {
+    return this.getPalette(type).gradient;
+  }
+
+  getAccentBarClass(type: string): string {
+    return this.getPalette(type).accentBar;
+  }
+
+  getProgressClass(type: string): string {
+    return this.getPalette(type).progress;
   }
 
   getTitle(type: string): string {

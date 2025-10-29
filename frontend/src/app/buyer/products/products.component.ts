@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ProductService } from '../../core/services/product.service';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { ProductService, ProductCategory } from '../../core/services/product.service';
 import { CartService } from '../../core/services/cart.service';
 import { ToastService } from '../../core/services/toast.service';
 import { Product, ProductQuery } from '../../core/models/product.model';
@@ -12,7 +13,7 @@ import { Product, ProductQuery } from '../../core/models/product.model';
 })
 export class ProductsComponent implements OnInit {
   products: Product[] = [];
-  categories: string[] = [];
+  categories: Array<ProductCategory & { iconSafeHtml?: SafeHtml | null }> = [];
   loading = false;
   
   // Pagination
@@ -34,7 +35,8 @@ export class ProductsComponent implements OnInit {
     private route: ActivatedRoute,
     private productService: ProductService,
     private cartService: CartService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
@@ -55,7 +57,10 @@ export class ProductsComponent implements OnInit {
   loadCategories(): void {
     this.productService.getCategories().subscribe({
       next: (categories) => {
-        this.categories = categories;
+        this.categories = categories.map(category => ({
+          ...category,
+          iconSafeHtml: category.iconSvg ? this.sanitizer.bypassSecurityTrustHtml(category.iconSvg) : null
+        }));
       },
       error: (error) => {
         console.error('Error loading categories:', error);

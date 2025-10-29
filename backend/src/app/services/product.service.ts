@@ -1,5 +1,6 @@
 import { AbstractService } from './abstracts/service.abstract';
 import { ProductRepository } from '../domain/repositories/product.repository';
+import { CategoryRepository } from '../domain/repositories/category.repository';
 import { IProduct } from '../domain/interfaces/product.interface';
 import { ErrorHelper } from '../helpers/error.helper';
 import mongoose from 'mongoose';
@@ -30,11 +31,13 @@ export interface CreateProductDTO {
 
 export class ProductService extends AbstractService<IProduct> {
   private productRepository: ProductRepository;
+  private categoryRepository: CategoryRepository;
 
   constructor() {
     const repository = new ProductRepository();
     super(repository);
     this.productRepository = repository;
+    this.categoryRepository = new CategoryRepository();
   }
 
   async createProduct(data: CreateProductDTO): Promise<IProduct> {
@@ -176,9 +179,13 @@ export class ProductService extends AbstractService<IProduct> {
     return product;
   }
 
-  async getCategories(): Promise<string[]> {
-    const categories = await this.productRepository.model.distinct('category');
-    return categories;
+  async getCategories(): Promise<Array<{ name: string; slug: string; iconSvg: string }>> {
+    const categories = await this.categoryRepository.findActive();
+    return categories.map(category => ({
+      name: category.name,
+      slug: category.slug,
+      iconSvg: category.iconSvg || ''
+    }));
   }
 
   async getProductStats(): Promise<any> {

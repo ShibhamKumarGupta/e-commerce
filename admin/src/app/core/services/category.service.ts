@@ -9,6 +9,7 @@ export interface Category {
   slug: string;
   description?: string;
   isActive: boolean;
+  iconSvg?: string;
   createdAt: string;
   updatedAt: string;
 }

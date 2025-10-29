@@ -5,6 +5,12 @@ import { ApiService } from './api.service';
 import { ToastService } from './toast.service';
 import { Product, ProductQuery, ProductResponse } from '../models/product.model';
 
+export interface ProductCategory {
+  name: string;
+  slug: string;
+  iconSvg?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -26,7 +32,7 @@ export class ProductService {
     );
   }
 
-  getCategories(): Observable<string[]> {
+  getCategories(): Observable<ProductCategory[]> {
     return this.apiService.get<any>('/products/categories').pipe(
       map(response => response.data.categories)
     );

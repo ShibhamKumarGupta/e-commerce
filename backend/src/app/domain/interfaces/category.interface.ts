@@ -6,6 +6,7 @@ export interface ICategory extends Document {
   slug: string;
   description?: string;
   isActive: boolean;
+  iconSvg?: string;
   createdAt: Date;
   updatedAt: Date;
 }

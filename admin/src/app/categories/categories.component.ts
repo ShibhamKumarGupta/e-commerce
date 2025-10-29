@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { CategoryService, Category } from '../core/services/category.service';
 
 @Component({
@@ -12,8 +13,9 @@ export class CategoriesComponent implements OnInit {
   showModal = false;
   isEditMode = false;
   currentCategory: Partial<Category> = {};
+  private iconPreviewCache = new Map<string, SafeHtml>();
 
-  constructor(private categoryService: CategoryService) {}
+  constructor(private categoryService: CategoryService, private sanitizer: DomSanitizer) {}
 
   ngOnInit(): void {
     this.loadCategories();
@@ -23,6 +25,7 @@ export class CategoriesComponent implements OnInit {
     this.loading = true;
     this.categoryService.getAllCategories().subscribe({
       next: (result) => {
+        this.iconPreviewCache.clear();
         this.categories = result.categories;
         this.loading = false;
       },
@@ -40,6 +43,7 @@ export class CategoriesComponent implements OnInit {
     this.currentCategory = {
       name: '',
       description: '',
+      iconSvg: '',
       isActive: true
     };
     this.showModal = true;
@@ -126,5 +130,17 @@ export class CategoriesComponent implements OnInit {
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '');
+  }
+
+  getIconPreview(iconSvg?: string): SafeHtml | null {
+    if (!iconSvg) {
+      return null;
+    }
+    if (this.iconPreviewCache.has(iconSvg)) {
+      return this.iconPreviewCache.get(iconSvg)!;
+    }
+    const safe = this.sanitizer.bypassSecurityTrustHtml(iconSvg);
+    this.iconPreviewCache.set(iconSvg, safe);
+    return safe;
   }
 }

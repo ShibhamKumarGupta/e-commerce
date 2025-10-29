@@ -12,7 +12,7 @@ export class CategoryService extends AbstractService<ICategory> {
     this.categoryRepository = repository;
   }
 
-  async createCategory(data: { name: string; description?: string }): Promise<ICategory> {
+  async createCategory(data: { name: string; description?: string; iconSvg?: string; isActive?: boolean }): Promise<ICategory> {
     // Check if category already exists
     const existingCategory = await this.categoryRepository.findByName(data.name);
     if (existingCategory) {
@@ -26,13 +26,14 @@ export class CategoryService extends AbstractService<ICategory> {
       name: data.name.trim(),
       slug,
       description: data.description,
-      isActive: true
+      iconSvg: data.iconSvg ? data.iconSvg.trim() : '',
+      isActive: data.isActive ?? true
     } as any);
 
     return category;
   }
 
-  async updateCategory(id: string, data: { name?: string; description?: string; isActive?: boolean }): Promise<ICategory> {
+  async updateCategory(id: string, data: { name?: string; description?: string; iconSvg?: string | null; isActive?: boolean }): Promise<ICategory> {
     const category = await this.categoryRepository.findById(id);
 
     if (!category) {
@@ -51,6 +52,10 @@ export class CategoryService extends AbstractService<ICategory> {
 
     if (data.description !== undefined) {
       category.description = data.description;
+    }
+
+    if (data.iconSvg !== undefined) {
+      category.iconSvg = data.iconSvg ? data.iconSvg.trim() : '';
     }
 
     if (data.isActive !== undefined) {

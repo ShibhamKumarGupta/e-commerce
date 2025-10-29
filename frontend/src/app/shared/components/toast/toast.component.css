@@ -12,3 +12,18 @@
 .animate-slide-in {
   animation: slide-in 0.3s ease-out;
 }
+
+@keyframes toast-progress {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+.toast-progress {
+  transform-origin: left;
+  animation: toast-progress linear forwards;
+  opacity: 0.9;
+}
