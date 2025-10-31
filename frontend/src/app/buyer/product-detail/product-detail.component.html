@@ -179,10 +179,30 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-4">
-              <button *ngIf="authService.isAuthenticated && !showReviewForm" type="button" (click)="showReviewForm = true" class="rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-primary-600">
+              <!-- Show review button only if user can review -->
+              <button 
+                *ngIf="authService.isAuthenticated && reviewEligibility.canReview && !showReviewForm && !checkingEligibility" 
+                type="button" 
+                (click)="showReviewForm = true" 
+                class="rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-primary-600">
                 Write a review
               </button>
-              <p class="text-xs text-slate-400">Share your experience to help fellow shoppers.</p>
+
+              <!-- Show loading state while checking eligibility -->
+              <div *ngIf="authService.isAuthenticated && checkingEligibility" class="flex items-center gap-2">
+                <div class="h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-slate-600"></div>
+                <span class="text-xs text-slate-400">Checking eligibility...</span>
+              </div>
+
+              <!-- Show appropriate message based on eligibility -->
+              <p class="text-lg text-slate-600" *ngIf="authService.isAuthenticated && !checkingEligibility">
+                <span *ngIf="reviewEligibility.hasReviewed">You have already reviewed this product.</span>
+                <span *ngIf="!reviewEligibility.hasPurchased && !reviewEligibility.hasReviewed">Purchase this product to leave a review.</span>
+                <span *ngIf="reviewEligibility.hasPurchased && !reviewEligibility.hasReviewed && !reviewEligibility.canReview">Share your experience to help fellow shoppers.</span>
+              </p>
+              <p class="text-lg text-slate-600" *ngIf="!authService.isAuthenticated">
+                <a routerLink="/auth/login" class="text-primary-600 hover:underline">Sign in</a> to leave a review.
+              </p>
             </div>
 
             <div *ngIf="showReviewForm" class="space-y-4 rounded-3xl border border-slate-200/70 bg-white/80 p-6">

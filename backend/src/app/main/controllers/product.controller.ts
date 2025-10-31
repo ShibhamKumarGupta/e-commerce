@@ -56,6 +56,14 @@ export class ProductController {
     ResponseUtils.success(res, { product }, 'Review added successfully');
   });
 
+  checkReviewEligibility = asyncHandler(async (req: AuthRequest, res: Response) => {
+    const eligibility = await this.productService.checkReviewEligibility(
+      req.params.id,
+      req.user!._id.toString()
+    );
+    ResponseUtils.success(res, eligibility, 'Review eligibility checked successfully');
+  });
+
   getCategories = asyncHandler(async (req: AuthRequest, res: Response) => {
     const categories = await this.productService.getCategories();
     ResponseUtils.success(res, { categories }, 'Categories retrieved successfully');

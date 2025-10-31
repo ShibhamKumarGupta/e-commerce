@@ -47,6 +47,12 @@ export class ProductRoutes {
     );
 
     this.router.get(
+      '/:id/review-eligibility',
+      AuthMiddleware.authenticate,
+      this.productController.checkReviewEligibility
+    );
+
+    this.router.get(
       '/seller/my-products',
       AuthMiddleware.authenticate,
       AuthMiddleware.authorize(UserRole.SELLER, UserRole.ADMIN),

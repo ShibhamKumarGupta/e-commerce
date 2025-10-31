@@ -1,7 +1,9 @@
 import { AbstractService } from './abstracts/service.abstract';
 import { ProductRepository } from '../domain/repositories/product.repository';
 import { CategoryRepository } from '../domain/repositories/category.repository';
+import { OrderRepository } from '../domain/repositories/order.repository';
 import { IProduct } from '../domain/interfaces/product.interface';
+import { OrderStatus } from '../domain/interfaces/order.interface';
 import { ErrorHelper } from '../helpers/error.helper';
 import mongoose from 'mongoose';
 
@@ -32,12 +34,14 @@ export interface CreateProductDTO {
 export class ProductService extends AbstractService<IProduct> {
   private productRepository: ProductRepository;
   private categoryRepository: CategoryRepository;
+  private orderRepository: OrderRepository;
 
   constructor() {
     const repository = new ProductRepository();
     super(repository);
     this.productRepository = repository;
     this.categoryRepository = new CategoryRepository();
+    this.orderRepository = new OrderRepository();
   }
 
   async createProduct(data: CreateProductDTO): Promise<IProduct> {
@@ -148,11 +152,54 @@ export class ProductService extends AbstractService<IProduct> {
     await this.productRepository.deleteById(productId);
   }
 
+  private async hasUserPurchasedProduct(userId: string, productId: string): Promise<boolean> {
+    // Find orders where the user has successfully purchased the product
+    const orders = await this.orderRepository.findByUser(userId);
+    
+    // Check if any order contains this product and has been delivered or shipped
+    for (const order of orders) {
+      const hasProduct = order.orderItems.some(item => 
+        item.product.toString() === productId
+      );
+      
+      if (hasProduct && (order.orderStatus === OrderStatus.DELIVERED || order.orderStatus === OrderStatus.SHIPPED)) {
+        return true;
+      }
+    }
+    
+    return false;
+  }
+
+  async checkReviewEligibility(productId: string, userId: string): Promise<{ canReview: boolean; hasReviewed: boolean; hasPurchased: boolean }> {
+    const product = await this.productRepository.findById(productId);
+
+    if (!product) {
+      throw ErrorHelper.notFound('Product not found');
+    }
+
+    const hasReviewed = product.reviews.some(review => review.user.toString() === userId);
+    const hasPurchased = await this.hasUserPurchasedProduct(userId, productId);
+
+    const canReview = !hasReviewed && hasPurchased;
+
+    return {
+      canReview,
+      hasReviewed,
+      hasPurchased
+    };
+  }
+
   async addReview(productId: string, userId: string, userName: string, rating: number, comment: string): Promise<IProduct> {
     const product = await this.productRepository.findById(productId);
 
     if (!product) {
       throw ErrorHelper.notFound('Product not found');
+    }
+
+    // Check if user has purchased this product
+    const hasPurchased = await this.hasUserPurchasedProduct(userId, productId);
+    if (!hasPurchased) {
+      throw ErrorHelper.badRequest('You can only review products you have purchased');
     }
 
     const alreadyReviewed = product.reviews.find(

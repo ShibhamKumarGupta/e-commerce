@@ -47,6 +47,12 @@ export class ProductService {
     );
   }
 
+  checkReviewEligibility(productId: string): Observable<{ canReview: boolean; hasReviewed: boolean; hasPurchased: boolean }> {
+    return this.apiService.get<any>(`/products/${productId}/review-eligibility`).pipe(
+      map(response => response.data)
+    );
+  }
+
   createProduct(data: any): Observable<Product> {
     return this.apiService.post<any>('/products', data).pipe(
       map(response => response.data.product)

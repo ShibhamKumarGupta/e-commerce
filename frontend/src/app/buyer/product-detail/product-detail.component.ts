@@ -27,6 +27,8 @@ export class ProductDetailComponent implements OnInit {
   rating = 5;
   comment = '';
   submittingReview = false;
+  reviewEligibility = { canReview: false, hasReviewed: false, hasPurchased: false };
+  checkingEligibility = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -51,6 +53,10 @@ export class ProductDetailComponent implements OnInit {
       .pipe(
         switchMap(product => {
           this.product = product;
+          // Check review eligibility if user is authenticated
+          if (this.authService.isAuthenticated) {
+            this.checkReviewEligibility(id);
+          }
           // Fetch similar products by category, excluding current product
           return this.productService.getAllProducts({ 
             category: product.category,
@@ -71,6 +77,20 @@ export class ProductDetailComponent implements OnInit {
           this.router.navigate(['/products']);
         }
       });
+  }
+
+  checkReviewEligibility(productId: string): void {
+    this.checkingEligibility = true;
+    this.productService.checkReviewEligibility(productId).subscribe({
+      next: (eligibility) => {
+        this.reviewEligibility = eligibility;
+        this.checkingEligibility = false;
+      },
+      error: (error) => {
+        console.error('Error checking review eligibility:', error);
+        this.checkingEligibility = false;
+      }
+    });
   }
 
   selectImage(index: number): void {
@@ -138,6 +158,12 @@ export class ProductDetailComponent implements OnInit {
       return;
     }
 
+    // Double-check eligibility before submitting
+    if (!this.reviewEligibility.canReview) {
+      alert('You are not eligible to review this product.');
+      return;
+    }
+
     this.submittingReview = true;
     this.productService.addReview(this.product._id, this.rating, this.comment).subscribe({
       next: () => {
@@ -149,6 +175,10 @@ export class ProductDetailComponent implements OnInit {
       },
       error: (error) => {
         this.submittingReview = false;
+        // Refresh eligibility in case it changed
+        if (this.authService.isAuthenticated) {
+          this.checkReviewEligibility(this.product!._id);
+        }
       }
     });
   }
