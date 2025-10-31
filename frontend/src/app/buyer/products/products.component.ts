@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ProductService, ProductCategory } from '../../core/services/product.service';
 import { CartService } from '../../core/services/cart.service';
@@ -23,7 +23,7 @@ export class ProductsComponent implements OnInit {
   limit = 12;
 
   // Filters
-  selectedCategory = '';
+  selectedCategories: string[] = [];
   minPrice: number | undefined;
   maxPrice: number | undefined;
   minRating: number | undefined;
@@ -33,6 +33,7 @@ export class ProductsComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private productService: ProductService,
     private cartService: CartService,
     private toastService: ToastService,
@@ -48,7 +49,10 @@ export class ProductsComponent implements OnInit {
         this.searchQuery = params['search'];
       }
       if (params['category']) {
-        this.selectedCategory = params['category'];
+        // category query can be single slug or multiple joined by +
+        this.selectedCategories = String(params['category']).split('+').filter(Boolean);
+      } else {
+        this.selectedCategories = [];
       }
       this.loadProducts();
     });
@@ -78,7 +82,7 @@ export class ProductsComponent implements OnInit {
       sortOrder: this.sortOrder
     };
 
-    if (this.selectedCategory) query.category = this.selectedCategory;
+    if (this.selectedCategories && this.selectedCategories.length) query.category = this.selectedCategories.join('+');
     if (this.minPrice !== undefined) query.minPrice = this.minPrice;
     if (this.maxPrice !== undefined) query.maxPrice = this.maxPrice;
     if (this.minRating !== undefined) query.minRating = this.minRating;
@@ -105,7 +109,39 @@ export class ProductsComponent implements OnInit {
   }
 
   onCategoryChange(): void {
+    // Keep for compatibility if template calls it without args
     this.currentPage = 1;
+    this.updateUrlAndLoad();
+  }
+
+  toggleCategory(slug: string, checked: boolean): void {
+    if (checked) {
+      if (!this.selectedCategories.includes(slug)) this.selectedCategories.push(slug);
+    } else {
+      this.selectedCategories = this.selectedCategories.filter(s => s !== slug);
+    }
+    this.currentPage = 1;
+    this.updateUrlAndLoad();
+  }
+
+  clearCategorySelection(): void {
+    this.selectedCategories = [];
+    this.currentPage = 1;
+    this.updateUrlAndLoad();
+  }
+
+  private updateUrlAndLoad(): void {
+    // Build query params to reflect current filters (no hardcoding)
+    const params: any = {};
+    if (this.searchQuery) params.search = this.searchQuery;
+    if (this.selectedCategories && this.selectedCategories.length) params.category = this.selectedCategories.join('+');
+    if (this.minPrice !== undefined) params.minPrice = this.minPrice;
+    if (this.maxPrice !== undefined) params.maxPrice = this.maxPrice;
+    if (this.minRating !== undefined) params.minRating = this.minRating;
+    params.page = this.currentPage;
+
+    // Update URL without navigating away
+    this.router.navigate([], { relativeTo: this.route, queryParams: params, replaceUrl: true });
     this.loadProducts();
   }
 
@@ -130,13 +166,13 @@ export class ProductsComponent implements OnInit {
   }
 
   clearFilters(): void {
-    this.selectedCategory = '';
+    this.selectedCategories = [];
     this.minPrice = undefined;
     this.maxPrice = undefined;
     this.minRating = undefined;
     this.searchQuery = '';
     this.currentPage = 1;
-    this.loadProducts();
+    this.updateUrlAndLoad();
   }
 
   get pages(): number[] {

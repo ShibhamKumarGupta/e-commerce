@@ -66,7 +66,13 @@ export class ProductService extends AbstractService<IProduct> {
     const filter: any = { isActive: true };
 
     if (category) {
-      filter.category = category;
+      // support multiple categories passed as slug1+slug2
+      if (typeof category === 'string' && category.includes('+')) {
+        const slugs = category.split('+').filter(Boolean);
+        filter.category = { $in: slugs };
+      } else {
+        filter.category = category;
+      }
     }
 
     if (minPrice !== undefined || maxPrice !== undefined) {
@@ -266,7 +272,12 @@ export class ProductService extends AbstractService<IProduct> {
     const filter: any = { seller: sellerId };
 
     if (category) {
-      filter.category = category;
+      if (typeof category === 'string' && category.includes('+')) {
+        const slugs = category.split('+').filter(Boolean);
+        filter.category = { $in: slugs };
+      } else {
+        filter.category = category;
+      }
     }
 
     if (minPrice !== undefined || maxPrice !== undefined) {
@@ -357,7 +368,12 @@ export class ProductService extends AbstractService<IProduct> {
     const filter: any = {}; // No isActive filter for admin
 
     if (category) {
-      filter.category = category;
+      if (typeof category === 'string' && category.includes('+')) {
+        const slugs = category.split('+').filter(Boolean);
+        filter.category = { $in: slugs };
+      } else {
+        filter.category = category;
+      }
     }
 
     if (minPrice !== undefined || maxPrice !== undefined) {
