@@ -11,6 +11,7 @@ import { OrderDetailsComponent } from './order-details/order-details.component';
 import { CategoriesComponent } from './categories/categories.component';
 import { AuthGuard } from './core/guards/auth.guard';
 import { NotFoundComponent } from './not-found/not-found.component';
+import { ReviewModerationComponent } from './review-moderation/review-moderation.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -23,6 +24,7 @@ const routes: Routes = [
       { path: 'users', component: UsersComponent },
       { path: 'products', component: ProductsComponent },
       { path: 'categories', component: CategoriesComponent },
+      { path: 'review-moderation', component: ReviewModerationComponent },
       { path: 'orders', component: OrdersComponent },
       { path: 'orders/:id', component: OrderDetailsComponent },
       { path: 'reports', component: ReportsComponent },

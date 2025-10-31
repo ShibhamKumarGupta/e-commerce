@@ -18,6 +18,7 @@ import { CategoriesComponent } from './categories/categories.component';
 import { NavbarComponent } from './shared/navbar/navbar.component';
 import { ErrorInterceptor } from './core/interceptors/error.interceptor';
 import { NotFoundComponent } from './not-found/not-found.component';
+import { ReviewModerationComponent } from './review-moderation/review-moderation.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { NotFoundComponent } from './not-found/not-found.component';
     OrderDetailsComponent,
     CategoriesComponent,
     NavbarComponent,
-    NotFoundComponent
+    NotFoundComponent,
+    ReviewModerationComponent
   ],
   imports: [
     BrowserModule,

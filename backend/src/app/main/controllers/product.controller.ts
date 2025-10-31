@@ -85,4 +85,15 @@ export class ProductController {
     await this.productService.adminDeleteProduct(req.params.id);
     ResponseUtils.success(res, null, 'Product deleted successfully');
   });
+
+  adminGetAllProducts = asyncHandler(async (req: AuthRequest, res: Response) => {
+    const result = await this.productService.adminGetAllProducts(req.query);
+    ResponseUtils.success(res, result, 'Products retrieved successfully');
+  });
+
+  adminDeleteReview = asyncHandler(async (req: AuthRequest, res: Response) => {
+    const reviewIndex = parseInt(req.query.reviewIndex as string);
+    const product = await this.productService.adminDeleteReview(req.params.id, reviewIndex);
+    ResponseUtils.success(res, { product }, 'Review deleted successfully');
+  });
 }
