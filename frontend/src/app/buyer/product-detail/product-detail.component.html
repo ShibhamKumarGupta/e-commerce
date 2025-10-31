@@ -27,19 +27,14 @@
 
         <div class="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1.2fr),minmax(0,1fr)]">
           <div class="space-y-6 relative">
-            <div class="overflow-hidden rounded-3xl border border-white/40 bg-white/80 p-8 shadow-2xl shadow-primary-500/20 backdrop-blur">
-              <div class="relative flex items-center justify-center rounded-3xl bg-gradient-to-br from-primary-500/10 via-white to-sky-400/10 p-6">
-                <img
-                  [src]="product.images[selectedImage] || 'assets/placeholder.jpg'"
-                  [alt]="product.name"
-                  class="h-96 w-full max-w-xl object-contain cursor-zoom-in transition-transform duration-200 hover:scale-105"
-                  (mouseenter)="showZoomPreview = true"
-                  (mouseleave)="showZoomPreview = false"
-                  (mousemove)="onImageMouseMove($event)"
-                  (click)="openImageModal()" />
-                <!-- <span class="absolute left-6 top-6 rounded-full bg-white/70 px-4 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Featured</span> -->
-              </div>
-            </div>
+            <img
+              [src]="product.images[selectedImage] || 'assets/placeholder.jpg'"
+              [alt]="product.name"
+              class="h-96 w-full max-w-xl object-cover cursor-zoom-in transition-transform duration-200 hover:scale-105 rounded-3xl"
+              (mouseenter)="showZoomPreview = true"
+              (mouseleave)="showZoomPreview = false"
+              (mousemove)="onImageMouseMove($event)"
+              (click)="openImageModal()" />
 
             <!-- Zoom Preview -->
             <div
@@ -64,7 +59,7 @@
                 (click)="selectImage(i)"
                 class="rounded-2xl border border-slate-200/80 bg-white/70 p-2 shadow-sm transition hover:border-primary-300"
                 [ngClass]="{ 'ring-2 ring-primary-500 border-transparent bg-primary-50': selectedImage === i }">
-                <img [src]="image" [alt]="product.name" class="h-20 w-full rounded-xl object-contain" />
+                <img [src]="image" [alt]="product.name" class="h-20 w-full rounded-xl object-cover" />
               </button>
             </div>
           </div>
@@ -244,7 +239,7 @@
               <div class="mt-6 grid gap-6 sm:grid-cols-2">
                 <a *ngFor="let product of similarProducts" [routerLink]="['/products', product._id]" class="group overflow-hidden rounded-3xl border border-white/50 bg-white/80 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
                   <div class="flex h-40 items-center justify-center bg-gradient-to-br from-primary-500/10 via-white to-sky-400/10 p-6">
-                    <img [src]="product.images[0]" [alt]="product.name" class="h-28 object-contain transition duration-500 group-hover:scale-110" />
+                    <img [src]="product.images[0]" [alt]="product.name" class="h-28 object-cover transition duration-500 group-hover:scale-110" />
                   </div>
                   <div class="space-y-2 px-5 py-4 text-sm text-slate-600">
                     <h3 class="text-base font-semibold text-slate-900 truncate">{{product.name}}</h3>
@@ -289,7 +284,7 @@
           <img
             [src]="product.images[selectedImage] || 'assets/placeholder.jpg'"
             [alt]="product.name"
-            class="max-h-screen w-full object-contain" />
+            class="max-h-screen w-full object-cover" />
 
           <!-- Navigation Arrows -->
           <button
