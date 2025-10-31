@@ -127,7 +127,7 @@ export class HomeComponent implements OnInit {
       title: 'Home Essentials',
       subtitle: 'Transform your living space with our curated home collection',
       buttonText: 'Discover',
-      buttonLink: '/products?category=home-kitchen',
+      buttonLink: '/products?category=home',
       background: 'url("https://images.unsplash.com/photo-1484101403633-562f891dc89a?auto=format&fit=crop&q=80&w=1920") center/cover no-repeat'
     }
   ];

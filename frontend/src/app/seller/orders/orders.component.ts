@@ -99,9 +99,11 @@ export class SellerOrdersComponent implements OnInit {
   }
 
   onPageChange(page: number): void {
-    this.currentPage = page;
-    this.loadOrders();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.loadOrders();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
   getStatusClass(status: string): string {

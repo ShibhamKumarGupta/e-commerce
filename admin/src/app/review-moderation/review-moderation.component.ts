@@ -29,6 +29,7 @@ export class ReviewModerationComponent implements OnInit {
   // Selected review for deletion
   selectedReview: any = null;
   showDeleteReviewModal = false;
+  deactivateUserAfterDelete = false;
 
   constructor(
     private productService: ProductService,
@@ -87,9 +88,11 @@ export class ReviewModerationComponent implements OnInit {
   }
 
   onPageChange(page: number): void {
-    this.currentPage = page;
-    this.loadProducts();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.loadProducts();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
   clearFilters(): void {
@@ -117,22 +120,46 @@ export class ReviewModerationComponent implements OnInit {
   closeDeleteReviewModal(): void {
     this.showDeleteReviewModal = false;
     this.selectedReview = null;
+    this.deactivateUserAfterDelete = false;
   }
 
   confirmDeleteReview(): void {
     if (this.selectedReview && this.selectedProduct) {
       this.productService.adminDeleteReview(this.selectedProduct._id, this.selectedReview.index).subscribe({
         next: () => {
-          alert('Review deleted successfully');
+          // Handle user deactivation if selected
+          if (this.deactivateUserAfterDelete) {
+            this.userService.toggleUserStatus(this.selectedReview.user._id).subscribe({
+              next: () => {
+                alert('Review deleted and user deactivated successfully');
+              },
+              error: (error) => {
+                console.error('Error deactivating user:', error);
+                alert('Review deleted but failed to deactivate user');
+              }
+            });
+          } else {
+            alert('Review deleted successfully');
+          }
+
           this.closeDeleteReviewModal();
+          
           // Update the product's reviews locally
           this.selectedProduct.reviews.splice(this.selectedReview.index, 1);
+          
           // Recalculate rating
           const totalRating = this.selectedProduct.reviews.reduce((sum: number, review: any) => sum + review.rating, 0);
           this.selectedProduct.numReviews = this.selectedProduct.reviews.length;
           this.selectedProduct.rating = this.selectedProduct.numReviews > 0 ? totalRating / this.selectedProduct.numReviews : 0;
-          // Reload products to reflect changes
-          this.loadProducts();
+          
+          // Update the product in the products list
+          const productIndex = this.products.findIndex(p => p._id === this.selectedProduct._id);
+          if (productIndex !== -1) {
+            this.products[productIndex] = { ...this.selectedProduct };
+          }
+          
+          // Reset the flag
+          this.deactivateUserAfterDelete = false;
         },
         error: (error) => {
           console.error('Error deleting review:', error);
