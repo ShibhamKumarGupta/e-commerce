@@ -161,8 +161,8 @@
             <div class="grid gap-6 rounded-3xl border border-slate-200/70 bg-white/70 p-6 sm:grid-cols-[minmax(0,1fr),minmax(0,1.5fr)]">
               <div class="text-center">
                 <div class="text-5xl font-bold text-slate-900">{{product.rating | number:'1.1-1'}}</div>
-                <div class="mt-2 flex items-center justify-center gap-1 text-lg text-amber-400">
-                  <span *ngFor="let star of getStars(product.rating)">★</span>
+                <div class="mt-2 flex items-center justify-center gap-1 text-lg">
+                  <span *ngFor="let i of [1,2,3,4,5]" [class.text-amber-400]="i <= product.rating" [class.text-slate-300]="i > product.rating">★</span>
                 </div>
                 <p class="mt-2 text-xs uppercase tracking-[0.3em] text-slate-400">Average rating</p>
               </div>
@@ -242,8 +242,9 @@
                       <h4 class="text-sm font-semibold text-slate-900">{{review.name}}</h4>
                       <span class="text-xs text-slate-400">{{review.createdAt | date:'MMM d, yyyy'}}</span>
                     </div>
-                    <div class="mt-1 flex items-center gap-1 text-amber-400">
-                      <span *ngFor="let star of getStars(review.rating)">★</span>
+                    <div class="mt-1 flex items-center gap-1">
+                      <span *ngFor="let i of [1,2,3,4,5]" [class.text-amber-400]="i <= review.rating" [class.text-slate-300]="i > review.rating">★</span>
+                      <span class="ml-2 text-xs text-slate-500">{{review.rating}}/5</span>
                     </div>
                     <p class="mt-2 text-sm leading-relaxed text-slate-600">{{review.comment}}</p>
                   </div>

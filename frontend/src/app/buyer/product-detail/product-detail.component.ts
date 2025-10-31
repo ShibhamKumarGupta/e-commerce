@@ -183,10 +183,6 @@ export class ProductDetailComponent implements OnInit {
     });
   }
 
-  getStars(rating: number): number[] {
-    return Array(5).fill(0).map((_, i) => i < rating ? 1 : 0);
-  }
-
   getStarPercentage(stars: number): number {
     if (!this.product || this.product.numReviews === 0) return 0;
     const count = this.product.reviews.filter(r => Math.floor(r.rating) === stars).length;
