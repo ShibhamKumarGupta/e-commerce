@@ -124,11 +124,11 @@ export class HomeComponent implements OnInit {
       background: 'url("https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&q=80&w=1920") center/cover no-repeat'
     },
     {
-      title: 'Home Essentials',
-      subtitle: 'Transform your living space with our curated home collection',
+      title: 'Sports & Outdoors',
+      subtitle: 'Gear up for adventure with our premium sports collection',
       buttonText: 'Discover',
-      buttonLink: '/products?category=home',
-      background: 'url("https://images.unsplash.com/photo-1484101403633-562f891dc89a?auto=format&fit=crop&q=80&w=1920") center/cover no-repeat'
+      buttonLink: '/products?category=sports',
+      background: 'url("https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&q=80&w=1920") center/cover no-repeat'
     }
   ];
 

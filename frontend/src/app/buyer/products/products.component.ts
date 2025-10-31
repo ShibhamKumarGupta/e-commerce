@@ -30,6 +30,7 @@ export class ProductsComponent implements OnInit {
   searchQuery = '';
   sortBy = 'createdAt';
   sortOrder: 'asc' | 'desc' = 'desc';
+  showFilters = true;
 
   constructor(
     private route: ActivatedRoute,
@@ -128,6 +129,10 @@ export class ProductsComponent implements OnInit {
     this.selectedCategories = [];
     this.currentPage = 1;
     this.updateUrlAndLoad();
+  }
+
+  toggleFilters(): void {
+    this.showFilters = !this.showFilters;
   }
 
   private updateUrlAndLoad(): void {
