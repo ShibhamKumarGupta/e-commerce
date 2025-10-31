@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { ResponsiveTableService } from './core/services/responsive-table.service';
 
 @Component({
   selector: 'app-root',
@@ -11,7 +12,7 @@ export class AppComponent implements OnInit {
   title = 'Admin Panel';
   showNavbar = true;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private responsiveTable: ResponsiveTableService) {}
 
   ngOnInit(): void {
     if ('scrollRestoration' in history) {
@@ -27,6 +28,9 @@ export class AppComponent implements OnInit {
     });
 
     this.scrollToTop();
+
+    // Initialize global responsive-table behavior
+    this.responsiveTable.init();
   }
 
   private scrollToTop(): void {

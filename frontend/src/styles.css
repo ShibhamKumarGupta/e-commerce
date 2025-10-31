@@ -123,3 +123,39 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+/* Mobile: transform tables into card-like rows */
+@media (max-width: 768px) {
+  .responsive-table {
+    width: 100%;
+    border: 0;
+  }
+  .responsive-table thead {
+    display: none;
+  }
+  .responsive-table tbody tr {
+    display: block;
+    background: #ffffff;
+    border: 1px solid #e5e7eb; /* gray-200 */
+    border-radius: 0.75rem; /* rounded-xl */
+    margin-bottom: 0.75rem; /* mb-3 */
+    overflow: hidden;
+  }
+  .responsive-table tbody td {
+    display: grid;
+    grid-template-columns: 9rem 1fr; /* label, value */
+    gap: 0.5rem;
+    padding: 0.75rem 1rem; /* px-4 py-3 */
+    border: 0;
+    border-bottom: 1px solid #f3f4f6; /* gray-100 */
+    white-space: normal; /* allow wrapping in cards */
+  }
+  .responsive-table tbody td:last-child {
+    border-bottom: 0;
+  }
+  .responsive-table tbody td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #6b7280; /* gray-500 */
+  }
+}
