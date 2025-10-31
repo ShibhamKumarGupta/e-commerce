@@ -77,6 +77,32 @@
         </div>
       </div>
 
+      <!-- Commission Rate Info -->
+      <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl shadow-md p-6 mb-8 text-white">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <div class="bg-white bg-opacity-20 rounded-lg p-3 mr-4">
+              <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold mb-1">Platform Commission</h3>
+              <p class="text-sm text-blue-100">
+                The platform charges <span class="font-bold text-xl">{{commissionRate}}%</span> commission on each sale
+              </p>
+              <p class="text-sm text-blue-100 mt-1">
+                You earn <span class="font-bold">{{100 - commissionRate}}%</span> from every order after delivery
+              </p>
+            </div>
+          </div>
+          <div class="hidden md:block text-right">
+            <p class="text-3xl font-bold">{{commissionRate}}%</p>
+            <p class="text-sm text-blue-100">Commission Rate</p>
+          </div>
+        </div>
+      </div>
+
       <!-- Quick Actions -->
       <div class="bg-white rounded-xl shadow-md p-6 mb-8">
         <h2 class="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>

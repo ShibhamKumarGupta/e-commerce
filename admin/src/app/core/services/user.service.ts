@@ -57,4 +57,10 @@ export class UserService {
       map(response => response.data.monthlyGrowth)
     );
   }
+
+  updateCommissionRate(id: string, commissionRate: number): Observable<any> {
+    return this.apiService.patch<any>(`/users/${id}/commission-rate`, { commissionRate }).pipe(
+      map(response => response.data.user)
+    );
+  }
 }

@@ -27,6 +27,7 @@ export interface ISubOrder extends MongoDocument {
   orderStatus: OrderStatus;
   paymentStatus: PaymentStatus;
   sellerApprovalStatus: SellerApprovalStatus;
+  earningsReleased: boolean; // true when earnings should be counted (after delivery approval)
   deliveredAt?: Date;
   refundResult?: {
     id: string;

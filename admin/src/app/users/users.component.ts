@@ -27,6 +27,10 @@ export class UsersComponent implements OnInit {
   showDeleteModal = false;
   selectedUser: any = null;
 
+  // Commission Rate Edit
+  editingCommissionUserId: string | null = null;
+  editingCommissionRate: number = 0;
+
   constructor(
     private userService: UserService,
     private authService: AuthService,
@@ -156,5 +160,50 @@ export class UsersComponent implements OnInit {
 
   get pages(): number[] {
     return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
+
+  // Commission Rate Management
+  startEditCommission(user: any): void {
+    if (user.role !== 'seller') {
+      alert('Commission rate can only be set for sellers');
+      return;
+    }
+    this.editingCommissionUserId = user._id;
+    this.editingCommissionRate = user.commissionRate || 20;
+  }
+
+  cancelEditCommission(): void {
+    this.editingCommissionUserId = null;
+    this.editingCommissionRate = 0;
+  }
+
+  saveCommissionRate(user: any): void {
+    if (this.editingCommissionRate < 0 || this.editingCommissionRate > 50) {
+      alert('Commission rate must be between 0% and 50%');
+      return;
+    }
+
+    this.userService.updateCommissionRate(user._id, this.editingCommissionRate).subscribe({
+      next: (updatedUser) => {
+        user.commissionRate = updatedUser.commissionRate;
+        this.editingCommissionUserId = null;
+        alert('Commission rate updated successfully');
+      },
+      error: (error) => {
+        console.error('Error updating commission rate:', error);
+        alert(error.error?.message || 'Failed to update commission rate');
+      }
+    });
+  }
+
+  isEditingCommission(userId: string): boolean {
+    return this.editingCommissionUserId === userId;
+  }
+
+  getCommissionDisplay(user: any): string {
+    if (user.role !== 'seller') {
+      return 'N/A';
+    }
+    return `${user.commissionRate || 20}%`;
   }
 }

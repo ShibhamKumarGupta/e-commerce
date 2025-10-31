@@ -105,6 +105,7 @@
               <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
               <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
               <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+              <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Commission Rate</th>
               <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
               <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
               <th class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
@@ -131,6 +132,50 @@
                 <span [class]="'px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ' + getRoleBadgeClass(user.role)">
                   {{user.role}}
                 </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div *ngIf="!isEditingCommission(user._id)" class="flex items-center gap-2">
+                  <span class="text-sm font-medium text-gray-900">{{getCommissionDisplay(user)}}</span>
+                  <button
+                    *ngIf="user.role === 'seller'"
+                    (click)="startEditCommission(user)"
+                    class="text-blue-600 hover:text-blue-800 transition-colors"
+                    title="Edit commission rate"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                    </svg>
+                  </button>
+                </div>
+                <div *ngIf="isEditingCommission(user._id)" class="flex items-center gap-2">
+                  <input
+                    type="number"
+                    [(ngModel)]="editingCommissionRate"
+                    min="0"
+                    max="50"
+                    step="1"
+                    class="w-20 px-2 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  />
+                  <span class="text-sm text-gray-600">%</span>
+                  <button
+                    (click)="saveCommissionRate(user)"
+                    class="text-green-600 hover:text-green-800 transition-colors"
+                    title="Save"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </button>
+                  <button
+                    (click)="cancelEditCommission()"
+                    class="text-red-600 hover:text-red-800 transition-colors"
+                    title="Cancel"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span [class]="'px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ' + (user.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800')">

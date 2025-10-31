@@ -45,7 +45,8 @@ export class SubOrderService extends AbstractService<ISubOrder> {
       commissionRate,
       sellerEarnings,
       orderStatus: OrderStatus.PENDING,
-      paymentStatus: PaymentStatus.PENDING
+      paymentStatus: PaymentStatus.PENDING,
+      earningsReleased: false // Earnings not released until delivery
     } as any);
 
     return subOrder;
@@ -125,10 +126,18 @@ export class SubOrderService extends AbstractService<ISubOrder> {
       subOrder.deliveredAt = new Date();
       console.log(`[SubOrder Service] Set deliveredAt timestamp`);
       
-      // Auto-update payment status to 'paid' when delivered (for both COD and Stripe)
-      // COD: Payment received on delivery
-      // Stripe: Ensures payment status is synced to PAID if not already
       const masterOrder = subOrder.masterOrder as any;
+      
+      // Release earnings when order is delivered (for both COD and Stripe)
+      // This ensures earnings are only counted after admin approves delivery
+      if (!subOrder.earningsReleased) {
+        console.log(`[SubOrder Service] Releasing earnings for delivered order`);
+        subOrder.earningsReleased = true;
+      }
+      
+      // Update payment status based on payment method
+      // COD: Payment received on delivery
+      // Stripe: Sync payment status to PAID if not already (should already be PAID from payment)
       if (masterOrder && subOrder.paymentStatus !== PaymentStatus.PAID) {
         console.log(`[SubOrder Service] Checking payment status. Master payment method: ${masterOrder.paymentMethod}, Current payment status: ${subOrder.paymentStatus}`);
         if (masterOrder.paymentMethod === 'cod') {
@@ -208,6 +217,12 @@ export class SubOrderService extends AbstractService<ISubOrder> {
       refundedAt: new Date()
     };
 
+    // When refunded, earnings should no longer be counted
+    if (subOrder.earningsReleased) {
+      console.log(`[SubOrder Service] Revoking earnings for refunded order ${subOrderId}`);
+      subOrder.earningsReleased = false;
+    }
+
     await subOrder.save();
     return subOrder;
   }
@@ -215,7 +230,7 @@ export class SubOrderService extends AbstractService<ISubOrder> {
   async getSellerEarnings(sellerId: string, startDate?: Date, endDate?: Date): Promise<any> {
     const filter: any = {
       seller: new Types.ObjectId(sellerId),
-      paymentStatus: PaymentStatus.PAID
+      earningsReleased: true // Only count earnings that have been released (after delivery)
     };
 
     if (startDate || endDate) {
@@ -312,7 +327,7 @@ export class SubOrderService extends AbstractService<ISubOrder> {
 
   async getCommissionBreakdown(startDate?: Date, endDate?: Date): Promise<any> {
     const filter: any = {
-      paymentStatus: PaymentStatus.PAID
+      earningsReleased: true // Only count earnings that have been released (after delivery)
     };
 
     if (startDate || endDate) {
@@ -392,7 +407,7 @@ export class SubOrderService extends AbstractService<ISubOrder> {
       {
         $match: {
           seller: new (require('mongoose').Types.ObjectId)(sellerId),
-          paymentStatus: PaymentStatus.PAID,
+          earningsReleased: true, // Only count earnings that have been released (after delivery)
           createdAt: { $gte: startDate, $lte: endDate }
         }
       },
@@ -426,7 +441,7 @@ export class SubOrderService extends AbstractService<ISubOrder> {
       { 
         $match: { 
           seller: new (require('mongoose').Types.ObjectId)(sellerId),
-          paymentStatus: PaymentStatus.PAID 
+          earningsReleased: true // Only count earnings that have been released (after delivery)
         } 
       },
       { $unwind: '$orderItems' },

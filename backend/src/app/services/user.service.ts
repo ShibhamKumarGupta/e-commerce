@@ -149,4 +149,27 @@ export class UserService extends AbstractService<IUser> {
 
     return result;
   }
+
+  async updateCommissionRate(userId: string, commissionRate: number): Promise<IUser> {
+    // Validate commission rate range
+    if (commissionRate < 0 || commissionRate > 50) {
+      throw ErrorHelper.badRequest('Commission rate must be between 0% and 50%');
+    }
+
+    const user = await this.userRepository.findById(userId);
+
+    if (!user) {
+      throw ErrorHelper.notFound('User not found');
+    }
+
+    // Only sellers should have commission rates
+    if (user.role !== UserRole.SELLER) {
+      throw ErrorHelper.badRequest('Commission rate can only be set for sellers');
+    }
+
+    user.commissionRate = commissionRate;
+    await user.save();
+
+    return user;
+  }
 }

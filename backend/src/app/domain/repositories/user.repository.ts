@@ -52,9 +52,9 @@ const userSchema = new Schema<IUser>(
     },
     commissionRate: {
       type: Number,
-      default: 10,
+      default: 20,
       min: 0,
-      max: 100
+      max: 50
     }
   },
   {

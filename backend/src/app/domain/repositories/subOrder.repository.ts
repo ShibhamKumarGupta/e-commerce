@@ -92,6 +92,10 @@ const subOrderSchema = new Schema<ISubOrder>(
       enum: Object.values(SellerApprovalStatus),
       default: SellerApprovalStatus.PENDING
     },
+    earningsReleased: {
+      type: Boolean,
+      default: false
+    },
     deliveredAt: {
       type: Date
     },

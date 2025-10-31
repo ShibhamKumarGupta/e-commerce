@@ -19,6 +19,7 @@ export interface User {
   };
   avatar?: string;
   isActive: boolean;
+  commissionRate?: number;
   createdAt: string;
   updatedAt: string;
 }

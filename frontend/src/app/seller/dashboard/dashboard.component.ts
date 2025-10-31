@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductService } from '../../core/services/product.service';
 import { SubOrderService } from '../../core/services/sub-order.service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-seller-dashboard',
@@ -18,14 +19,24 @@ export class SellerDashboardComponent implements OnInit {
     totalCommission: 0
   };
   recentOrders: any[] = [];
+  commissionRate = 20; // Default value
 
   constructor(
     private productService: ProductService,
-    private subOrderService: SubOrderService
+    private subOrderService: SubOrderService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
     this.loadDashboardData();
+    this.loadCommissionRate();
+  }
+
+  loadCommissionRate(): void {
+    const user = this.authService.currentUser;
+    if (user && user.commissionRate !== undefined) {
+      this.commissionRate = user.commissionRate;
+    }
   }
 
   loadDashboardData(): void {

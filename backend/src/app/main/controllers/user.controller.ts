@@ -48,4 +48,10 @@ export class UserController {
     );
     ResponseUtils.success(res, { monthlyGrowth: data }, 'Monthly user growth retrieved successfully');
   });
+
+  updateCommissionRate = asyncHandler(async (req: AuthRequest, res: Response) => {
+    const { commissionRate } = req.body;
+    const user = await this.userService.updateCommissionRate(req.params.id, commissionRate);
+    ResponseUtils.success(res, { user }, 'Commission rate updated successfully');
+  });
 }

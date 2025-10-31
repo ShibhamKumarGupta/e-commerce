@@ -331,6 +331,7 @@ export class UserRoutes {
     this.router.get('/analytics/monthly-growth', this.userController.getMonthlyUserGrowth);
     this.router.get('/:id', this.userController.getUserById);
     this.router.put('/:id', this.userController.updateUser);
+    this.router.patch('/:id/commission-rate', this.userController.updateCommissionRate);
     this.router.delete('/:id', this.userController.deleteUser);
     this.router.patch('/:id/toggle-status', this.userController.toggleUserStatus);
   }
