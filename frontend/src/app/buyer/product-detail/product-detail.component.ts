@@ -17,6 +17,10 @@ export class ProductDetailComponent implements OnInit {
   selectedImage = 0;
   quantity = 1;
   similarProducts: Product[] = [];
+  showZoomPreview = false;
+  showImageModal = false;
+  zoomPosition = { x: 0, y: 0 };
+  zoomScale = 2.5; // How much to zoom in
   
   // Review form
   showReviewForm = false;
@@ -71,6 +75,36 @@ export class ProductDetailComponent implements OnInit {
 
   selectImage(index: number): void {
     this.selectedImage = index;
+  }
+
+  openImageModal(): void {
+    this.showImageModal = true;
+  }
+
+  closeImageModal(): void {
+    this.showImageModal = false;
+  }
+
+  prevImage(): void {
+    if (this.product && this.product.images.length > 1) {
+      this.selectedImage = this.selectedImage > 0 ? this.selectedImage - 1 : this.product.images.length - 1;
+    }
+  }
+
+  nextImage(): void {
+    if (this.product && this.product.images.length > 1) {
+      this.selectedImage = this.selectedImage < this.product.images.length - 1 ? this.selectedImage + 1 : 0;
+    }
+  }
+
+  onImageMouseMove(event: MouseEvent): void {
+    const rect = (event.target as HTMLElement).getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / rect.width) * 100;
+    const y = ((event.clientY - rect.top) / rect.height) * 100;
+    
+    // Constrain the position to stay within bounds
+    this.zoomPosition.x = Math.max(0, Math.min(100, x));
+    this.zoomPosition.y = Math.max(0, Math.min(100, y));
   }
 
   addToCart(): void {

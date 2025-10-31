@@ -26,11 +26,34 @@
         </nav>
 
         <div class="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1.2fr),minmax(0,1fr)]">
-          <div class="space-y-6">
+          <div class="space-y-6 relative">
             <div class="overflow-hidden rounded-3xl border border-white/40 bg-white/80 p-8 shadow-2xl shadow-primary-500/20 backdrop-blur">
               <div class="relative flex items-center justify-center rounded-3xl bg-gradient-to-br from-primary-500/10 via-white to-sky-400/10 p-6">
-                <img [src]="product.images[selectedImage] || 'assets/placeholder.jpg'" [alt]="product.name" class="h-96 w-full max-w-xl object-contain" />
-                <span class="absolute left-6 top-6 rounded-full bg-white/70 px-4 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Featured</span>
+                <img
+                  [src]="product.images[selectedImage] || 'assets/placeholder.jpg'"
+                  [alt]="product.name"
+                  class="h-96 w-full max-w-xl object-contain cursor-zoom-in transition-transform duration-200 hover:scale-105"
+                  (mouseenter)="showZoomPreview = true"
+                  (mouseleave)="showZoomPreview = false"
+                  (mousemove)="onImageMouseMove($event)"
+                  (click)="openImageModal()" />
+                <!-- <span class="absolute left-6 top-6 rounded-full bg-white/70 px-4 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Featured</span> -->
+              </div>
+            </div>
+
+            <!-- Zoom Preview -->
+            <div
+              *ngIf="showZoomPreview"
+              class="absolute left-full top-0 ml-4 z-50 w-96 h-96 bg-white rounded-lg shadow-2xl border border-slate-200 overflow-hidden lg:block hidden"
+              (mouseenter)="showZoomPreview = true"
+              (mouseleave)="showZoomPreview = false">
+              <div class="w-full h-full relative overflow-hidden">
+                <img
+                  [src]="product.images[selectedImage] || 'assets/placeholder.jpg'"
+                  [alt]="product.name"
+                  class="absolute inset-0 w-full h-full object-cover transition-none"
+                  [style.transform]="'scale(' + zoomScale + ')'"
+                  [style.transform-origin]="zoomPosition.x + '% ' + zoomPosition.y + '%'" />
               </div>
             </div>
 
@@ -248,5 +271,57 @@
         </div>
       </div>
     </section>
+
+    <!-- Full Screen Image Modal -->
+    <div *ngIf="showImageModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm" (click)="closeImageModal()">
+      <div class="relative max-w-5xl max-h-screen p-4" (click)="$event.stopPropagation()">
+        <!-- Close Button -->
+        <button
+          (click)="closeImageModal()"
+          class="absolute -top-12 right-0 z-10 rounded-full bg-white/10 p-2 text-white backdrop-blur-sm transition hover:bg-white/20">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+
+        <!-- Main Image -->
+        <div class="relative">
+          <img
+            [src]="product.images[selectedImage] || 'assets/placeholder.jpg'"
+            [alt]="product.name"
+            class="max-h-screen w-full object-contain" />
+
+          <!-- Navigation Arrows -->
+          <button
+            *ngIf="product.images.length > 1"
+            (click)="prevImage()"
+            class="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-3 text-white backdrop-blur-sm transition hover:bg-black/70">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+          </button>
+
+          <button
+            *ngIf="product.images.length > 1"
+            (click)="nextImage()"
+            class="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-3 text-white backdrop-blur-sm transition hover:bg-black/70">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Thumbnail Strip -->
+        <div *ngIf="product.images.length > 1" class="mt-4 flex justify-center gap-2 overflow-x-auto">
+          <button
+            *ngFor="let image of product.images; let i = index"
+            (click)="selectImage(i)"
+            class="flex-shrink-0 rounded-lg border-2 p-1 transition"
+            [ngClass]="selectedImage === i ? 'border-primary-500' : 'border-transparent'">
+            <img [src]="image" [alt]="product.name" class="h-16 w-16 rounded object-cover" />
+          </button>
+        </div>
+      </div>
+    </div>
   </ng-container>
 </div>
