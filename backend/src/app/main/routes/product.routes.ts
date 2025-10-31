@@ -80,5 +80,19 @@ export class ProductRoutes {
       AuthMiddleware.isAdmin,
       this.productController.adminDeleteProduct
     );
+
+    this.router.get(
+      '/admin/all',
+      AuthMiddleware.authenticate,
+      AuthMiddleware.isAdmin,
+      this.productController.adminGetAllProducts
+    );
+
+    this.router.delete(
+      '/admin/:id/reviews',
+      AuthMiddleware.authenticate,
+      AuthMiddleware.isAdmin,
+      this.productController.adminDeleteReview
+    );
   }
 }

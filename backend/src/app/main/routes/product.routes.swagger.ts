@@ -386,4 +386,117 @@
  *         $ref: '#/components/responses/UnauthorizedError'
  *       403:
  *         $ref: '#/components/responses/ForbiddenError'
+ *
+ * /products/admin/all:
+ *   get:
+ *     tags: [Products]
+ *     summary: Get all products for admin
+ *     description: Retrieve a paginated list of all products (including inactive) with reviews for admin moderation
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 12
+ *         description: Number of items per page
+ *       - in: query
+ *         name: category
+ *         schema:
+ *           type: string
+ *         description: Filter by category
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search by product name
+ *     responses:
+ *       200:
+ *         description: Products retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Products retrieved successfully
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     products:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Product'
+ *                     total:
+ *                       type: integer
+ *                     page:
+ *                       type: integer
+ *                     pages:
+ *                       type: integer
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ */
+
+/**
+ * @swagger
+ * /products/admin/{id}/reviews:
+ *   delete:
+ *     tags: [Products]
+ *     summary: Delete a review from a product
+ *     description: Delete a specific review from a product (admin only)
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Product ID
+ *       - in: query
+ *         name: reviewIndex
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Index of the review to delete
+ *     responses:
+ *       200:
+ *         description: Review deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Review deleted successfully
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     product:
+ *                       $ref: '#/components/schemas/Product'
+ *       400:
+ *         description: Invalid review index
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       403:
+ *         $ref: '#/components/responses/ForbiddenError'
+ *       404:
+ *         description: Product not found
  */

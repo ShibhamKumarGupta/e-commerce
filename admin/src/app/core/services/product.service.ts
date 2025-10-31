@@ -66,4 +66,16 @@ export class ProductService {
   adminDeleteProduct(id: string): Observable<any> {
     return this.apiService.delete<any>(`/products/admin/${id}`);
   }
+
+  adminGetAllProducts(query?: ProductQuery): Observable<ProductResponse> {
+    return this.apiService.get<any>('/products/admin/all', query).pipe(
+      map(response => response.data)
+    );
+  }
+
+  adminDeleteReview(productId: string, reviewIndex: number): Observable<any> {
+    return this.apiService.delete<any>(`/products/admin/${productId}/reviews?reviewIndex=${reviewIndex}`).pipe(
+      map(response => response.data.product)
+    );
+  }
 }
