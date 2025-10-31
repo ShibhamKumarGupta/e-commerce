@@ -1,7 +1,8 @@
 export enum UserRole {
   ADMIN = 'admin',
   BUYER = 'buyer',
-  SELLER = 'seller'
+  SELLER = 'seller',
+  ORDER_MANAGER = 'order-manager'
 }
 
 export interface User {

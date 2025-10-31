@@ -29,31 +29,31 @@ export class OrderRoutes {
 
     this.router.get(
       '/admin/all',
-      AuthMiddleware.isAdmin,
+      AuthMiddleware.isAdminOrOrderManager,
       this.orderController.getAllOrders
     );
 
     this.router.get(
       '/admin/stats',
-      AuthMiddleware.isAdmin,
+      AuthMiddleware.isAdminOrOrderManager,
       this.orderController.getOrderStats
     );
 
     this.router.get(
       '/admin/analytics/monthly-revenue',
-      AuthMiddleware.isAdmin,
+      AuthMiddleware.isAdminOrOrderManager,
       this.orderController.getMonthlyRevenue
     );
 
     this.router.get(
       '/admin/analytics/top-products',
-      AuthMiddleware.isAdmin,
+      AuthMiddleware.isAdminOrOrderManager,
       this.orderController.getTopProducts
     );
 
     this.router.patch(
       '/:id/status',
-      AuthMiddleware.authorize(UserRole.SELLER, UserRole.ADMIN),
+      AuthMiddleware.authorize(UserRole.SELLER, UserRole.ADMIN, UserRole.ORDER_MANAGER),
       this.orderController.updateOrderStatus
     );
 

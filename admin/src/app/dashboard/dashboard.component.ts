@@ -15,6 +15,7 @@ import { Router } from '@angular/router';
 export class DashboardComponent implements OnInit {
   loading = false;
   currentUser: any = null;
+  isOrderManager = false;
 
   stats = {
     users: {
@@ -64,9 +65,10 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentUser = this.authService.currentUser;
+    this.isOrderManager = this.authService.isOrderManager;
     
-    if (!this.authService.isAdmin) {
-      alert('Access denied. Admin privileges required.');
+    if (!this.authService.isAdminOrOrderManager) {
+      alert('Access denied. Admin or Order Manager privileges required.');
       this.router.navigate(['/login']);
       return;
     }
@@ -77,19 +79,38 @@ export class DashboardComponent implements OnInit {
   loadDashboardData(): void {
     this.loading = true;
 
-    this.dashboardService.getDashboardStats().subscribe({
-      next: (data) => {
-        this.stats = data;
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Error loading dashboard stats:', error);
-        this.loading = false;
-      }
-    });
+    if (this.isOrderManager) {
+      // Order Manager only loads order stats
+      this.orderService.getOrderStats().subscribe({
+        next: (orderStats) => {
+          this.stats.orders = orderStats;
+          this.loading = false;
+        },
+        error: (error) => {
+          console.error('Error loading order stats:', error);
+          this.loading = false;
+        }
+      });
+    } else {
+      // Admin loads all stats
+      this.dashboardService.getDashboardStats().subscribe({
+        next: (data) => {
+          this.stats = data;
+          this.loading = false;
+        },
+        error: (error) => {
+          console.error('Error loading dashboard stats:', error);
+          this.loading = false;
+        }
+      });
+    }
 
     this.loadRecentOrders();
-    this.loadCommissionBreakdown();
+    
+    // Only admin loads commission breakdown
+    if (!this.isOrderManager) {
+      this.loadCommissionBreakdown();
+    }
   }
 
   loadCommissionBreakdown(): void {

@@ -11,6 +11,7 @@ export class NavbarComponent implements OnInit {
   currentUser: any = null;
   showUserMenu = false;
   showMobileMenu = false;
+  isOrderManager = false;
 
   constructor(
     private authService: AuthService,
@@ -29,6 +30,7 @@ export class NavbarComponent implements OnInit {
   ngOnInit(): void {
     this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
+      this.isOrderManager = this.authService.isOrderManager;
     });
   }
 

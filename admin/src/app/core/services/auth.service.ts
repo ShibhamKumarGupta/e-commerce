@@ -92,4 +92,12 @@ export class AuthService {
   get isAdmin(): boolean {
     return this.currentUser?.role === 'admin';
   }
+
+  get isOrderManager(): boolean {
+    return this.currentUser?.role === 'order-manager';
+  }
+
+  get isAdminOrOrderManager(): boolean {
+    return this.isAdmin || this.isOrderManager;
+  }
 }

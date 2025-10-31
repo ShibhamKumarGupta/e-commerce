@@ -25,8 +25,8 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Redirect if already logged in as admin
-    if (this.authService.isAuthenticated && this.authService.isAdmin) {
+    // Redirect if already logged in as admin or order-manager
+    if (this.authService.isAuthenticated && this.authService.isAdminOrOrderManager) {
       this.router.navigate(['/dashboard']);
     }
   }
@@ -46,9 +46,9 @@ export class LoginComponent implements OnInit {
       next: (response) => {
         const user = this.authService.currentUser;
         
-        // Check if user is admin
-        if (user?.role !== 'admin') {
-          this.error = 'Access denied. Admin privileges required.';
+        // Check if user is admin or order-manager
+        if (user?.role !== 'admin' && user?.role !== 'order-manager') {
+          this.error = 'Access denied. Admin or Order Manager privileges required.';
           this.authService.logout();
           this.loading = false;
           return;

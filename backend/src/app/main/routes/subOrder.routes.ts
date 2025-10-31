@@ -55,25 +55,25 @@ export class SubOrderRoutes {
 
     this.router.patch(
       '/:id/status',
-      AuthMiddleware.authorize(UserRole.SELLER, UserRole.ADMIN),
+      AuthMiddleware.authorize(UserRole.SELLER, UserRole.ADMIN, UserRole.ORDER_MANAGER),
       this.subOrderController.updateSubOrderStatus
     );
 
     this.router.patch(
       '/:id/approval',
-      AuthMiddleware.authorize(UserRole.SELLER, UserRole.ADMIN),
+      AuthMiddleware.authorize(UserRole.SELLER, UserRole.ADMIN, UserRole.ORDER_MANAGER),
       this.subOrderController.updateSellerApproval
     );
 
     this.router.get(
       '/admin/all',
-      AuthMiddleware.isAdmin,
+      AuthMiddleware.isAdminOrOrderManager,
       this.subOrderController.getAllSubOrders
     );
 
     this.router.get(
       '/admin/commission-breakdown',
-      AuthMiddleware.isAdmin,
+      AuthMiddleware.isAdminOrOrderManager,
       this.subOrderController.getCommissionBreakdown
     );
 

@@ -54,4 +54,6 @@ export class AuthMiddleware {
   static isAdmin = AuthMiddleware.authorize(UserRole.ADMIN);
   static isSeller = AuthMiddleware.authorize(UserRole.SELLER, UserRole.ADMIN);
   static isBuyer = AuthMiddleware.authorize(UserRole.BUYER, UserRole.ADMIN);
+  static isOrderManager = AuthMiddleware.authorize(UserRole.ORDER_MANAGER, UserRole.ADMIN);
+  static isAdminOrOrderManager = AuthMiddleware.authorize(UserRole.ADMIN, UserRole.ORDER_MANAGER);
 }

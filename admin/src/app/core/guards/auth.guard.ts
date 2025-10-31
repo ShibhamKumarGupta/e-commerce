@@ -13,9 +13,9 @@ export class AuthGuard implements CanActivate {
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
     if (this.authService.isAuthenticated) {
-      // Check if user is admin
-      if (!this.authService.isAdmin) {
-        alert('Access denied. Admin privileges required.');
+      // Check if user is admin or order-manager
+      if (!this.authService.isAdminOrOrderManager) {
+        alert('Access denied. Admin or Order Manager privileges required.');
         this.authService.logout();
         this.router.navigate(['/login']);
         return false;

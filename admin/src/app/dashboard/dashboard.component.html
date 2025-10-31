@@ -10,12 +10,67 @@
   <div class="container mx-auto px-4 py-8">
     <!-- Header -->
     <div class="mb-8">
-      <h1 class="text-4xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
+      <h1 class="text-4xl font-bold text-gray-900 mb-2">
+        {{ isOrderManager ? 'Order Manager Dashboard' : 'Admin Dashboard' }}
+      </h1>
       <p class="text-gray-600">Welcome back, {{currentUser?.name || 'Admin'}}</p>
     </div>
 
-    <!-- Stats Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <!-- Stats Grid - Order Manager sees only order-related stats -->
+    <div *ngIf="isOrderManager" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <!-- Total Orders -->
+      <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-transform">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-purple-100 text-sm mb-1 font-medium">Total Orders</p>
+            <p class="text-4xl font-bold mb-2">{{stats.orders.totalOrders}}</p>
+            <p class="text-purple-100 text-xs">
+              <span class="font-semibold">{{stats.orders.pendingOrders}}</span> pending
+            </p>
+          </div>
+          <div class="bg-white bg-opacity-20 rounded-lg p-3">
+            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Processing Orders -->
+      <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-transform">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-blue-100 text-sm mb-1 font-medium">Processing Orders</p>
+            <p class="text-4xl font-bold mb-2">{{stats.orders.processingOrders}}</p>
+            <p class="text-blue-100 text-xs">Orders in progress</p>
+          </div>
+          <div class="bg-white bg-opacity-20 rounded-lg p-3">
+            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Delivered Orders -->
+      <div class="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-transform">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-green-100 text-sm mb-1 font-medium">Delivered Orders</p>
+            <p class="text-4xl font-bold mb-2">{{stats.orders.deliveredOrders}}</p>
+            <p class="text-green-100 text-xs">Successfully completed</p>
+          </div>
+          <div class="bg-white bg-opacity-20 rounded-lg p-3">
+            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Grid - Admin sees all stats -->
+    <div *ngIf="!isOrderManager" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <!-- Total Users -->
       <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-transform">
         <div class="flex justify-between items-start">
@@ -90,8 +145,29 @@
       </div>
     </div>
 
-    <!-- Secondary Stats -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <!-- Secondary Stats - Order Manager sees only order status -->
+    <div *ngIf="isOrderManager" class="grid grid-cols-1 gap-6 mb-8">
+      <div class="bg-white rounded-xl shadow-md p-6">
+        <h3 class="text-lg font-semibold text-gray-700 mb-4">Order Status</h3>
+        <div class="space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-gray-600">Pending</span>
+            <span class="font-bold text-yellow-600">{{stats.orders.pendingOrders}}</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-600">Processing</span>
+            <span class="font-bold text-blue-600">{{stats.orders.processingOrders}}</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-gray-600">Delivered</span>
+            <span class="font-bold text-green-600">{{stats.orders.deliveredOrders}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Secondary Stats - Admin sees all -->
+    <div *ngIf="!isOrderManager" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
       <div class="bg-white rounded-xl shadow-md p-6">
         <h3 class="text-lg font-semibold text-gray-700 mb-4">User Distribution</h3>
         <div class="space-y-3">
@@ -147,8 +223,27 @@
       </div>
     </div>
 
-    <!-- Quick Actions -->
-    <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+    <!-- Quick Actions - Order Manager sees only order-related actions -->
+    <div *ngIf="isOrderManager" class="bg-white rounded-xl shadow-md p-6 mb-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">Quick Actions</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <button routerLink="/orders" class="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-4 px-6 rounded-lg transition-all transform hover:scale-105 shadow-md flex items-center justify-center space-x-2">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/>
+          </svg>
+          <span>Manage Orders</span>
+        </button>
+        <button routerLink="/profile" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg transition-all transform hover:scale-105 shadow-md flex items-center justify-center space-x-2">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+          </svg>
+          <span>My Profile</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Quick Actions - Admin sees all -->
+    <div *ngIf="!isOrderManager" class="bg-white rounded-xl shadow-md p-6 mb-8">
       <h2 class="text-2xl font-bold text-gray-900 mb-6">Quick Actions</h2>
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
         <button routerLink="/users" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg transition-all transform hover:scale-105 shadow-md flex items-center justify-center space-x-2">
@@ -178,8 +273,8 @@
       </div>
     </div>
 
-    <!-- Commission Breakdown -->
-    <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+    <!-- Commission Breakdown - Only for Admin -->
+    <div *ngIf="!isOrderManager" class="bg-white rounded-xl shadow-md p-6 mb-8">
       <h2 class="text-2xl font-bold text-gray-900 mb-6">Commission Breakdown</h2>
       
       <!-- Commission Totals -->
