@@ -113,21 +113,24 @@ export class HomeComponent implements OnInit {
       title: 'Unbeatable Tech Deals',
       subtitle: 'Discover our latest collection of gadgets and save big. Limited time only!',
       buttonText: 'Shop Now',
-      buttonLink: '/products?category=electronics',
+      buttonLink: '/products',
+      queryParams: { category: 'electronics' },
       background: 'url("https://images.unsplash.com/photo-1550009158-9ebf69173e03?auto=format&fit=crop&q=80&w=1920") center/cover no-repeat'
     },
     {
       title: 'Fashion Forward',
       subtitle: 'Elevate your style with our trending fashion collection',
       buttonText: 'Explore',
-      buttonLink: '/products?category=fashion',
+      buttonLink: '/products',
+      queryParams: { category: 'fashion' },
       background: 'url("https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&q=80&w=1920") center/cover no-repeat'
     },
     {
       title: 'Sports & Outdoors',
       subtitle: 'Gear up for adventure with our premium sports collection',
       buttonText: 'Discover',
-      buttonLink: '/products?category=sports',
+      buttonLink: '/products',
+      queryParams: { category: 'sports' },
       background: 'url("https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&q=80&w=1920") center/cover no-repeat'
     }
   ];

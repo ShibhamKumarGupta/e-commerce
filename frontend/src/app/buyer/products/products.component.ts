@@ -30,7 +30,7 @@ export class ProductsComponent implements OnInit {
   searchQuery = '';
   sortBy = 'createdAt';
   sortOrder: 'asc' | 'desc' = 'desc';
-  showFilters = true;
+  showFilters = false;
 
   constructor(
     private route: ActivatedRoute,

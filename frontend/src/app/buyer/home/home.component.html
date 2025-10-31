@@ -1,6 +1,6 @@
 <div class="page-shell pt-20">
   <!-- Hero -->
-  <section class="relative py-12 sm:py-20 overflow-hidden">
+  <section class="relative pt-24 pb-12 sm:py-20 overflow-hidden">
     <div class="absolute inset-0">
       <div class="absolute -left-32 top-10 h-96 w-96 rounded-full bg-primary-500/40 blur-3xl"></div>
       <div class="absolute right-0 -bottom-12 h-72 w-72 rounded-full bg-sky-500/30 blur-3xl"></div>
@@ -9,7 +9,7 @@
       <div class="glass-card overflow-hidden shadow-2xl">
         <div class="absolute inset-0" [style.background]="heroSlides[currentSlide].background"></div>
         <div class="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/80 to-slate-900/30"></div>
-        <div class="relative z-10 grid gap-12 lg:grid-cols-2">
+        <div class="relative z-10 grid gap-12 lg:grid-cols-2 min-h-[70vh] lg:min-h-0">
           <div class="p-10 lg:p-14 flex flex-col justify-center">
             <span class="primary-pill w-fit mb-6">
               <span class="inline-block h-2 w-2 rounded-full bg-white animate-ping"></span>
@@ -24,6 +24,7 @@
             <div class="mt-10 flex flex-wrap items-center gap-4">
               <button
                 [routerLink]="heroSlides[currentSlide].buttonLink"
+                [queryParams]="heroSlides[currentSlide].queryParams"
                 class="inline-flex items-center justify-center gap-3 rounded-full bg-white px-8 py-3 font-semibold text-slate-900 shadow-lg shadow-primary-500/20 transition hover:-translate-y-0.5 hover:shadow-2xl">
                 {{heroSlides[currentSlide].buttonText}}
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
