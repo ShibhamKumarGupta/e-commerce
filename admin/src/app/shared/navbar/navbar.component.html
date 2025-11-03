@@ -108,8 +108,8 @@
           </div>
         </a>
 
+        <!-- Reports - visible to both Admin and Order Manager -->
         <a
-          *ngIf="!isOrderManager"
           routerLink="/reports"
           routerLinkActive="bg-blue-50 text-blue-600"
           class="px-4 py-2 rounded-lg font-medium text-gray-700 hover:bg-gray-100 transition-colors"
@@ -228,7 +228,6 @@
         Orders
       </a>
       <a
-        *ngIf="!isOrderManager"
         routerLink="/reports"
         routerLinkActive="bg-blue-50 text-blue-600"
         (click)="toggleMobileMenu()"

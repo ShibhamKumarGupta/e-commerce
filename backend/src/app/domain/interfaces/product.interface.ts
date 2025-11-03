@@ -21,4 +21,13 @@ export interface IProduct extends MongoDocument {
   numReviews: number;
   reviews: IReview[];
   isActive: boolean;
+  sold?: number;  // Track total units sold
+  
+  // Discount Management
+  discountPercentage?: number;  // 0-100 percentage
+  discountedPrice?: number;     // calculated price after discount
+  isOnSale?: boolean;           // flag to mark product on sale
+  isFlashDeal?: boolean;        // flag to mark as flash deal
+  saleStartDate?: Date;         // when discount starts
+  saleEndDate?: Date;           // when discount ends
 }

@@ -70,6 +70,92 @@
     </div>
   </section>
 
+  <!-- Trust Badges Bar -->
+  <section class="bg-white border-y border-slate-200 py-8">
+    <div class="page-container">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div class="flex flex-col items-center text-center group">
+          <div class="text-4xl mb-2 transform transition-transform group-hover:scale-110">👥</div>
+          <div class="text-2xl font-bold text-slate-900">{{trustBadges.totalCustomers}}+</div>
+          <div class="text-sm text-slate-600">Happy Customers</div>
+        </div>
+        <div class="flex flex-col items-center text-center group">
+          <div class="text-4xl mb-2 transform transition-transform group-hover:scale-110">📦</div>
+          <div class="text-2xl font-bold text-slate-900">{{trustBadges.totalOrders}}+</div>
+          <div class="text-sm text-slate-600">Orders Delivered</div>
+        </div>
+        <div class="flex flex-col items-center text-center group">
+          <div class="text-4xl mb-2 transform transition-transform group-hover:scale-110">🚚</div>
+          <div class="text-2xl font-bold text-slate-900">{{trustBadges.avgDeliveryDays}} Days</div>
+          <div class="text-sm text-slate-600">Avg Delivery Time</div>
+        </div>
+        <div class="flex flex-col items-center text-center group">
+          <div class="text-4xl mb-2 transform transition-transform group-hover:scale-110">⭐</div>
+          <div class="text-2xl font-bold text-slate-900">{{trustBadges.rating}}</div>
+          <div class="text-sm text-slate-600">Customer Rating</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Flash Deals Section -->
+  <section class="relative overflow-hidden py-14 bg-gradient-to-br from-red-50 via-orange-50 to-amber-50">
+    <div class="absolute inset-0 opacity-30">
+      <div class="absolute -left-20 top-10 h-80 w-80 rounded-full bg-red-300/40 blur-3xl"></div>
+      <div class="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-orange-300/40 blur-3xl"></div>
+    </div>
+    <div class="page-container relative">
+      <div class="flex flex-wrap items-center justify-between gap-6 mb-8">
+        <div>
+          <div class="flex items-center gap-3 mb-4">
+            <span class="inline-flex items-center gap-2 rounded-full bg-red-500 px-4 py-2 text-sm font-bold text-white animate-pulse">
+              ⚡ FLASH DEALS
+            </span>
+            <div class="flex items-center gap-2 text-slate-900">
+              <span class="text-sm font-semibold">Ends in:</span>
+              <div class="flex gap-2">
+                <div class="flex flex-col items-center bg-white rounded-lg px-3 py-2 shadow-md min-w-[50px]">
+                  <span class="text-2xl font-bold text-red-600">{{timeRemaining.hours.toString().padStart(2, '0')}}</span>
+                  <span class="text-xs text-slate-600">Hours</span>
+                </div>
+                <div class="flex flex-col items-center bg-white rounded-lg px-3 py-2 shadow-md min-w-[50px]">
+                  <span class="text-2xl font-bold text-red-600">{{timeRemaining.minutes.toString().padStart(2, '0')}}</span>
+                  <span class="text-xs text-slate-600">Mins</span>
+                </div>
+                <div class="flex flex-col items-center bg-white rounded-lg px-3 py-2 shadow-md min-w-[50px]">
+                  <span class="text-2xl font-bold text-red-600">{{timeRemaining.seconds.toString().padStart(2, '0')}}</span>
+                  <span class="text-xs text-slate-600">Secs</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <h2 class="section-heading text-slate-900">Limited Time Offers</h2>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div *ngFor="let product of flashDeals" class="relative group">
+          <div *ngIf="product.isOnSale && product.discountPercentage" class="absolute -top-3 -right-3 z-10 bg-red-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg transform rotate-12">
+            -{{product.discountPercentage}}% OFF
+          </div>
+          <div class="bg-white rounded-2xl p-5 shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-red-200 hover:border-red-400">
+            <a [routerLink]="['/products', product._id]" class="block overflow-hidden rounded-xl mb-4">
+              <img [src]="product.images[0] || 'assets/placeholder.jpg'" [alt]="product.name" class="w-full h-48 object-cover transform group-hover:scale-110 transition-transform duration-300" />
+            </a>
+            <h3 class="font-semibold text-slate-900 line-clamp-2 mb-2">{{product.name}}</h3>
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-2xl font-bold text-red-600">₹{{product.isOnSale && product.discountedPrice ? product.discountedPrice : product.price}}</span>
+              <span *ngIf="product.isOnSale && product.discountPercentage" class="text-sm text-slate-500 line-through">₹{{product.price}}</span>
+            </div>
+            <button (click)="addToCart(product)" [disabled]="product.stock === 0" class="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed">
+              {{product.stock === 0 ? 'Out of Stock' : 'Grab Now!'}}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Categories -->
   <section class="relative overflow-hidden py-12 bg-gradient-to-br from-[#eef3ff] via-white to-[#dbf8ff]">
     <div class="absolute inset-0 opacity-80">
@@ -171,6 +257,66 @@
     </div>
   </section> -->
 
+  <!-- New Arrivals Section -->
+  <section class="relative overflow-hidden py-14 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
+    <div class="absolute inset-0 opacity-40">
+      <div class="absolute -top-24 left-10 h-80 w-80 rounded-full bg-indigo-300/50 blur-3xl"></div>
+      <div class="absolute bottom-[-2rem] right-[-3rem] h-96 w-96 rounded-full bg-pink-300/45 blur-3xl"></div>
+    </div>
+    <div class="page-container relative">
+      <div class="flex flex-wrap items-end justify-between gap-5 mb-10">
+        <div>
+          <p class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 px-4 py-2 text-sm font-bold text-white mb-4">
+            ✨ JUST DROPPED
+          </p>
+          <h2 class="section-heading text-slate-900">Fresh New Arrivals</h2>
+          <p class="text-slate-600 mt-2">Be the first to own our latest collection</p>
+        </div>
+        <a routerLink="/products" [queryParams]="{sortBy: 'createdAt', sortOrder: 'desc'}" class="outline-button">
+          View All New →
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div *ngFor="let product of newArrivals" class="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-indigo-100">
+          <a [routerLink]="['/products', product._id]" class="block relative overflow-hidden group">
+            <span class="absolute top-3 left-3 z-10 bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+              NEW
+            </span>
+            <!-- Discount badges -->
+            <span *ngIf="product.isOnSale && product.discountPercentage" class="absolute top-3 right-3 z-10 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+              -{{product.discountPercentage}}% OFF
+            </span>
+            <span *ngIf="product.isFlashDeal" class="absolute top-12 right-3 z-10 bg-gradient-to-r from-amber-400 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse">
+              ⚡ Flash Deal
+            </span>
+            <img [src]="product.images[0] || 'assets/placeholder.jpg'" [alt]="product.name" class="w-full h-64 object-cover transform group-hover:scale-105 transition-transform duration-300" />
+          </a>
+          <div class="p-5">
+            <a [routerLink]="['/products', product._id]" class="text-lg font-semibold text-slate-900 hover:text-indigo-600 line-clamp-2 mb-2 block">
+              {{product.name}}
+            </a>
+            <p class="text-sm text-slate-600 line-clamp-2 mb-3">{{product.description}}</p>
+            <div class="flex items-center justify-between mb-4">
+              <!-- Dynamic pricing -->
+              <div *ngIf="product.isOnSale && product.discountedPrice" class="flex items-center gap-2">
+                <span class="text-2xl font-bold text-red-600">₹{{product.discountedPrice}}</span>
+                <span class="text-sm text-slate-400 line-through">₹{{product.price}}</span>
+              </div>
+              <span *ngIf="!product.isOnSale || !product.discountedPrice" class="text-2xl font-bold text-indigo-600">₹{{product.price}}</span>
+              <span class="flex items-center gap-1 text-sm text-emerald-600 font-semibold">
+                ★ {{product.rating | number:'1.1-1'}}
+              </span>
+            </div>
+            <button (click)="addToCart(product)" [disabled]="product.stock === 0" class="w-full bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white font-semibold py-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed">
+              {{product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Trending Products -->
   <section class="relative overflow-hidden py-14 md:py-16 bg-gradient-to-br from-white via-[#e7f0ff] to-[#ccefff]">
     <div class="absolute inset-0 opacity-70">
@@ -190,12 +336,19 @@
   <div class="h-14 w-14 animate-spin rounded-full border-4 border-slate-200 border-t-primary-300"></div>
       </div>
 
-  <div *ngIf="!loading" class="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
+  <div *ngIf="!loading" class="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <div
           *ngFor="let product of trendingProducts"
           class="relative overflow-hidden rounded-3xl border border-primary-100 bg-white/95 p-6 shadow-lg transition duration-300 hover:-translate-y-2 hover:border-primary-200 hover:shadow-xl">
           <div class="flex flex-col gap-6">
             <a [routerLink]="['/products', product._id]" class="group relative block overflow-hidden rounded-2xl bg-gradient-to-br from-primary-50 via-white to-sky-50">
+              <!-- Discount badges -->
+              <div *ngIf="product.isOnSale && product.discountPercentage" class="absolute top-3 left-3 z-10 rounded-full bg-red-500 px-3 py-1.5 text-xs font-bold text-white shadow-lg">
+                -{{product.discountPercentage}}% OFF
+              </div>
+              <div *ngIf="product.isFlashDeal" class="absolute top-3 right-3 z-10 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 px-3 py-1.5 text-xs font-bold text-white shadow-lg animate-pulse">
+                ⚡ Flash Deal
+              </div>
               <img
                 [src]="product.images[0] || 'assets/placeholder.jpg'"
                 [alt]="product.name"
@@ -215,7 +368,12 @@
               </div>
               <p class="text-sm text-slate-600 line-clamp-2">{{product.description}}</p>
               <div class="flex items-center justify-between">
-                <div class="text-2xl font-bold text-primary-700">₹{{product.price}}</div>
+                <!-- Dynamic pricing -->
+                <div *ngIf="product.isOnSale && product.discountedPrice" class="flex items-center gap-2">
+                  <div class="text-2xl font-bold text-red-600">₹{{product.discountedPrice}}</div>
+                  <div class="text-sm text-slate-400 line-through">₹{{product.price}}</div>
+                </div>
+                <div *ngIf="!product.isOnSale || !product.discountedPrice" class="text-2xl font-bold text-primary-700">₹{{product.price}}</div>
                 <span [class]="'rounded-full px-3 py-1 text-xs font-semibold ' + (product.stock > 10 ? 'bg-emerald-500/20 text-emerald-600' : product.stock > 0 ? 'bg-amber-400/25 text-amber-600' : 'bg-red-500/20 text-red-600')">
                   {{product.stock > 10 ? 'In Stock' : product.stock > 0 ? 'Low Stock' : 'Out of Stock'}}
                 </span>
@@ -232,6 +390,171 @@
             </button>
           </div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Best Sellers Section -->
+  <section class="relative overflow-hidden py-14 bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50">
+    <div class="absolute inset-0 opacity-40">
+      <div class="absolute -left-24 top-10 h-80 w-80 rounded-full bg-amber-300/50 blur-3xl"></div>
+      <div class="absolute bottom-0 right-[-3rem] h-96 w-96 rounded-full bg-orange-300/45 blur-3xl"></div>
+    </div>
+    <div class="page-container relative">
+      <div class="flex flex-wrap items-end justify-between gap-5 mb-10">
+        <div>
+          <p class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-2 text-sm font-bold text-white mb-4">
+            🔥 BEST SELLERS
+          </p>
+          <h2 class="section-heading text-slate-900">Customer Favorites</h2>
+          <p class="text-slate-600 mt-2">Top products loved by thousands of shoppers</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div *ngFor="let product of bestSellers; let i = index" class="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border-2 border-amber-200">
+          <a [routerLink]="['/products', product._id]" class="block relative overflow-hidden group">
+            <span class="absolute top-3 left-3 z-10 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+              #{{i + 1}} Best Seller
+            </span>
+            <!-- Discount badges -->
+            <span *ngIf="product.isOnSale && product.discountPercentage" class="absolute top-3 right-3 z-10 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+              -{{product.discountPercentage}}% OFF
+            </span>
+            <span *ngIf="product.isFlashDeal" class="absolute top-12 right-3 z-10 bg-gradient-to-r from-amber-400 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse">
+              ⚡ Flash Deal
+            </span>
+            <img [src]="product.images[0] || 'assets/placeholder.jpg'" [alt]="product.name" class="w-full h-64 object-cover transform group-hover:scale-105 transition-transform duration-300" />
+          </a>
+          <div class="p-5">
+            <a [routerLink]="['/products', product._id]" class="text-lg font-semibold text-slate-900 hover:text-amber-600 line-clamp-2 mb-2 block">
+              {{product.name}}
+            </a>
+            <p class="text-sm text-slate-600 line-clamp-2 mb-3">{{product.description}}</p>
+            <div class="flex items-center justify-between mb-4">
+              <!-- Dynamic pricing -->
+              <div *ngIf="product.isOnSale && product.discountedPrice" class="flex items-center gap-2">
+                <span class="text-2xl font-bold text-red-600">₹{{product.discountedPrice}}</span>
+                <span class="text-sm text-slate-400 line-through">₹{{product.price}}</span>
+              </div>
+              <span *ngIf="!product.isOnSale || !product.discountedPrice" class="text-2xl font-bold text-amber-600">₹{{product.price}}</span>
+              <span class="flex items-center gap-1 text-sm text-emerald-600 font-semibold">
+                ★ {{product.rating | number:'1.1-1'}}
+              </span>
+            </div>
+            <button (click)="addToCart(product)" [disabled]="product.stock === 0" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold py-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed">
+              {{product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Choose Us Features -->
+  <section class="py-14 bg-gradient-to-br from-slate-50 to-slate-100">
+    <div class="page-container">
+      <div class="text-center mb-12">
+        <p class="inline-block bg-primary-100 text-primary-700 px-4 py-2 rounded-full text-sm font-semibold mb-4">Why Choose Us</p>
+        <h2 class="section-heading text-slate-900">Shopping Made Simple</h2>
+        <p class="text-slate-600 mt-2">Experience the difference with our premium features</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white rounded-2xl p-6 shadow-md hover:shadow-xl transition-all duration-300 text-center group">
+          <div class="text-5xl mb-4 transform group-hover:scale-110 transition-transform">🎯</div>
+          <h3 class="text-lg font-semibold text-slate-900 mb-2">Smart Recommendations</h3>
+          <p class="text-sm text-slate-600">Personalized product suggestions based on your preferences</p>
+        </div>
+        <div class="bg-white rounded-2xl p-6 shadow-md hover:shadow-xl transition-all duration-300 text-center group">
+          <div class="text-5xl mb-4 transform group-hover:scale-110 transition-transform">✅</div>
+          <h3 class="text-lg font-semibold text-slate-900 mb-2">Quality Guarantee</h3>
+          <p class="text-sm text-slate-600">Every product verified and backed by real customer reviews</p>
+        </div>
+        <div class="bg-white rounded-2xl p-6 shadow-md hover:shadow-xl transition-all duration-300 text-center group">
+          <div class="text-5xl mb-4 transform group-hover:scale-110 transition-transform">💳</div>
+          <h3 class="text-lg font-semibold text-slate-900 mb-2">Secure Payments</h3>
+          <p class="text-sm text-slate-600">100% safe and encrypted payment processing</p>
+        </div>
+        <div class="bg-white rounded-2xl p-6 shadow-md hover:shadow-xl transition-all duration-300 text-center group">
+          <div class="text-5xl mb-4 transform group-hover:scale-110 transition-transform">🎧</div>
+          <h3 class="text-lg font-semibold text-slate-900 mb-2">24/7 Support</h3>
+          <p class="text-sm text-slate-600">Always here to help with any questions or concerns</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Customer Reviews -->
+  <section class="py-14 bg-white">
+    <div class="page-container">
+      <div class="text-center mb-12">
+        <p class="inline-block bg-emerald-100 text-emerald-700 px-4 py-2 rounded-full text-sm font-semibold mb-4">Customer Reviews</p>
+        <h2 class="section-heading text-slate-900">What Our Customers Say</h2>
+        <p class="text-slate-600 mt-2">Real reviews from real customers</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div *ngFor="let review of customerReviews" class="bg-gradient-to-br from-slate-50 to-white rounded-2xl p-6 shadow-md hover:shadow-xl transition-all duration-300 border border-slate-200">
+          <div class="flex items-center gap-4 mb-4">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold text-lg">
+              {{review.userName.charAt(0).toUpperCase()}}
+            </div>
+            <div>
+              <h4 class="font-semibold text-slate-900">{{review.userName}}</h4>
+              <div class="flex items-center gap-1">
+                <span *ngFor="let star of [1,2,3,4,5]" class="text-amber-400">
+                  {{star <= review.rating ? '★' : '☆'}}
+                </span>
+              </div>
+            </div>
+          </div>
+          <p class="text-slate-700 mb-3 line-clamp-3">{{review.comment}}</p>
+          <p class="text-xs text-slate-500">Product: {{review.productName}}</p>
+        </div>
+      </div>
+
+      <div *ngIf="customerReviews.length === 0" class="text-center text-slate-500 py-8">
+        Loading reviews...
+      </div>
+    </div>
+  </section>
+
+  <!-- Newsletter Section -->
+  <section class="relative overflow-hidden py-16 bg-gradient-to-br from-primary-600 via-primary-700 to-sky-700">
+    <div class="absolute inset-0 opacity-10">
+      <div class="absolute -left-20 top-10 h-80 w-80 rounded-full bg-white blur-3xl"></div>
+      <div class="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-white blur-3xl"></div>
+    </div>
+    <div class="page-container relative">
+      <div class="max-w-3xl mx-auto text-center">
+        <div class="text-5xl mb-4">📧</div>
+        <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Get 10% Off Your First Order</h2>
+        <p class="text-lg text-white/90 mb-8">Subscribe to our newsletter for exclusive deals, new arrivals, and special offers!</p>
+        
+        <div class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+          <input 
+            type="email" 
+            [(ngModel)]="newsletterEmail"
+            placeholder="Enter your email"
+            class="flex-1 px-6 py-4 rounded-full text-slate-900 focus:outline-none focus:ring-4 focus:ring-white/50"
+          />
+          <button 
+            (click)="subscribeNewsletter()"
+            class="bg-white text-primary-700 px-8 py-4 rounded-full font-semibold hover:bg-slate-100 transition shadow-lg">
+            Subscribe
+          </button>
+        </div>
+
+        <div *ngIf="newsletterSuccess" class="mt-4 bg-green-500/20 border border-green-400 text-white px-6 py-3 rounded-full inline-block animate-fade-in">
+          ✓ Successfully subscribed! Check your email for the discount code.
+        </div>
+
+        <div *ngIf="newsletterError" class="mt-4 bg-red-500/20 border border-red-400 text-white px-6 py-3 rounded-full inline-block">
+          {{newsletterError}}
+        </div>
+
+        <p class="text-sm text-white/70 mt-6">We respect your privacy. Unsubscribe anytime.</p>
       </div>
     </div>
   </section>

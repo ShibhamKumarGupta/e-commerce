@@ -77,6 +77,21 @@
               </div>
             </div>
 
+            <!-- Special Offers -->
+            <div>
+              <h3 class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Special Offers</h3>
+              <div class="mt-4 space-y-2">
+                <label class="group flex cursor-pointer items-center gap-3 rounded-xl border border-transparent px-3 py-2 transition hover:border-primary-200 hover:bg-primary-50">
+                  <input type="checkbox" [(ngModel)]="showOnSaleOnly" (change)="onCategoryChange()" class="h-4 w-4 rounded text-primary-600 focus:ring-primary-500" />
+                  <span class="text-sm font-medium text-slate-600 group-hover:text-primary-600">On Sale</span>
+                </label>
+                <label class="group flex cursor-pointer items-center gap-3 rounded-xl border border-transparent px-3 py-2 transition hover:border-primary-200 hover:bg-primary-50">
+                  <input type="checkbox" [(ngModel)]="showFlashDealsOnly" (change)="onCategoryChange()" class="h-4 w-4 rounded text-primary-600 focus:ring-primary-500" />
+                  <span class="text-sm font-medium text-slate-600 group-hover:text-primary-600">⚡ Flash Deals</span>
+                </label>
+              </div>
+            </div>
+
             <!-- Rating -->
             <!-- <div>
               <h3 class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Rating</h3>
@@ -202,7 +217,7 @@
           </div>
 
           <!-- Products -->
-          <div *ngIf="!loading && products.length > 0" class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2">
+          <div *ngIf="!loading && products.length > 0" class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             <div
               *ngFor="let product of products"
               class="group flex h-full flex-col overflow-hidden rounded-3xl border border-slate-100 bg-gradient-to-br from-white to-slate-50 shadow-xl transition duration-300 hover:-translate-y-2 hover:shadow-2xl">
@@ -215,7 +230,15 @@
                 <div *ngIf="product.stock === 0" class="absolute inset-0 flex items-center justify-center bg-slate-900/60">
                   <span class="rounded-full bg-red-500 px-4 py-1 text-sm font-semibold text-white">Out of stock</span>
                 </div>
-                <div *ngIf="product.stock > 0 && product.stock < 10" class="absolute left-4 top-4 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">
+                <!-- Discount badges -->
+                <div *ngIf="product.isOnSale && product.discountPercentage" class="absolute left-4 top-4 rounded-full bg-red-500 px-3 py-1.5 text-xs font-bold text-white shadow-lg">
+                  -{{product.discountPercentage}}% OFF
+                </div>
+                <div *ngIf="product.isFlashDeal" class="absolute right-4 top-4 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 px-3 py-1.5 text-xs font-bold text-white shadow-lg animate-pulse">
+                  ⚡ Flash Deal
+                </div>
+                <!-- Stock badges -->
+                <div *ngIf="product.stock > 0 && product.stock < 10 && !product.isOnSale" class="absolute left-4 top-4 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">
                   Only {{product.stock}} left
                 </div>
               </a>
@@ -232,7 +255,11 @@
                 <div class="mt-auto flex items-center justify-between">
                   <div>
                     <p class="text-xs uppercase tracking-wide text-slate-400">Price</p>
-                    <p class="text-2xl font-bold text-slate-900">₹{{product.price.toFixed(2) || '0.00'}}</p>
+                    <div *ngIf="product.isOnSale && product.discountedPrice" class="flex items-center gap-2">
+                      <p class="text-2xl font-bold text-red-600">₹{{product.discountedPrice.toFixed(2) || '0.00'}}</p>
+                      <p class="text-sm text-slate-400 line-through">₹{{product.price.toFixed(2) || '0.00'}}</p>
+                    </div>
+                    <p *ngIf="!product.isOnSale || !product.discountedPrice" class="text-2xl font-bold text-slate-900">₹{{product.price.toFixed(2) || '0.00'}}</p>
                   </div>
                   <span [class]="'rounded-full px-3 py-1 text-xs font-semibold ' + (product.stock > 10 ? 'bg-emerald-100 text-emerald-700' : product.stock > 0 ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700')">
                     {{product.stock > 10 ? 'In stock' : product.stock > 0 ? 'Low stock' : 'Out of stock'}}

@@ -14,6 +14,8 @@ export interface ProductQuery {
   minRating?: number;
   search?: string;
   seller?: string;
+  onSale?: boolean;
+  flashDeal?: boolean;
   page?: number;
   limit?: number;
   sortBy?: string;
@@ -57,6 +59,8 @@ export class ProductService extends AbstractService<IProduct> {
       minRating,
       search,
       seller,
+      onSale,
+      flashDeal,
       page = 1,
       limit = 12,
       sortBy = 'createdAt',
@@ -95,6 +99,21 @@ export class ProductService extends AbstractService<IProduct> {
 
     if (seller) {
       filter.seller = seller;
+    }
+
+    // Filter for on sale products
+    if (onSale) {
+      filter.isOnSale = true;
+      filter.saleStartDate = { $lte: new Date() };
+      filter.saleEndDate = { $gte: new Date() };
+    }
+
+    // Filter for flash deal products
+    if (flashDeal) {
+      filter.isFlashDeal = true;
+      filter.isOnSale = true;
+      filter.saleStartDate = { $lte: new Date() };
+      filter.saleEndDate = { $gte: new Date() };
     }
 
     const total = await this.productRepository.count(filter);

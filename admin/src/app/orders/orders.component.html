@@ -6,22 +6,187 @@
       <p class="text-gray-600">View and manage all orders in the system</p>
     </div>
 
-    <!-- Filters -->
-    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <!-- Order Status Filter -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Order Status</label>
-          <select
-            [(ngModel)]="selectedStatus"
-            (change)="onFilterChange()"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="">All Statuses</option>
-            <option *ngFor="let status of orderStatuses" [value]="status.value">{{status.label}}</option>
-          </select>
+    <!-- Enhanced Stats Dashboard -->
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+      <!-- Total Orders -->
+      <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-600 mb-1">Total Orders</p>
+            <p class="text-2xl font-bold text-gray-900">{{stats.total}}</p>
+          </div>
+          <div class="bg-blue-100 rounded-full p-3">
+            <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/>
+            </svg>
+          </div>
         </div>
+      </div>
 
+      <!-- Pending Orders -->
+      <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-600 mb-1">Pending</p>
+            <p class="text-2xl font-bold text-yellow-600">{{stats.pending}}</p>
+          </div>
+          <div class="bg-yellow-100 rounded-full p-3">
+            <svg class="w-6 h-6 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Processing Orders -->
+      <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-600 mb-1">Processing</p>
+            <p class="text-2xl font-bold text-blue-600">{{stats.processing}}</p>
+          </div>
+          <div class="bg-blue-100 rounded-full p-3">
+            <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Delivered Orders -->
+      <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-600 mb-1">Delivered</p>
+            <p class="text-2xl font-bold text-green-600">{{stats.delivered}}</p>
+          </div>
+          <div class="bg-green-100 rounded-full p-3">
+            <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total Revenue -->
+      <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-600 mb-1">Revenue</p>
+            <p class="text-2xl font-bold text-purple-600">₹{{stats.revenue.toFixed(0)}}</p>
+          </div>
+          <div class="bg-purple-100 rounded-full p-3">
+            <svg class="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="bg-white rounded-lg shadow-md mb-6 overflow-x-auto">
+      <div class="flex border-b border-gray-200">
+        <button
+          (click)="onTabChange('all')"
+          [class.border-b-2]="activeTab === 'all'"
+          [class.border-blue-600]="activeTab === 'all'"
+          [class.text-blue-600]="activeTab === 'all'"
+          [class.text-gray-600]="activeTab !== 'all'"
+          class="px-6 py-4 font-medium whitespace-nowrap hover:text-blue-600 transition-colors"
+        >
+          All Orders
+          <span class="ml-2 px-2 py-1 text-xs rounded-full bg-gray-100">{{getTabCount('all')}}</span>
+        </button>
+        <button
+          (click)="onTabChange('pending')"
+          [class.border-b-2]="activeTab === 'pending'"
+          [class.border-yellow-600]="activeTab === 'pending'"
+          [class.text-yellow-600]="activeTab === 'pending'"
+          [class.text-gray-600]="activeTab !== 'pending'"
+          class="px-6 py-4 font-medium whitespace-nowrap hover:text-yellow-600 transition-colors"
+        >
+          ⏳ Pending
+          <span class="ml-2 px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800">{{getTabCount('pending')}}</span>
+        </button>
+        <button
+          (click)="onTabChange('processing')"
+          [class.border-b-2]="activeTab === 'processing'"
+          [class.border-blue-600]="activeTab === 'processing'"
+          [class.text-blue-600]="activeTab === 'processing'"
+          [class.text-gray-600]="activeTab !== 'processing'"
+          class="px-6 py-4 font-medium whitespace-nowrap hover:text-blue-600 transition-colors"
+        >
+          ⚙️ Processing
+          <span class="ml-2 px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">{{getTabCount('processing')}}</span>
+        </button>
+        <button
+          (click)="onTabChange('shipped')"
+          [class.border-b-2]="activeTab === 'shipped'"
+          [class.border-purple-600]="activeTab === 'shipped'"
+          [class.text-purple-600]="activeTab === 'shipped'"
+          [class.text-gray-600]="activeTab !== 'shipped'"
+          class="px-6 py-4 font-medium whitespace-nowrap hover:text-purple-600 transition-colors"
+        >
+          🚚 Shipped
+          <span class="ml-2 px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-800">{{getShippedCount()}}</span>
+        </button>
+        <button
+          (click)="onTabChange('delivered')"
+          [class.border-b-2]="activeTab === 'delivered'"
+          [class.border-green-600]="activeTab === 'delivered'"
+          [class.text-green-600]="activeTab === 'delivered'"
+          [class.text-gray-600]="activeTab !== 'delivered'"
+          class="px-6 py-4 font-medium whitespace-nowrap hover:text-green-600 transition-colors"
+        >
+          ✅ Delivered
+          <span class="ml-2 px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">{{getTabCount('delivered')}}</span>
+        </button>
+        <button
+          (click)="onTabChange('cancelled')"
+          [class.border-b-2]="activeTab === 'cancelled'"
+          [class.border-red-600]="activeTab === 'cancelled'"
+          [class.text-red-600]="activeTab === 'cancelled'"
+          [class.text-gray-600]="activeTab !== 'cancelled'"
+          class="px-6 py-4 font-medium whitespace-nowrap hover:text-red-600 transition-colors"
+        >
+          ❌ Cancelled
+          <span class="ml-2 px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">{{getCancelledCount()}}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Enhanced Filters -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+      <!-- Search Bar -->
+      <div class="mb-4">
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+          <input
+            type="text"
+            [(ngModel)]="searchQuery"
+            (ngModelChange)="onSearchChange()"
+            placeholder="Search by Order ID, Customer Name, or Email..."
+            class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+          <button
+            *ngIf="searchQuery"
+            (click)="searchQuery = ''; onSearchChange()"
+            class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+          >
+            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
         <!-- Payment Status Filter -->
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">Payment Status</label>
@@ -35,8 +200,43 @@
           </select>
         </div>
 
-        <!-- Clear Filters -->
-        <div class="flex items-end md:col-span-2">
+        <!-- Payment Method Filter -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Payment Method</label>
+          <select
+            [(ngModel)]="selectedPaymentMethod"
+            (change)="onFilterChange()"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="">All Methods</option>
+            <option *ngFor="let method of paymentMethods" [value]="method.value">{{method.label}}</option>
+          </select>
+        </div>
+
+        <!-- Start Date Filter -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
+          <input
+            type="date"
+            [(ngModel)]="startDate"
+            (change)="onFilterChange()"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+        </div>
+
+        <!-- End Date Filter -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">End Date</label>
+          <input
+            type="date"
+            [(ngModel)]="endDate"
+            (change)="onFilterChange()"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+        </div>
+
+        <!-- Clear Filters & Export -->
+        <div class="flex flex-col justify-end gap-2">
           <button
             (click)="clearFilters()"
             class="w-full bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors font-medium"
@@ -47,20 +247,30 @@
       </div>
     </div>
 
-    <!-- Stats -->
-    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
-      <div class="bg-white rounded-lg shadow-md p-6">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="text-sm text-gray-600">Total Orders</p>
-            <p class="text-2xl font-bold text-gray-900">{{totalOrders}}</p>
-          </div>
-          <div class="bg-blue-100 rounded-full p-3">
-            <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/>
-            </svg>
-          </div>
-        </div>
+    <!-- Bulk Actions Bar -->
+    <div *ngIf="showBulkActions" class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 flex items-center justify-between">
+      <div class="flex items-center">
+        <svg class="w-5 h-5 text-blue-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+        </svg>
+        <span class="text-blue-900 font-medium">{{selectedOrders.size}} order(s) selected</span>
+      </div>
+      <div class="flex space-x-3">
+        <button
+          (click)="exportSelected()"
+          class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center space-x-2"
+        >
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
+          </svg>
+          <span>Export Selected</span>
+        </button>
+        <button
+          (click)="clearSelection()"
+          class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+        >
+          Clear Selection
+        </button>
       </div>
     </div>
 
@@ -70,6 +280,14 @@
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
+              <th class="px-6 py-3 text-left">
+                <input
+                  type="checkbox"
+                  [checked]="isAllSelected()"
+                  (change)="toggleSelectAll()"
+                  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                >
+              </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Items</th>
@@ -82,20 +300,34 @@
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
             <tr *ngIf="loading">
-              <td colspan="8" class="px-6 py-12 text-center">
+              <td colspan="9" class="px-6 py-12 text-center">
                 <div class="flex justify-center items-center">
                   <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
                 </div>
               </td>
             </tr>
             <tr *ngIf="!loading && orders.length === 0">
-              <td colspan="8" class="px-6 py-12 text-center text-gray-500">
-                No orders found
+              <td colspan="9" class="px-6 py-12 text-center">
+                <div class="flex flex-col items-center">
+                  <svg class="w-16 h-16 text-gray-300 mb-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/>
+                  </svg>
+                  <p class="text-gray-500 text-lg font-medium mb-2">No orders found</p>
+                  <p class="text-gray-400 text-sm">Try adjusting your filters or search criteria</p>
+                </div>
               </td>
             </tr>
-            <tr *ngFor="let order of orders" class="hover:bg-gray-50">
+            <tr *ngFor="let order of orders" class="hover:bg-gray-50 transition-colors">
               <td class="px-6 py-4 whitespace-nowrap">
-                <span class="text-sm font-mono text-gray-900">#{{order._id.slice(-8)}}</span>
+                <input
+                  type="checkbox"
+                  [checked]="isOrderSelected(order._id)"
+                  (change)="toggleOrderSelection(order._id)"
+                  class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                >
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="text-sm font-mono text-gray-900">#{{order._id.slice(-8).toUpperCase()}}</span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div>
@@ -114,7 +346,11 @@
                   <span [class]="'px-2 py-1 text-xs font-semibold rounded-full ' + getPaymentStatusClass(order.paymentStatus)">
                     {{order.paymentStatus}}
                   </span>
-                  <div class="text-xs text-gray-500 mt-1">{{order.paymentMethod}}</div>
+                  <div class="mt-1">
+                    <span [class]="'px-2 py-1 text-xs font-semibold rounded-full ' + getPaymentMethodClass(order.paymentMethod)">
+                      {{order.paymentMethod | titlecase}}
+                    </span>
+                  </div>
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
@@ -125,18 +361,76 @@
               <td class="px-6 py-4 whitespace-nowrap">
                 <span class="text-sm text-gray-900">{{formatDate(order.createdAt)}}</span>
               </td>
-              <!-- <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <button
-                  (click)="openStatusModal(order)"
-                  class="px-3 py-1 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
-                >
-                  Update Status
-                </button>
-              </td> -->
-              <td class="px-6 py-4 whitespace-nowrap text-sm">
-                <button [routerLink]="['/orders', order._id]" class="text-blue-600 hover:text-blue-900 font-medium">
-                  View Details
-                </button>
+              <td class="px-6 py-4 whitespace-nowrap text-sm relative">
+                <div class="flex items-center space-x-2">
+                  <button
+                    (click)="openQuickView(order)"
+                    class="text-blue-600 hover:text-blue-900 font-medium"
+                    title="Quick View"
+                  >
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                      <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                    </svg>
+                  </button>
+                  <button
+                    [routerLink]="['/orders', order._id]"
+                    class="text-gray-600 hover:text-gray-900 font-medium"
+                    title="View Details"
+                  >
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                  </button>
+                  <button
+                    (click)="toggleActionMenu(order._id)"
+                    class="text-gray-600 hover:text-gray-900 font-medium relative"
+                    title="More Actions"
+                  >
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
+                    </svg>
+                  </button>
+                  
+                  <!-- Action Menu Dropdown -->
+                  <div *ngIf="activeActionMenu === order._id" class="absolute right-0 top-8 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                    <div class="py-1">
+                      <button
+                        (click)="openStatusModal(order); closeActionMenu()"
+                        [disabled]="isOrderLocked(order)"
+                        [class]="'w-full text-left px-4 py-2 text-sm flex items-center ' + (isOrderLocked(order) ? 'text-gray-400 cursor-not-allowed bg-gray-50' : 'text-gray-700 hover:bg-gray-100')"
+                      >
+                        <svg *ngIf="!isOrderLocked(order)" class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                        </svg>
+                        <svg *ngIf="isOrderLocked(order)" class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Update Status</span>
+                        <span *ngIf="isOrderLocked(order)" class="ml-auto text-xs">🔒</span>
+                      </button>
+                      <button
+                        [routerLink]="['/orders', order._id]"
+                        (click)="closeActionMenu()"
+                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                      >
+                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                        </svg>
+                        View Full Details
+                      </button>
+                      <button
+                        (click)="closeActionMenu()"
+                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                      >
+                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd"/>
+                        </svg>
+                        Print Invoice
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -185,17 +479,121 @@
   </div>
 </div>
 
+<!-- Quick View Modal -->
+<div *ngIf="showQuickViewModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" (click)="closeQuickView()">
+  <div class="bg-white rounded-lg max-w-3xl w-full mx-4 max-h-[90vh] overflow-y-auto" (click)="$event.stopPropagation()">
+    <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+      <h3 class="text-xl font-bold text-gray-900">Quick Order View</h3>
+      <button (click)="closeQuickView()" class="text-gray-400 hover:text-gray-600">
+        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+        </svg>
+      </button>
+    </div>
+    
+    <div *ngIf="quickViewOrder" class="p-6">
+      <!-- Order Info Grid -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div>
+          <p class="text-sm text-gray-600 mb-1">Order ID</p>
+          <p class="font-mono font-semibold text-gray-900">#{{quickViewOrder._id.slice(-8).toUpperCase()}}</p>
+        </div>
+        <div>
+          <p class="text-sm text-gray-600 mb-1">Status</p>
+          <span [class]="'px-2 py-1 text-xs font-semibold rounded-full ' + getStatusClass(quickViewOrder.orderStatus)">
+            {{quickViewOrder.orderStatus}}
+          </span>
+        </div>
+        <div>
+          <p class="text-sm text-gray-600 mb-1">Payment</p>
+          <span [class]="'px-2 py-1 text-xs font-semibold rounded-full ' + getPaymentStatusClass(quickViewOrder.paymentStatus)">
+            {{quickViewOrder.paymentStatus}}
+          </span>
+        </div>
+        <div>
+          <p class="text-sm text-gray-600 mb-1">Total</p>
+          <p class="font-bold text-gray-900">₹{{quickViewOrder.totalPrice.toFixed(2)}}</p>
+        </div>
+      </div>
+
+      <!-- Customer Info -->
+      <div class="bg-gray-50 rounded-lg p-4 mb-4">
+        <h4 class="font-semibold text-gray-900 mb-2">Customer Information</h4>
+        <div class="space-y-1">
+          <p class="text-sm text-gray-700"><strong>Name:</strong> {{quickViewOrder.user?.name || 'N/A'}}</p>
+          <p class="text-sm text-gray-700"><strong>Email:</strong> {{quickViewOrder.user?.email || 'N/A'}}</p>
+        </div>
+      </div>
+
+      <!-- Order Items -->
+      <div class="mb-4">
+        <h4 class="font-semibold text-gray-900 mb-3">Order Items ({{quickViewOrder.orderItems.length}})</h4>
+        <div class="space-y-2">
+          <div *ngFor="let item of quickViewOrder.orderItems" class="flex items-center bg-gray-50 rounded-lg p-3">
+            <img [src]="item.image || 'https://via.placeholder.com/50'" alt="{{item.name}}" class="h-12 w-12 rounded object-cover">
+            <div class="ml-3 flex-1">
+              <p class="text-sm font-medium text-gray-900">{{item.name}}</p>
+              <p class="text-xs text-gray-600">Qty: {{item.quantity}} × ₹{{item.price.toFixed(2)}}</p>
+            </div>
+            <p class="text-sm font-semibold text-gray-900">₹{{(item.price * item.quantity).toFixed(2)}}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Shipping Address -->
+      <div class="bg-gray-50 rounded-lg p-4 mb-4">
+        <h4 class="font-semibold text-gray-900 mb-2">Shipping Address</h4>
+        <p class="text-sm text-gray-700">{{quickViewOrder.shippingAddress.street}}</p>
+        <p class="text-sm text-gray-700">{{quickViewOrder.shippingAddress.city}}, {{quickViewOrder.shippingAddress.state}} {{quickViewOrder.shippingAddress.zipCode}}</p>
+        <p class="text-sm text-gray-700">{{quickViewOrder.shippingAddress.country}}</p>
+        <p class="text-sm text-gray-700 mt-1"><strong>Phone:</strong> {{quickViewOrder.shippingAddress.phone}}</p>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex space-x-3 pt-4 border-t">
+        <button
+          [routerLink]="['/orders', quickViewOrder._id]"
+          (click)="closeQuickView()"
+          class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+        >
+          View Full Details
+        </button>
+        <button
+          (click)="openStatusModal(quickViewOrder); closeQuickView()"
+          class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+        >
+          Update Status
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Update Status Modal -->
 <div *ngIf="showStatusModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
   <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
     <h3 class="text-xl font-bold text-gray-900 mb-4">Update Order Status</h3>
-    <p class="text-gray-600 mb-4">Order ID: #{{selectedOrder?._id.slice(-8)}}</p>
+    <p class="text-gray-600 mb-4">Order ID: #{{selectedOrder?._id.slice(-8).toUpperCase()}}</p>
     
+    <!-- Show lock warning if applicable -->
+    <div *ngIf="isOrderLocked(selectedOrder)" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+      <div class="flex items-start">
+        <svg class="w-5 h-5 text-red-600 mr-2 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+        </svg>
+        <div class="text-sm text-red-800">
+          <p class="font-semibold">Order is Locked</p>
+          <p>{{selectedOrder?.orderStatus === 'cancelled' ? 'Cancelled' : 'Delivered'}} status is final and cannot be changed.</p>
+        </div>
+      </div>
+    </div>
+
     <div class="mb-6">
       <label class="block text-sm font-medium text-gray-700 mb-2">Select New Status</label>
       <select
         [(ngModel)]="newOrderStatus"
-        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        [disabled]="isOrderLocked(selectedOrder)"
+        [class]="'w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ' + (isOrderLocked(selectedOrder) ? 'bg-gray-100 cursor-not-allowed opacity-60' : 'border-gray-300')"
       >
         <option *ngFor="let status of orderStatuses" [value]="status.value">{{status.label}}</option>
       </select>
@@ -204,7 +602,8 @@
     <div class="flex space-x-4">
       <button
         (click)="updateOrderStatus()"
-        class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+        [disabled]="isOrderLocked(selectedOrder)"
+        [class]="'flex-1 px-4 py-2 rounded-lg transition-colors font-medium ' + (isOrderLocked(selectedOrder) ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700')"
       >
         Update
       </button>
@@ -217,3 +616,6 @@
     </div>
   </div>
 </div>
+
+<!-- Click Outside to Close Action Menu -->
+<div *ngIf="activeActionMenu" (click)="closeActionMenu()" class="fixed inset-0 z-40"></div>

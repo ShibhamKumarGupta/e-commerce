@@ -26,6 +26,16 @@ export class ProductsComponent implements OnInit {
   selectedProduct: any = null;
   showDeleteModal = false;
   showToggleModal = false;
+  showDiscountModal = false;
+
+  // Discount form
+  discountForm = {
+    isOnSale: false,
+    discountPercentage: 0,
+    isFlashDeal: false,
+    saleStartDate: '',
+    saleEndDate: ''
+  };
 
   constructor(private productService: ProductService) {}
 
@@ -171,5 +181,125 @@ export class ProductsComponent implements OnInit {
     if (stock === 0) return 'bg-red-100 text-red-800';
     if (stock <= 10) return 'bg-yellow-100 text-yellow-800';
     return 'bg-green-100 text-green-800';
+  }
+
+  // Discount Management Methods
+  openDiscountModal(product: any): void {
+    this.selectedProduct = product;
+    
+    // Pre-fill form with existing discount data
+    this.discountForm = {
+      isOnSale: product.isOnSale || false,
+      discountPercentage: product.discountPercentage || 0,
+      isFlashDeal: product.isFlashDeal || false,
+      saleStartDate: product.saleStartDate ? this.formatDateForInput(product.saleStartDate) : '',
+      saleEndDate: product.saleEndDate ? this.formatDateForInput(product.saleEndDate) : ''
+    };
+    
+    this.showDiscountModal = true;
+  }
+
+  closeDiscountModal(): void {
+    this.showDiscountModal = false;
+    this.selectedProduct = null;
+    this.resetDiscountForm();
+  }
+
+  resetDiscountForm(): void {
+    this.discountForm = {
+      isOnSale: false,
+      discountPercentage: 0,
+      isFlashDeal: false,
+      saleStartDate: '',
+      saleEndDate: ''
+    };
+  }
+
+  calculateDiscountedPrice(): number {
+    if (!this.selectedProduct || !this.discountForm.discountPercentage) {
+      return 0;
+    }
+    const discount = (this.selectedProduct.price * this.discountForm.discountPercentage) / 100;
+    return Math.round((this.selectedProduct.price - discount) * 100) / 100;
+  }
+
+  isDiscountFormValid(): boolean {
+    if (!this.discountForm.isOnSale) return true;
+    
+    if (this.discountForm.discountPercentage < 0 || this.discountForm.discountPercentage > 100) {
+      return false;
+    }
+    
+    if (this.discountForm.saleStartDate && this.discountForm.saleEndDate) {
+      const start = new Date(this.discountForm.saleStartDate);
+      const end = new Date(this.discountForm.saleEndDate);
+      if (start >= end) {
+        return false;
+      }
+    }
+    
+    return true;
+  }
+
+  saveDiscount(): void {
+    if (!this.selectedProduct || !this.isDiscountFormValid()) {
+      return;
+    }
+
+    const discountData: any = {
+      isOnSale: this.discountForm.isOnSale,
+      discountPercentage: this.discountForm.isOnSale ? this.discountForm.discountPercentage : 0,
+      isFlashDeal: this.discountForm.isOnSale ? this.discountForm.isFlashDeal : false
+    };
+
+    // Calculate discounted price if on sale
+    if (this.discountForm.isOnSale && this.discountForm.discountPercentage > 0) {
+      discountData.discountedPrice = this.calculateDiscountedPrice();
+    } else {
+      discountData.discountedPrice = this.selectedProduct.price;
+    }
+
+    // Add dates if provided
+    if (this.discountForm.saleStartDate) {
+      discountData.saleStartDate = new Date(this.discountForm.saleStartDate).toISOString();
+    } else {
+      discountData.saleStartDate = null;
+    }
+
+    if (this.discountForm.saleEndDate) {
+      discountData.saleEndDate = new Date(this.discountForm.saleEndDate).toISOString();
+    } else {
+      discountData.saleEndDate = null;
+    }
+
+    // Update product via API
+    this.productService.adminUpdateProduct(this.selectedProduct._id, discountData).subscribe({
+      next: (updatedProduct) => {
+        alert('Discount updated successfully!');
+        
+        // Update the product in the list
+        const index = this.products.findIndex(p => p._id === this.selectedProduct._id);
+        if (index !== -1) {
+          this.products[index] = { ...this.products[index], ...updatedProduct };
+        }
+        
+        this.closeDiscountModal();
+      },
+      error: (error) => {
+        console.error('Error updating discount:', error);
+        alert('Failed to update discount. Please try again.');
+      }
+    });
+  }
+
+  formatDateForInput(dateString: string): string {
+    const date = new Date(dateString);
+    // Format: YYYY-MM-DDTHH:MM
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
   }
 }

@@ -104,7 +104,13 @@ export class CartService {
 
   private calculateTotals(items: CartItem[]): { totalItems: number; totalPrice: number } {
     const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
-    const totalPrice = items.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+    const totalPrice = items.reduce((sum, item) => {
+      // Use discounted price if product is on sale, otherwise use regular price
+      const price = (item.product.isOnSale && item.product.discountedPrice) 
+        ? item.product.discountedPrice 
+        : item.product.price;
+      return sum + (price * item.quantity);
+    }, 0);
     return { totalItems, totalPrice };
   }
 

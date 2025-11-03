@@ -136,8 +136,11 @@
                 <div class="flex-1">
                   <p class="font-semibold text-slate-900 line-clamp-2">{{item.product.name}}</p>
                   <p class="text-xs text-slate-400">Qty {{item.quantity}}</p>
+                  <p *ngIf="item.product.isOnSale && item.product.discountPercentage" class="text-xs font-semibold text-red-600">-{{item.product.discountPercentage}}% OFF</p>
                 </div>
-                <span class="font-semibold text-slate-900">₹{{(item.product.price * item.quantity).toFixed(2)}}</span>
+                <span class="font-semibold text-slate-900">
+                  ₹{{((item.product.isOnSale && item.product.discountedPrice ? item.product.discountedPrice : item.product.price) * item.quantity).toFixed(2)}}
+                </span>
               </div>
             </div>
 

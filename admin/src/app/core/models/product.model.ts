@@ -16,6 +16,15 @@ export interface Product {
   numReviews: number;
   reviews: Review[];
   isActive: boolean;
+  
+  // Discount Management
+  discountPercentage?: number;
+  discountedPrice?: number;
+  isOnSale?: boolean;
+  isFlashDeal?: boolean;
+  saleStartDate?: string;
+  saleEndDate?: string;
+  
   createdAt: string;
   updatedAt: string;
 }

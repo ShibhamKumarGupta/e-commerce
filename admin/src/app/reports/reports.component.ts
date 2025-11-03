@@ -3,6 +3,7 @@ import { DashboardService } from '../core/services/dashboard.service';
 import { OrderService } from '../core/services/order.service';
 import { ProductService } from '../core/services/product.service';
 import { UserService } from '../core/services/user.service';
+import { AuthService } from '../core/services/auth.service';
 
 declare var Chart: any;
 
@@ -14,6 +15,7 @@ declare var Chart: any;
 export class ReportsComponent implements OnInit, AfterViewInit {
   loading = false;
   selectedPeriod = 'month';
+  isOrderManager = false;
   
   stats = {
     totalRevenue: 0,
@@ -38,10 +40,12 @@ export class ReportsComponent implements OnInit, AfterViewInit {
     private dashboardService: DashboardService,
     private orderService: OrderService,
     private productService: ProductService,
-    private userService: UserService
+    private userService: UserService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
+    this.isOrderManager = this.authService.isOrderManager;
     this.loadReportData();
   }
 
@@ -52,7 +56,43 @@ export class ReportsComponent implements OnInit, AfterViewInit {
   loadReportData(): void {
     this.loading = true;
 
-    // Load all stats
+    if (this.isOrderManager) {
+      // Order Manager only loads order-related stats
+      this.loadOrderManagerReports();
+    } else {
+      // Admin loads all stats
+      this.loadAdminReports();
+    }
+  }
+
+  loadOrderManagerReports(): void {
+    // Load order stats
+    this.orderService.getOrderStats().subscribe({
+      next: (orderStats) => {
+        this.orderStats = orderStats;
+        this.stats.totalOrders = orderStats.totalOrders || 0;
+        this.stats.totalRevenue = orderStats.totalRevenue || 0;
+        this.stats.averageOrderValue = this.stats.totalOrders > 0 
+          ? this.stats.totalRevenue / this.stats.totalOrders 
+          : 0;
+        
+        // Set product and user stats to 0 for Order Manager
+        this.stats.totalProducts = 0;
+        this.stats.totalUsers = 0;
+        this.stats.conversionRate = 0;
+        
+        this.loading = false;
+        this.initializeCharts();
+      },
+      error: (error) => {
+        console.error('Error loading order manager reports:', error);
+        this.loading = false;
+      }
+    });
+  }
+
+  loadAdminReports(): void {
+    // Load all stats for admin
     this.dashboardService.getDashboardStats().subscribe({
       next: (data) => {
         this.stats.totalRevenue = data.orders.totalRevenue;

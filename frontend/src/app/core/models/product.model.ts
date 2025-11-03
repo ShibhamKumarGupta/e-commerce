@@ -16,6 +16,15 @@ export interface Product {
   numReviews: number;
   reviews: Review[];
   isActive: boolean;
+  
+  // Discount Management
+  discountPercentage?: number;
+  discountedPrice?: number;
+  isOnSale?: boolean;
+  isFlashDeal?: boolean;
+  saleStartDate?: string;
+  saleEndDate?: string;
+  
   createdAt: string;
   updatedAt: string;
 }
@@ -38,6 +47,8 @@ export interface ProductQuery {
   limit?: number;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
+  onSale?: boolean;  // Filter for products on sale
+  flashDeal?: boolean;  // Filter for flash deal products
 }
 
 export interface ProductResponse {

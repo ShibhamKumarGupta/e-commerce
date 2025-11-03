@@ -85,6 +85,36 @@ const productSchema = new Schema<IProduct>(
     isActive: {
       type: Boolean,
       default: true
+    },
+    sold: {
+      type: Number,
+      default: 0,
+      min: 0
+    },
+    // Discount Management Fields
+    discountPercentage: {
+      type: Number,
+      min: 0,
+      max: 100,
+      default: 0
+    },
+    discountedPrice: {
+      type: Number,
+      min: 0
+    },
+    isOnSale: {
+      type: Boolean,
+      default: false
+    },
+    isFlashDeal: {
+      type: Boolean,
+      default: false
+    },
+    saleStartDate: {
+      type: Date
+    },
+    saleEndDate: {
+      type: Date
     }
   },
   {
@@ -95,6 +125,17 @@ const productSchema = new Schema<IProduct>(
 // Index for search and filtering
 productSchema.index({ name: 'text', description: 'text' });
 productSchema.index({ category: 1, price: 1 });
+productSchema.index({ isOnSale: 1, isFlashDeal: 1 });
+
+// Middleware to calculate discounted price before save
+productSchema.pre('save', function(next) {
+  if (this.discountPercentage && this.discountPercentage > 0) {
+    this.discountedPrice = this.price - (this.price * this.discountPercentage / 100);
+  } else {
+    this.discountedPrice = this.price;
+  }
+  next();
+});
 
 const ProductModel = mongoose.model<IProduct>('Product', productSchema);
 
@@ -120,5 +161,50 @@ export class ProductRepository extends AbstractRepository<IProduct> {
 
   async findActiveProducts(): Promise<IProduct[]> {
     return this.model.find({ isActive: true }).exec();
+  }
+
+  async findOnSaleProducts(): Promise<IProduct[]> {
+    const now = new Date();
+    return this.model.find({
+      isActive: true,
+      isOnSale: true,
+      $and: [
+        {
+          $or: [
+            { saleStartDate: { $exists: false } },
+            { saleStartDate: { $lte: now } }
+          ]
+        },
+        {
+          $or: [
+            { saleEndDate: { $exists: false } },
+            { saleEndDate: { $gte: now } }
+          ]
+        }
+      ]
+    }).exec();
+  }
+
+  async findFlashDealProducts(): Promise<IProduct[]> {
+    const now = new Date();
+    return this.model.find({
+      isActive: true,
+      isFlashDeal: true,
+      isOnSale: true,
+      $and: [
+        {
+          $or: [
+            { saleStartDate: { $exists: false } },
+            { saleStartDate: { $lte: now } }
+          ]
+        },
+        {
+          $or: [
+            { saleEndDate: { $exists: false } },
+            { saleEndDate: { $gte: now } }
+          ]
+        }
+      ]
+    }).exec();
   }
 }

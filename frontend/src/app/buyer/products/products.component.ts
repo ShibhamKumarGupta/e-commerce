@@ -31,6 +31,8 @@ export class ProductsComponent implements OnInit {
   sortBy = 'createdAt';
   sortOrder: 'asc' | 'desc' = 'desc';
   showFilters = false;
+  showOnSaleOnly = false;
+  showFlashDealsOnly = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -88,6 +90,8 @@ export class ProductsComponent implements OnInit {
     if (this.maxPrice !== undefined) query.maxPrice = this.maxPrice;
     if (this.minRating !== undefined) query.minRating = this.minRating;
     if (this.searchQuery) query.search = this.searchQuery;
+    if (this.showOnSaleOnly) query.onSale = true;
+    if (this.showFlashDealsOnly) query.flashDeal = true;
 
     this.productService.getAllProducts(query).subscribe({
       next: (response) => {
@@ -176,6 +180,8 @@ export class ProductsComponent implements OnInit {
     this.maxPrice = undefined;
     this.minRating = undefined;
     this.searchQuery = '';
+    this.showOnSaleOnly = false;
+    this.showFlashDealsOnly = false;
     this.currentPage = 1;
     this.updateUrlAndLoad();
   }

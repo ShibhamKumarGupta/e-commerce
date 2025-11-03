@@ -27,14 +27,24 @@
 
         <div class="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1.2fr),minmax(0,1fr)]">
           <div class="space-y-6 relative">
-            <img
-              [src]="product.images[selectedImage] || 'assets/placeholder.jpg'"
-              [alt]="product.name"
-              class="h-96 w-full max-w-xl object-cover cursor-zoom-in transition-transform duration-200 hover:scale-105 rounded-3xl"
-              (mouseenter)="showZoomPreview = true"
-              (mouseleave)="showZoomPreview = false"
-              (mousemove)="onImageMouseMove($event)"
-              (click)="openImageModal()" />
+            <div class="relative">
+              <!-- Discount badges on image -->
+              <div *ngIf="product.isOnSale && product.discountPercentage" class="absolute left-4 top-4 z-10 rounded-full bg-red-500 px-4 py-2 text-sm font-bold text-white shadow-lg">
+                -{{product.discountPercentage}}% OFF
+              </div>
+              <div *ngIf="product.isFlashDeal" class="absolute right-4 top-4 z-10 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 px-4 py-2 text-sm font-bold text-white shadow-lg animate-pulse">
+                ⚡ Flash Deal
+              </div>
+              
+              <img
+                [src]="product.images[selectedImage] || 'assets/placeholder.jpg'"
+                [alt]="product.name"
+                class="h-96 w-full max-w-xl object-cover cursor-zoom-in transition-transform duration-200 hover:scale-105 rounded-3xl"
+                (mouseenter)="showZoomPreview = true"
+                (mouseleave)="showZoomPreview = false"
+                (mousemove)="onImageMouseMove($event)"
+                (click)="openImageModal()" />
+            </div>
 
             <!-- Zoom Preview -->
             <div
@@ -85,9 +95,15 @@
             </div>
 
             <div class="flex flex-wrap items-baseline gap-4">
-              <div class="text-4xl font-semibold text-slate-900">₹{{product.price.toFixed(2)}}</div>
-              <div class="text-lg text-slate-400 line-through">₹{{(product.price * 1.25).toFixed(2)}}</div>
-              <div class="rounded-full bg-primary-500/15 px-4 py-1 text-sm font-semibold text-primary-600">20% launch offer</div>
+              <!-- Dynamic pricing based on discount -->
+              <div *ngIf="product.isOnSale && product.discountedPrice" class="flex items-baseline gap-4">
+                <div class="text-4xl font-semibold text-red-600">₹{{product.discountedPrice.toFixed(2)}}</div>
+                <div class="text-lg text-slate-400 line-through">₹{{product.price.toFixed(2)}}</div>
+                <div class="rounded-full bg-red-500/15 px-4 py-1 text-sm font-semibold text-red-600">
+                  Save ₹{{(product.price - product.discountedPrice).toFixed(2)}} ({{product.discountPercentage}}% OFF)
+                </div>
+              </div>
+              <div *ngIf="!product.isOnSale || !product.discountedPrice" class="text-4xl font-semibold text-slate-900">₹{{product.price.toFixed(2)}}</div>
             </div>
 
             <p class="text-sm leading-relaxed text-slate-600 sm:text-base">{{product.description}}</p>
